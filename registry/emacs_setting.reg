@@ -1,0 +1,21 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
+// fontの種類と大きさ
+"Emacs.Font"="VL Gothic-9"
+
+// windowの幅と高さ
+"Emacs.Geometry"="100x30"
+
+// 透過度
+"Emacs.Alpha"="80"
+
+// 行間隔
+"Emacs.LineSpacing"="0"
+
+// tool-bar非表示
+"Emacs.toolbar"="off"
+
+// 左右フリンジ幅
+"Emacs.leftfringe"="0"
+"Emacs.rightfringe"="0"
