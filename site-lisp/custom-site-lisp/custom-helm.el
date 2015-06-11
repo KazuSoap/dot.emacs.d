@@ -74,8 +74,8 @@
 (define-key helm-command-map (kbd "g")   'helm-do-grep) ;;C-u 付で起動すると recursive となる
 (define-key helm-command-map (kbd "t")   'helm-gtags-find-tag)
 
-;; 先頭に"*"が付いたバッファーは表示しない
-(setq helm-boring-buffer-regexp-list '("^*"))
+;; 先頭に"*helm"が付いたバッファーは表示しない
+(setq helm-boring-buffer-regexp-list '("^*helm"))
 
 ;; ハイライト色の変更
 (custom-set-faces
