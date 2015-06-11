@@ -27,6 +27,10 @@
   (defvar auto-async-byte-compile-exclude-files-regexp "/junk/")
   (add-hook 'emacs-lisp-mode-hook 'enable-auto-async-byte-compile-mode))
 
+(require 'sticky)
+;(use-sticky-key ?\; sticky-alist:en)    ; for english keyboards
+(use-sticky-key ?\; sticky-alist:ja)    ; for japanese keyboards
+
 ;; pop_window 設定
 ;(load "custom-pop_window")
 
