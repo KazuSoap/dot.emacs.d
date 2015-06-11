@@ -21,6 +21,12 @@
 ;; helm 設定
 (with-eval-after-load 'helm (load "custom-helm"))
 
+;; auto-async-byte-compile 設定
+(with-eval-after-load 'lisp-mode
+  (require 'auto-async-byte-compile)
+  (defvar auto-async-byte-compile-exclude-files-regexp "/junk/")
+  (add-hook 'emacs-lisp-mode-hook 'enable-auto-async-byte-compile-mode))
+
 ;; pop_window 設定
 ;(load "custom-pop_window")
 
