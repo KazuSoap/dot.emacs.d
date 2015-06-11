@@ -10,24 +10,27 @@
 ;(defvar lpr-add-switches t)
 ;(defvar lpr-command-switches '())
 
-;;NTEmacsからnotepadを使って印刷
-(setq print-region-function
-      (lambda (start end
-                     &optional _lpr-prog
-                     _delete-text _buf _display
-                     &rest _rest)
+;; lpr-bufferコマンド で notepad を開くようにする
+(defvar print-region-function
+      (lambda (start end _program
+                     &optional _delete _destination _display
+                     &rest _args)
         (let* ((procname (make-temp-name "w32-print-"))
-               (tempfile
-                (subst-char-in-string
-                 ?/ ?\\
-                 (expand-file-name procname temporary-file-directory)))
-               (coding-system-for-write 'sjis-dos))
-          (write-region start end tempfile)
+                       (tempfile (expand-file-name procname temporary-file-directory))
+                       (winfile
+                        (if (fboundp 'cygwin-convert-file-name-to-windows)
+                            (cygwin-convert-file-name-to-windows tempfile)
+                          tempfile)))
+          (let ((coding-system-for-write 'cp932-dos))
+            (write-region start end winfile))
           (set-process-sentinel
-           (start-process procname nil "notepad.exe" tempfile)
-           (lambda (process _event)
-             (let ((tempfile
-                    (expand-file-name (process-name process)
-                                      temporary-file-directory)))
-               (when (file-exists-p tempfile)
-                 (delete-file tempfile))))))))
+           (start-process procname nil "notepad.exe" winfile)
+           (lambda (_process _state)
+             (when (file-exists-p winfile)
+               (delete-file winfile)))))))
+
+;; lpr-buffer を実行する
+(global-set-key (kbd "C-c C-p")
+                (lambda ()
+                  (interactive)
+                  (lpr-buffer)))
