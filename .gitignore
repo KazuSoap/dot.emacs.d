@@ -1,0 +1,7 @@
+!site-lisp/
+*/
+!*.el
+shell_env.el
+*.*
+recentf
+tramp
