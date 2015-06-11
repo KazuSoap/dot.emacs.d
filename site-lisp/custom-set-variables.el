@@ -6,7 +6,6 @@
 ;;-- 色分け,highlight --;;
 ;(global-font-lock-mode t) ;;program-色分け
 (show-paren-mode t) ;; カッコ-highlight
-(defvar show-paren-delay 0.5)
 
 ;;-- ファイルのフルパスをタイトルバーに表示 --;;
 (setq frame-title-format(format "%%f - Emacs"))
@@ -25,7 +24,6 @@
 ;;-- C-Ret で矩形選択 --;;
 ;; 詳しいキーバインド操作：http://dev.ariel-networks.com/articles/emacs/part5/
 (cua-mode t)
-(setq cua-enable-cua-keys nil)
 
 ;;-- 右から左に書く言語のための設定を無効化 --;;
 (setq bidi-display-reordering nil)
