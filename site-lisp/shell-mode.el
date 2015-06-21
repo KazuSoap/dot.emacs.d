@@ -16,7 +16,10 @@
   (add-to-list 'exec-path (directory-file-name path)))
 
 ;; load fakecygpty setting
-(load "fakecygpty")
+;; (load "fakecygpty")
+
+(require 'fakecygpty)
+(fakecygpty-activate)
 
 (setq explicit-shell-file-name "bash")
 (setq shell-command-switch "-c")
