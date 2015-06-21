@@ -24,6 +24,7 @@
 ;;-- C-Ret で矩形選択 --;;
 ;; 詳しいキーバインド操作：http://dev.ariel-networks.com/articles/emacs/part5/
 (cua-mode t)
+(setq cua-enable-cua-keys nil)
 
 ;;-- 右から左に書く言語のための設定を無効化 --;;
 (setq bidi-display-reordering nil)
