@@ -3,12 +3,8 @@
 ;;------------------------------------------------------------------------------
 ;; 印刷設定
 ;;------------------------------------------------------------------------------
-;;ak2prでEmacs のバッファの内容を印刷する
-;;(ただし日本語は sjis のみ? utf-8 非対応)
-;(setq lpr-command "d:/Program Files (x86)/ak2pr/bin/ak2pr.exe")
-;(setq lpr-switches '())
-;(defvar lpr-add-switches t)
-;(defvar lpr-command-switches '())
+;; 文字化け防止
+(defvar ps-multibyte-buffer 'non-latin-printer)
 
 ;; lpr-bufferコマンド で notepad を開くようにする
 (defvar print-region-function
