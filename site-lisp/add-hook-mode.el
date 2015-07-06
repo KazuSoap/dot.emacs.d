@@ -16,7 +16,8 @@
 ;;共通設定
 (dolist (hook '(text-mode-hook
 				emacs-lisp-mode-hook
-				sh-mode-hook))
+				sh-mode-hook
+				makefile-mode-hook))
   (add-hook hook '(lambda () (setq tab-width 4))));;タブ幅4
 
 ;;text-mode
