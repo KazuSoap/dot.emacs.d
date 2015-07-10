@@ -24,7 +24,8 @@
 ;; auto-async-byte-compile 設定
 (with-eval-after-load 'lisp-mode
   (require 'auto-async-byte-compile)
-  (defvar auto-async-byte-compile-exclude-files-regexp "/junk/")
+  (defvar auto-async-byte-compile-exclude-files-regexp)
+  (setq auto-async-byte-compile-exclude-files-regexp "/elpa/*/*")
   (add-hook 'emacs-lisp-mode-hook 'enable-auto-async-byte-compile-mode))
 
 (require 'sticky)
