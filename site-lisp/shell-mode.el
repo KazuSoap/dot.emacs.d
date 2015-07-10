@@ -21,6 +21,7 @@
 (require 'fakecygpty)
 (fakecygpty-activate)
 
+(defvar explicit-shell-file-name)
 (setq explicit-shell-file-name "bash")
 (setq shell-command-switch "-c")
 

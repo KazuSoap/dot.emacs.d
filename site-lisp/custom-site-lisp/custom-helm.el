@@ -17,6 +17,7 @@
 ;; tramp で remote-directory を開いているときに、helm-for-files を起動すると反応が悪い
 ;; 原因は helm-source-files-in-current-dir だったので、この情報源の指定を削除する
 ;; また、一部表示順を変更する
+(defvar helm-for-files-preferred-list)
 (setq helm-for-files-preferred-list
       '(helm-source-buffers-list
         helm-source-bookmarks
@@ -26,22 +27,28 @@
         helm-source-locate))
 
 ;; helm-source-buffers-list を詳細に表示しない
+(defvar helm-buffer-details-flag)
 (setq helm-buffer-details-flag nil)
 
 ;; helm-source-buffers-list でバッファ名を表示する幅を調整する
+(defvar helm-buffer-max-length)
 (setq helm-buffer-max-length 50)
 
 ;; helm-follow-mode （C-c C-f で ON/OFF）の前回の状態を維持する
+(defvar helm-follow-mode-persistent)
 (setq helm-follow-mode-persistent t)
 
 ;; ミニバッファで C-k 入力時にカーソル以降を削除する（C-u C-k でも同様の動きをする）
+(defvar helm-delete-minibuffer-contents-from-point)
 (setq helm-delete-minibuffer-contents-from-point t)
 
 ;; http://fukuyama.co/nonexpansion
 ;; 自動補完を無効にする
+(defvar helm-ff-auto-update-initial-value)
 (setq helm-ff-auto-update-initial-value nil)
 
 ;; 先頭に"*helm"が付いたバッファーは表示しない
+(defvar helm-boring-buffer-regexp-list)
 (setq helm-boring-buffer-regexp-list '("^*helm"))
 
 ;; ハイライト色の変更

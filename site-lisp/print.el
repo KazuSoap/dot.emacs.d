@@ -4,10 +4,12 @@
 ;; 印刷設定
 ;;------------------------------------------------------------------------------
 ;; 文字化け防止
-(defvar ps-multibyte-buffer 'non-latin-printer)
+(defvar ps-multibyte-buffer)
+(setq ps-multibyte-buffer 'non-latin-printer)
 
 ;; lpr-bufferコマンド で notepad を開くようにする
-(defvar print-region-function
+(defvar print-region-function)
+(setq print-region-function
       (lambda (start end _program
                      &optional _delete _destination _display
                      &rest _args)
