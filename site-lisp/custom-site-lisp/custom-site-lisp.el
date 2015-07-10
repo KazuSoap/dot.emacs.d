@@ -33,7 +33,7 @@
 (use-sticky-key ?\; sticky-alist:ja)    ; for japanese keyboards
 
 ;; pop_window 設定
-;(load "custom-pop_window")
+;; (load "custom-pop_window")
 
 ;; twittering-mode 設定
-;;(load "custom-twittering-mode")
+;; (load "custom-twittering-mode")
