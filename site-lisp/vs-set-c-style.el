@@ -1,3 +1,5 @@
+;;; -*- coding: utf-8; lexical-binding: t -*-
+
 ;;; vs-set-c-style.el --- Visual Studio like C/C++ style for c-mode
 ;; Keywords: c, tools
 ;;
