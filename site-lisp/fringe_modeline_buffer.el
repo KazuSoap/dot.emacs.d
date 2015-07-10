@@ -8,19 +8,25 @@
 ;;------------------------------------------------------------------------------
 ;;-- linum customize --;;
 ;; linumのカスタマイズ
-(global-linum-mode t) ;; 行番号表示
-(defvar linum-format)
-(setq linum-format "%4d\u2502") ;; 行番号のフォーマット
 
-(custom-set-faces
- ;; 背景色,文字色,高さ
- '(linum ((t (:background "black" :foreground "gray" :height 0.8 :underline nil)))))
+;; 特定の mode のみ linum を有効にする
+(dolist (hook '(fundamental-mode-hook text-mode-hook emacs-lisp-mode-hook
+				sh-mode-hook c-mode-hook c++-mode-hook makefile-mode-hook))
+  (add-hook hook '(lambda ()
+					(linum-mode 1)
+					(defvar linum-format)
+					(setq linum-format "%4d\u2502") ;; 行番号のフォーマット
 
-;; 行番号の表示遅延の修正
-(defvar linum-delay)
-(setq linum-delay t)
-(defadvice linum-schedule (around my-linum-schedule () activate)
-  (run-with-idle-timer 0.5 nil #'linum-update-current))
+					(custom-set-faces
+					 ;; 背景色,文字色,高さ
+					 '(linum ((t (:background "black" :foreground "gray" :height 0.8 :underline nil)))))
+
+					;; 行番号の表示遅延の修正
+					(defvar linum-delay)
+					(setq linum-delay t)
+					(defadvice linum-schedule (around my-linum-schedule () activate)
+					  (run-with-idle-timer 0.2 nil #'linum-update-current))
+					)))
 
 ;;------------------------------------------------------------------------------
 ;; modeline
