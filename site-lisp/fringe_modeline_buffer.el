@@ -10,8 +10,8 @@
 ;; linumのカスタマイズ
 
 ;; linum を有効にする mode
-(dolist (hook '(fundamental-mode-hook text-mode-hook emacs-lisp-mode-hook
-				sh-mode-hook c-mode-hook c++-mode-hook makefile-mode-hook))
+(dolist (hook '(text-mode-hook emacs-lisp-mode-hook sh-mode-hook
+				c-mode-hook c++-mode-hook makefile-mode-hook))
   (add-hook hook '(lambda ()
 					(linum-mode 1)
 					(defvar linum-format)
