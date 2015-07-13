@@ -9,7 +9,7 @@
 ;;-- linum customize --;;
 ;; linumのカスタマイズ
 
-;; 特定の mode のみ linum を有効にする
+;; linum を有効にする mode
 (dolist (hook '(fundamental-mode-hook text-mode-hook emacs-lisp-mode-hook
 				sh-mode-hook c-mode-hook c++-mode-hook makefile-mode-hook))
   (add-hook hook '(lambda ()
@@ -25,8 +25,12 @@
 					(defvar linum-delay)
 					(setq linum-delay t)
 					(defadvice linum-schedule (around my-linum-schedule () activate)
-					  (run-with-idle-timer 0.2 nil #'linum-update-current))
-					)))
+					  (run-with-idle-timer 0.2 nil #'linum-update-current)))))
+
+;; linum を無効にする mode
+(dolist (hook '(lisp-interaction-mode-hook))
+  (add-hook hook '(lambda ()
+					(linum-mode 0))))
 
 ;;------------------------------------------------------------------------------
 ;; modeline
