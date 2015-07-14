@@ -3,6 +3,8 @@
 ;;------------------------------------------------------------------------------
 ;; custom-set-faces
 ;;------------------------------------------------------------------------------
+;; (set-face-attribute 'hoge nil :background "black" :foreground "white" ...)
+
 (custom-set-faces
  '(default ((t (:background "black" :foreground "white"))))
  '(blue ((t (:foreground "blue"))))
