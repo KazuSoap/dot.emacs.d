@@ -9,7 +9,7 @@
 (global-set-key [backspace] 'backward-delete-char)
 (global-set-key (kbd "C-x <pause>") 'save-buffers-kill-emacs);for -nw mode
 
-;;for auto-complete
+;; for auto-complete
 (global-set-key (kbd "M-<RET>") 'auto-complete-mode)
 
 ;; for smart-compile
