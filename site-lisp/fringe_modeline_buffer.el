@@ -15,7 +15,7 @@
 (custom-set-faces
  '(linum ((t (:background "black" :foreground "gray" :height 0.8 :underline nil)))))
 
-;; ;; 行番号の表示遅延の修正
+;; 行番号の表示遅延の修正
 (defvar linum-delay)
 (setq linum-delay t)
 (defadvice linum-schedule (around my-linum-schedule () activate)
