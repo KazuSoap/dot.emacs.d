@@ -17,22 +17,17 @@
 
 ;;-- mode設定 --;;
 ;;共通設定
-(dolist (hook '(text-mode-hook
-				emacs-lisp-mode-hook
-				sh-mode-hook
-				makefile-mode-hook))
+(dolist (hook '(text-mode-hook emacs-lisp-mode-hook
+				sh-mode-hook makefile-mode-hook))
   (add-hook hook '(lambda () (setq tab-width 4))));;タブ幅4
 
 ;;text-mode
 (add-hook 'text-mode-hook '(lambda ()
-	(font-lock-mode t)
-	))
+							 (font-lock-mode t)))
 
 ;;c,c++mode
 (autoload 'vs-set-c-style "vs-set-c-style")
-(dolist (hook '(c-mode-hook
-				c++-mode-hook))
+(dolist (hook '(c-mode-hook c++-mode-hook))
   (add-hook hook '(lambda ()
-					(auto-complete-mode t)
 					(vs-set-c-style))))
 
