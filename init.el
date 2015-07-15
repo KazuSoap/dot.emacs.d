@@ -25,15 +25,17 @@
 ;;------------------------------------------------------------------------------
 ;; load files(local)
 ;;------------------------------------------------------------------------------
-(load "custom-set-variables")
-(load "fringe_modeline_buffer")
-(load "color-theme")
-(load "add-hook-mode")
-(load "custom-site-lisp")
-(load "general-key-bind")
-(load "print")
-(load "coding-system")
-(with-eval-after-load 'shell (load "shell-mode") )
-;(load "YaTeX-mode")
-(load "calculate_bootup_time")
+(load "initfuncs")
 
+(dolist (loadfile '("custom-set-variables"
+					"fringe_modeline_buffer"
+					"color-theme"
+					"add-hook-mode"
+					"custom-site-lisp"
+					"general-key-bind"
+					"print"
+					"coding-system"
+					"shell-mode"
+					"calculate_bootup_time"))
+  (unless (load loadfile t)
+	(display-loading-error-message loadfile)))
