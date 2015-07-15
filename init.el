@@ -23,10 +23,23 @@
       (normal-top-level-add-subdirs-to-load-path)))
 
 ;;------------------------------------------------------------------------------
+;; local functions
+;;------------------------------------------------------------------------------
+(defun display-loading-error-message (filename)
+  "Display Loading Error Message"
+  (let ((buffer (get-buffer-create "*Loading Error*")))
+	(set-buffer buffer)
+	(insert "cannot load \"" filename "\"\n")
+	(display-buffer (current-buffer))))
+
+(defun autoload-if-found (function file &optional docstring interactive type)
+  "set autoload iff. FILE has found."
+  (and (locate-library file)
+       (autoload function file docstring interactive type)))
+
+;;------------------------------------------------------------------------------
 ;; load files(local)
 ;;------------------------------------------------------------------------------
-(load "initfuncs")
-
 (dolist (loadfile '("custom-set-variables"
 					"fringe_modeline_buffer"
 					"custom-set-faces"
@@ -39,3 +52,15 @@
 					"calculate_bootup_time"))
   (unless (load loadfile t)
 	(display-loading-error-message loadfile)))
+
+;; esup 確認用
+;; (load "custom-set-variables")
+;; (load "fringe_modeline_buffer")
+;; (load "custom-set-faces")
+;; (load "add-hook-settings")
+;; (load  "custom-site-lisp")
+;; (load "general-key-bind")
+;; (load "print")
+;; (load "coding-system")
+;; (load "shell-settings")
+;; (load "calculate_bootup_time")
