@@ -7,7 +7,18 @@
 (load "custom-elscreen")
 
 ;; auto-complete 設定
-(with-eval-after-load 'auto-complete (load "custom-auto-complete"))
+(load "custom-auto-complete")
+
+;; flycheck 設定
+(dolist (hook '(emacs-lisp-mode-hook c-mode-hook c++-mode-hook))
+  (add-hook hook '(lambda ()
+					(setq left-fringe-width 8) ;; 左フリンジを有効化
+					(flycheck-mode nil)
+					(flycheck-mode t))))
+
+(dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
+  (add-hook hook '(lambda ()
+					(flycheck-mode nil))))
 
 ;; TRAMP 設定
 (with-eval-after-load 'tramp (load "custom-tramp"))
@@ -21,6 +32,8 @@
 ;; auto-async-byte-compile 設定
 (with-eval-after-load 'lisp-mode
   (require 'auto-async-byte-compile)
+  (defvar auto-async-byte-compile-init-file)
+  (setq auto-async-byte-compile-init-file "~/.emacs.d/site-lisp/initfuncs.elc")
   (defvar auto-async-byte-compile-exclude-files-regexp)
   (setq auto-async-byte-compile-exclude-files-regexp "/elpa/*/*")
   (add-hook 'emacs-lisp-mode-hook 'enable-auto-async-byte-compile-mode))
