@@ -7,10 +7,18 @@
 ;; 補完システム
 ;; from package
 
+;; global-set-key
+(global-set-key (kbd "M-<RET>") 'auto-complete-mode)
+
 ;; 特定のモードで自動的に有効化
-(dolist (hook '(emacs-lisp-mode-hook makefile-mode-hook
+(dolist (hook '(text-mode-hook emacs-lisp-mode-hook
+				sh-mode-hook makefile-mode-hook
 				c-mode-hook c++-mode-hook))
   (add-hook hook '(lambda () (auto-complete-mode t))))
+
+;; 特定のモードで無効化
+(dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
+  (add-hook hook '(lambda () (auto-complete-mode 0))))
 
 (with-eval-after-load 'auto-complete
   ;; ファイル名の補完をしない

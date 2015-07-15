@@ -11,15 +11,15 @@
 (setq exec-path (mapcar #'directory-file-name exec-path))
 
 ;; load environment value
-(load "shell_env")
-(dolist (path (reverse (split-string (getenv "PATH") ";")))
-  (add-to-list 'exec-path (directory-file-name path)))
+(let ((loadfile "shell_env"))
+  (cond ((load loadfile t)
+		 (dolist (path (reverse (split-string (getenv "PATH") ";")))
+		   (add-to-list 'exec-path (directory-file-name path))))
+		(t (display-loading-error-message loadfile))))
 
 ;; load fakecygpty setting
-(load "fakecygpty")
-
-;; (require 'fakecygpty)
-;; (fakecygpty-activate)
+(let ((loadfile "fakecygpty"))
+  (unless (load loadfile t) (display-loading-error-message loadfile)))
 
 (defvar explicit-shell-file-name)
 (setq explicit-shell-file-name "bash")

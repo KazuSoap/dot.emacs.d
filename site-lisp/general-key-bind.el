@@ -9,21 +9,6 @@
 (global-set-key [backspace] 'backward-delete-char)
 (global-set-key (kbd "C-x <pause>") 'save-buffers-kill-emacs);for -nw mode
 
-;; for auto-complete
-(global-set-key (kbd "M-<RET>") 'auto-complete-mode)
-
-;; for smart-compile
-(global-set-key (kbd "C-c c") 'smart-compile)
-
-;; for helm
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x C-r") 'helm-recentf)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-c i") 'helm-imenu)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-(global-set-key (kbd "C-z C-e") 'helm-elscreen)
-
 ;(global-set-key (kbd "C-c a")   'align)
 ;(global-set-key (kbd "C-c M-a") 'align-regexp)
 ;(global-set-key (kbd "C-c d")   'delete-indentation)

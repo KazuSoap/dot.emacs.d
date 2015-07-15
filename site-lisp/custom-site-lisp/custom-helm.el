@@ -12,6 +12,16 @@
 ;; このフレームワーク上で作られた機能は全て同じ操作方式で機能を利用できる
 ;; 絞り込み -> 選択 -> アクション の操作性を様々な機能に提供するのがhelmの本質
 ;; from : package system
+
+;; global-set-key
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x C-r") 'helm-recentf)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-c i") 'helm-imenu)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "C-z C-e") 'helm-elscreen)
+
 (with-eval-after-load 'helm
   (helm-mode 1)
 
@@ -56,28 +66,3 @@
   (custom-set-faces
    '(helm-match ((t (:inherit match :foreground "#d70035")))))
 )
-;;; helm-migemo ----------------------------------------------------------------
-;; helmでmigemo検索
-;; from : package system
-
-(with-eval-after-load 'helm-lib
-  (require 'helm-migemo)
-
-  ;; helm で正しく migemo を動作させるための対策
-  ;; http://rubikitch.com/2014/12/19/helm-migemo/
-  ;; https://github.com/emacs-helm/helm/pull/379
-  (defun helm-compile-source--candidates-in-buffer (source)
-	(helm-aif (assoc 'candidates-in-buffer source)
-		(append source
-				`((candidates
-				   . ,(or (cdr it)
-						  (lambda ()
-							;; Do not use `source' because other plugins
-							;; (such as helm-migemo) may change it
-							(helm-candidates-in-buffer (helm-get-current-source))))
-				   )
-				  (volatile) (match identity)
-				  )
-				)source)
-	)
-  )

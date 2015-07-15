@@ -6,6 +6,7 @@
 ;;; migemo ---------------------------------------------------------------------
 ;; ローマ字入力で日本語文字列を検索
 ;; from : package system
+
 (require 'migemo)
 
 (setq migemo-command "d:/Program Files/cmigemo/cmigemo")
@@ -27,3 +28,28 @@
 (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
 (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)
 
+;;; helm-migemo ----------------------------------------------------------------
+;; helmでmigemo検索
+;; from : package system
+
+(with-eval-after-load 'helm-lib
+  (require 'helm-migemo)
+
+  ;; helm で正しく migemo を動作させるための対策
+  ;; http://rubikitch.com/2014/12/19/helm-migemo/
+  ;; https://github.com/emacs-helm/helm/pull/379
+  (defun helm-compile-source--candidates-in-buffer (source)
+	(helm-aif (assoc 'candidates-in-buffer source)
+		(append source
+				`((candidates
+				   . ,(or (cdr it)
+						  (lambda ()
+							;; Do not use `source' because other plugins
+							;; (such as helm-migemo) may change it
+							(helm-candidates-in-buffer (helm-get-current-source))))
+				   )
+				  (volatile) (match identity)
+				  )
+				)source)
+	)
+  )

@@ -8,29 +8,20 @@
 ;;------------------------------------------------------------------------------
 ;;-- linum customize --;;
 ;; linumのカスタマイズ
-(defvar linum-format)
-(setq linum-format "%4d\u2502") ;; 行番号のフォーマット
 
-;; face
-(custom-set-faces
- '(linum ((t (:background "black" :foreground "gray" :height 0.8 :underline nil)))))
+(with-eval-after-load 'linum
+  (defvar linum-format)
+  (setq linum-format "%4d\u2502") ;; 行番号のフォーマット
 
-;; 行番号の表示遅延の修正
-(defvar linum-delay)
-(setq linum-delay t)
-(defadvice linum-schedule (around my-linum-schedule () activate)
-  (run-with-idle-timer 0.2 nil #'linum-update-current))
+  ;; face
+  (custom-set-faces
+   '(linum ((t (:background "black" :foreground "gray" :height 0.8 :underline nil)))))
 
-;; linum を有効にする mode
-(dolist (hook '(text-mode-hook emacs-lisp-mode-hook sh-mode-hook
-				c-mode-hook c++-mode-hook makefile-mode-hook))
-  (add-hook hook '(lambda ()
-					(linum-mode 1))))
-
-;; linum を無効にする mode
-(dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
-  (add-hook hook '(lambda ()
-					(linum-mode 0))))
+  ;; 行番号の表示遅延の修正
+  (defvar linum-delay)
+  (setq linum-delay t)
+  (defadvice linum-schedule (around my-linum-schedule () activate)
+	(run-with-idle-timer 0.2 nil #'linum-update-current)))
 
 ;;------------------------------------------------------------------------------
 ;; modeline
@@ -67,13 +58,13 @@
 ;;; time -----------------------------------------------------------------------
 ;; 時刻の表示
 ;; emacs default
-(require 'time)
-(setq display-time-string-forms
-   '((format "%s/%s/%s(%s) %s:%s "
-			 year month day dayname 24-hours minutes)
-	 load))
-(setq display-time-24hr-format t)
-(display-time)
+
+;; (setq display-time-string-forms
+;;    '((format "%s/%s/%s(%s) %s:%s "
+;; 			 year month day dayname 24-hours minutes)
+;; 	 load))
+;; (setq display-time-24hr-format t)
+;; (display-time)
 
 ;;------------------------------------------------------------------------------
 ;; buffer
@@ -110,33 +101,33 @@
 ;;; whitespace -----------------------------------------------------------------
 ;; 不可視文字の可視化
 ;; emacs default
-(require 'whitespace)
-(global-whitespace-mode 1)
 
 ;; see whitespace.el for more details
-(setq whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
-;; 表示の変更
-(setq whitespace-display-mappings
-	  '(;; space → " "
-		(space-mark ?\xA0 [?\u00A4] [?_])
-		(space-mark ?\x8A0 [?\x8A4] [?_])
-		(space-mark ?\x920 [?\x924] [?_])
-		(space-mark ?\xE20 [?\xE24] [?_])
-		(space-mark ?\xF20 [?\xF24] [?_])
-		;; full-width-space → "□"
-		(space-mark ?\u3000 [?\u25a1] [?_ ?_])
-		;; tab → "»"
-		(tab-mark     ?\t    [?\xBB ?\t]   [?\\ ?\t])
-		;; newline → "｣"
-		(newline-mark ?\n    [?\uFF63 ?\n] [?$ ?\n])))
- ;; 以下の正規表現にマッチするものを"space"と認識
-(setq whitespace-space-regexp "\\(\u3000+\\)")
 
-(custom-set-faces
- '(whitespace-space ((t (:background nil :foreground "GreenYellow"))))
- '(whitespace-tab ((t (:background nil :foreground "LightSkyBlue" :underline t))))
- '(whitespace-newline ((t (:background nil :foreground "DeepSkyBlue"))))
- '(whitespace-trailing ((t (:background "DeepPink" :foreground nil)))))
+(with-eval-after-load 'whitespace
+  (setq whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
+  ;; 表示の変更
+  (setq whitespace-display-mappings
+		'(;; space → " "
+		  (space-mark ?\xA0 [?\u00A4] [?_])
+		  (space-mark ?\x8A0 [?\x8A4] [?_])
+		  (space-mark ?\x920 [?\x924] [?_])
+		  (space-mark ?\xE20 [?\xE24] [?_])
+		  (space-mark ?\xF20 [?\xF24] [?_])
+		  ;; full-width-space → "□"
+		  (space-mark ?\u3000 [?\u25a1] [?_ ?_])
+		  ;; tab → "»"
+		  (tab-mark     ?\t    [?\xBB ?\t]   [?\\ ?\t])
+		  ;; newline → "｣"
+		  (newline-mark ?\n    [?\uFF63 ?\n] [?$ ?\n])))
+  ;; 以下の正規表現にマッチするものを"space"と認識
+  (setq whitespace-space-regexp "\\(\u3000+\\)")
+
+  (custom-set-faces
+   '(whitespace-space ((t (:background nil :foreground "GreenYellow"))))
+   '(whitespace-tab ((t (:background nil :foreground "LightSkyBlue" :underline t))))
+   '(whitespace-newline ((t (:background nil :foreground "DeepSkyBlue"))))
+   '(whitespace-trailing ((t (:background "DeepPink" :foreground nil))))))
 
 ;;; my-mark-eob ----------------------------------------------------------------
 ;; バッファの最後に "[EOB]" を表示

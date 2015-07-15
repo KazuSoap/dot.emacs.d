@@ -8,10 +8,10 @@
 (dolist (hook '(emacs-lisp-mode-hook c-mode-hook c++-mode-hook))
   (add-hook hook '(lambda ()
 					(setq left-fringe-width 8) ;; 左フリンジを有効化
-					(flycheck-mode nil)
+					(flycheck-mode 0)
 					(flycheck-mode t))))
 
 ;; 特定のモードで無効化
 (dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
   (add-hook hook '(lambda ()
-					(flycheck-mode nil))))
+					(flycheck-mode 0))))
