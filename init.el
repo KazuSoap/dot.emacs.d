@@ -29,13 +29,13 @@
 
 (dolist (loadfile '("custom-set-variables"
 					"fringe_modeline_buffer"
-					"color-theme"
-					"add-hook-mode"
+					"custom-set-faces"
+					"add-hook-settings"
 					"custom-site-lisp"
 					"general-key-bind"
 					"print"
 					"coding-system"
-					"shell-mode"
+					"shell-settings"
 					"calculate_bootup_time"))
   (unless (load loadfile t)
 	(display-loading-error-message loadfile)))
