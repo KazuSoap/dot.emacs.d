@@ -1,9 +1,11 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; sticky shift 設定
+;; sticky
+;; スティッキーシフト
+;; from : package system
 ;;------------------------------------------------------------------------------
-;; sticky shift 設定
+;; sticky 設定
 (require 'sticky)
 
 ;; for japanese keyboards

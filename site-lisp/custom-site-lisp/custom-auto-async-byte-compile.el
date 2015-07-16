@@ -1,7 +1,9 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; site-lisp 設定
+;; auto-async-byte-compile
+;; バイトコンパイルの自動化
+;; from : package system
 ;;------------------------------------------------------------------------------
 ;; auto-async-byte-compile 設定
 (let ((loadfile "auto-async-byte-compile"))

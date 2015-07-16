@@ -1,11 +1,10 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; twittering-mode 設定
-;;------------------------------------------------------------------------------
-;;; twittering-mode ------------------------------------------------------------
+;; twittering-mode
 ;; twittering-mode.el is a major mode for Twitter.
 ;; from : package system
+;;------------------------------------------------------------------------------
 (with-eval-after-load "twittering-mode"
   ;; パスワード暗号ファイル保存先変更(デフォはホームディレクトリ)
   (defvar twittering-private-info-file)
