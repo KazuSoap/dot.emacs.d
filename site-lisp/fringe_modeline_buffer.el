@@ -91,12 +91,12 @@
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
 ;; 2 line at a time
-(global-set-key [double-wheel-up] '(lambda () "" (interactive) (scroll-down 2)))
-(global-set-key [double-wheel-down] '(lambda () "" (interactive) (scroll-up 2)))
+(global-set-key [double-wheel-up] '(lambda () (interactive) (scroll-down 2)))
+(global-set-key [double-wheel-down] '(lambda () (interactive) (scroll-up 2)))
 
 ;; 3 line at a time
-(global-set-key [triple-wheel-up] '(lambda () "" (interactive) (scroll-down 4)))
-(global-set-key [triple-wheel-down] '(lambda () "" (interactive) (scroll-up 4)))
+(global-set-key [triple-wheel-up] '(lambda () (interactive) (scroll-down 4)))
+(global-set-key [triple-wheel-down] '(lambda () (interactive) (scroll-up 4)))
 
 ;;; whitespace -----------------------------------------------------------------
 ;; 不可視文字の可視化
