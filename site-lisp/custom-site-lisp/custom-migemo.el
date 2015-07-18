@@ -38,17 +38,16 @@
   ;; http://rubikitch.com/2014/12/19/helm-migemo/
   ;; https://github.com/emacs-helm/helm/pull/379
   (defun helm-compile-source--candidates-in-buffer (source)
-	(helm-aif (assoc 'candidates-in-buffer source)
-		(append source
-				`((candidates
-				   . ,(or (cdr it)
-						  (lambda ()
-							;; Do not use `source' because other plugins
-							;; (such as helm-migemo) may change it
-							(helm-candidates-in-buffer (helm-get-current-source))))
-				   )
-				  (volatile) (match identity)
-				  )
-				)source)
-	)
+	(let ((test-form (assoc 'candidates-in-buffer source)))
+	  (helm-aif test-form
+				(append source
+						`((candidates
+						   . ,(or (cdr test-form)
+								  (lambda ()
+									;; Do not use `source' because other plugins
+									;; (such as helm-migemo) may change it
+									(helm-candidates-in-buffer (helm-get-current-source)))))
+						  (volatile) (match identity)))
+				source)
+	  ))
   )
