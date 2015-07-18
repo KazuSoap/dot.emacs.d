@@ -6,4 +6,4 @@
 ;; from : package system
 ;;------------------------------------------------------------------------------
 ;; global-set-key
-(global-set-key (kbd "C-c c") 'smart-compile)
+(global-set-key (kbd "C-x c") 'smart-compile)
