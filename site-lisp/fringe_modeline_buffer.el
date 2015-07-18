@@ -105,8 +105,10 @@
 ;; see whitespace.el for more details
 
 (with-eval-after-load 'whitespace
+  (defvar whitespace-style)
   (setq whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
   ;; 表示の変更
+  (defvar whitespace-display-mappings)
   (setq whitespace-display-mappings
 		'(;; space → " "
 		  (space-mark ?\xA0 [?\u00A4] [?_])
@@ -121,6 +123,7 @@
 		  ;; newline → "｣"
 		  (newline-mark ?\n    [?\uFF63 ?\n] [?$ ?\n])))
   ;; 以下の正規表現にマッチするものを"space"と認識
+  (defvar whitespace-space-regexp)
   (setq whitespace-space-regexp "\\(\u3000+\\)")
 
   (custom-set-faces
