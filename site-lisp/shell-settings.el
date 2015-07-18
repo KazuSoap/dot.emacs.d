@@ -18,7 +18,7 @@
 		(t (display-loading-error-message loadfile))))
 
 ;; load fakecygpty setting
-(let ((loadfile "fakecygpty"))
+(let ((loadfile "custom-fakecygpty"))
   (unless (load loadfile t) (display-loading-error-message loadfile)))
 
 (defvar explicit-shell-file-name)
