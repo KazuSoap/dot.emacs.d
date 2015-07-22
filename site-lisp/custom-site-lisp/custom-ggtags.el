@@ -8,7 +8,7 @@
 
 ;; cygwin or msys2 版 GNU Global で使うための設定
 (defun ggtags-ensure-localname-Win (file)
-  "convert windows path to unix path"
+  "convert Windows path to UNIX path"
   (cygpath "-u" (and file (or (file-remote-p file 'localname) file))))
 (advice-add 'ggtags-ensure-localname :override 'ggtags-ensure-localname-Win)
 
@@ -37,3 +37,6 @@
 ;; (dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
 ;;   (add-hook hook 'ggtags-mode-disable-hooks))
 
+;; use helm
+(defvar ggtags-completing-read-function)
+(setq ggtags-completing-read-function nil)
