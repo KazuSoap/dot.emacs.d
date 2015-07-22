@@ -15,7 +15,7 @@
 
 (dolist (hook '(text-mode-hook emacs-lisp-mode-hook
 				sh-mode-hook makefile-mode-hook
-				c-mode-hook c++-mode-hook))
+				c-mode-common-hook))
   (add-hook hook 'auto-complete-mode-enable-hooks))
 
 ;; 特定のモードで無効化

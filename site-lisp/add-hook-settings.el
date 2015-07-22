@@ -26,7 +26,7 @@
 
 (dolist (hook '(text-mode-hook emacs-lisp-mode-hook
 				sh-mode-hook makefile-mode-hook
-				c-mode-hook c++-mode-hook))
+				c-mode-common-hook))
   (add-hook hook 'common-mode-enable-hooks))
 
 ;; 共通設定 (無効化)
@@ -36,8 +36,7 @@
   (cua-mode 0)
   (show-paren-mode 0))
 
-(dolist (hook '(esup-mode-hook lisp-interaction-mode-hook
-				emacs-lisp-byte-code-mode-hook))
+(dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook))
   (add-hook hook 'common-mode-disable-hooks))
 
 ;; c,c++mode
