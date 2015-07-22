@@ -37,6 +37,11 @@
   (and (locate-library file)
        (autoload function file docstring interactive type)))
 
+(defun cygpath (option &rest args)
+  "cygpath for emacs"
+  (let ((command (mapconcat #'identity (append (list "cygpath" option) args) "\s")))
+	(substring (directory-file-name (shell-command-to-string command)) 0 -1)))
+
 ;;------------------------------------------------------------------------------
 ;; load files(local)
 ;;------------------------------------------------------------------------------
@@ -64,3 +69,4 @@
 ;; (load "coding-system")
 ;; (load "shell-settings")
 ;; (load "calculate_bootup_time")
+
