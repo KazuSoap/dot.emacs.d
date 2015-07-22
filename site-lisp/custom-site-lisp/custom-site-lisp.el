@@ -7,6 +7,7 @@
 					"custom-auto-complete" ;; auto-complete 設定
 					"custom-elscreen" ;; elscreen 設定
 					"custom-flycheck" ;; flycheck 設定
+					"custom-ggtags" ;; ggtags 設定
 					"custom-helm" ;; helm 設定
 					"custom-migemo" ;; migemo 設定
 					"custom-shell-pop" ;; shell-pop 設定
@@ -21,6 +22,7 @@
 ;; (load "custom-auto-complete") ;; auto-complete 設定
 ;; (load "custom-elscreen") ;; elscreen 設定
 ;; (load "custom-flycheck") ;; flycheck 設定
+;; (load "custom-ggtags") ;; ggtags 設定
 ;; (load "custom-helm") ;; helm 設定
 ;; (load "custom-migemo") ;; migemo 設定
 ;; (load "custom-shell-pop") ;; shell-pop 設定
