@@ -5,6 +5,7 @@
 ;;------------------------------------------------------------------------------
 (dolist (loadfile '("custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
 					"custom-auto-complete" ;; auto-complete 設定
+					"custom-c-eldoc" ;; c-eldoc 設定
 					"custom-elscreen" ;; elscreen 設定
 					"custom-flycheck" ;; flycheck 設定
 					"custom-ggtags" ;; ggtags 設定
@@ -20,6 +21,7 @@
 ;; esup 確認用
 ;; (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
 ;; (load "custom-auto-complete") ;; auto-complete 設定
+;; (load "custom-c-eldoc") ;; c-eldoc 設定
 ;; (load "custom-elscreen") ;; elscreen 設定
 ;; (load "custom-flycheck") ;; flycheck 設定
 ;; (load "custom-ggtags") ;; ggtags 設定
