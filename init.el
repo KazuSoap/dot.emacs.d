@@ -45,7 +45,7 @@
 ;;------------------------------------------------------------------------------
 ;; load files(local)
 ;;------------------------------------------------------------------------------
-(dolist (loadfile '(;;-- from packages --;;
+(dolist (loadfile '(;;-- addon --;;
 					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
 					"custom-auto-complete" ;; auto-complete 設定
 					"custom-c-eldoc" ;; c-eldoc 設定
@@ -59,7 +59,7 @@
 					"custom-tramp" ;; TRAMP 設定
 					;; "custom-twittering-mode" ;; twittering-mode 設定
 
-					;;-- built in --;;
+					;;-- built-in --;;
 					"custom-set-variables"
 					"fringe_modeline_buffer"
 					"custom-set-faces"
