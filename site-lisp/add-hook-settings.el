@@ -5,11 +5,10 @@
 ;;------------------------------------------------------------------------------
 ;;-- デフォルトのメジャーモード --;;
 (setq-default major-mode 'text-mode)
-;
-;;-- fileの関連付け --;;
-(setq auto-mode-alist (append (list
-                              '("\\.h\\'" . c++-mode)
-                             auto-mode-alist)))
+;; -- 拡張子の関連付け --;;
+(setq auto-mode-alist
+	  (append '(("\\.h$" . c++-mode))
+			  auto-mode-alist))
 
 ;;-- 不要なhookを外す --;;
 (remove-hook 'find-file-hook 'vc-find-file-hook)
