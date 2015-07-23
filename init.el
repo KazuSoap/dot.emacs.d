@@ -45,11 +45,25 @@
 ;;------------------------------------------------------------------------------
 ;; load files(local)
 ;;------------------------------------------------------------------------------
-(dolist (loadfile '("custom-set-variables"
+(dolist (loadfile '(;;-- from packages --;;
+					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
+					"custom-auto-complete" ;; auto-complete 設定
+					"custom-c-eldoc" ;; c-eldoc 設定
+					"custom-elscreen" ;; elscreen 設定
+					"custom-flycheck" ;; flycheck 設定
+					"custom-ggtags" ;; ggtags 設定
+					"custom-helm" ;; helm 設定
+					"custom-migemo" ;; migemo 設定
+					"custom-shell-pop" ;; shell-pop 設定
+					"custom-smart-compile" ;; smart-compile 設定
+					"custom-tramp" ;; TRAMP 設定
+					;; "custom-twittering-mode" ;; twittering-mode 設定
+
+					;;-- built in --;;
+					"custom-set-variables"
 					"fringe_modeline_buffer"
 					"custom-set-faces"
 					"add-hook-settings"
-					"custom-site-lisp"
 					"general-key-bind"
 					"print"
 					"coding-system"
@@ -58,12 +72,26 @@
   (unless (load loadfile t)
 	(display-loading-error-message loadfile)))
 
-;; esup 確認用
+;; ;; esup 確認用
+;; ;; -- from packages --;;
+;; (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
+;; (load "custom-auto-complete") ;; auto-complete 設定
+;; (load "custom-c-eldoc") ;; c-eldoc 設定
+;; (load "custom-elscreen") ;; elscreen 設定
+;; (load "custom-flycheck") ;; flycheck 設定
+;; (load "custom-ggtags") ;; ggtags 設定
+;; (load "custom-helm") ;; helm 設定
+;; (load "custom-migemo") ;; migemo 設定
+;; (load "custom-shell-pop") ;; shell-pop 設定
+;; (load "custom-smart-compile") ;; smart-compile 設定
+;; (load "custom-tramp") ;; TRAMP 設定
+;; (load "custom-twittering-mode") ;; twittering-mode 設定
+
+;; ;;-- built in --;;
 ;; (load "custom-set-variables")
 ;; (load "fringe_modeline_buffer")
 ;; (load "custom-set-faces")
 ;; (load "add-hook-settings")
-;; (load  "custom-site-lisp")
 ;; (load "general-key-bind")
 ;; (load "print")
 ;; (load "coding-system")
