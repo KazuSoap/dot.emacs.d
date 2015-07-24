@@ -4,27 +4,29 @@
 ;; fakecygpty
 ;;------------------------------------------------------------------------------
 ;; process-connection-type が nil で start-process がコールされるけれども、
-;; fakecygpty を経由して起動したいプログラムの名称を列挙する
+;; fakecygpty を経由して起動したいプログラムの名称を列挙
 (defvar fakecygpty-program-list)
 (setq fakecygpty-program-list '(""))
 
-;; process-connection-type が nil 以外で start-process がコールされるけれども、
-;; fakecygpty を経由したプロセスを走らせたくないバッファの名称を列挙する
-(defvar fakecygpty-exclusion-buffer-name-list)
-(setq fakecygpty-exclusion-buffer-name-list '("*grep*"))
+;; process-connection-type が nil 以外で start-process がコールされた際に、
+;; fakecygpty を経由したプロセスを走らせたいバッファの正規表現
+(defvar fakecygpty-exec-buffer-name-regexp)
+(setq fakecygpty-exec-buffer-name-regexp "^\\(*shell\\|*tramp\\)")
 
 ;; fakecygpty を経由するかを判断してプログラムを起動する
-(defadvice start-process (around ad-start-process-to-fake last activate)
+(defun ad-start-process-to-fake (orig-fun &rest args)
   (when (and (or process-connection-type
-                 (member (replace-regexp-in-string "\\.exe$" "" (file-name-nondirectory (ad-get-arg 2)))
-                         fakecygpty-program-list))
-             (not (member (if (bufferp (ad-get-arg 1))
-                              (buffer-name (ad-get-arg 1))
-                            (ad-get-arg 1))
-                          fakecygpty-exclusion-buffer-name-list)))
-    (ad-set-args 3 (cons (ad-get-arg 2) (ad-get-args 3)))
-    (ad-set-arg 2 "fakecygpty"))
-  ad-do-it)
+				 (member (replace-regexp-in-string "\\.exe$" "" (file-name-nondirectory (nth 2 args)))
+						 fakecygpty-program-list))
+			 (string-match fakecygpty-exec-buffer-name-regexp
+						   (if (bufferp (nth 1 args))
+							   (buffer-name (nth 1 args))
+							 (nth 1 args))))
+	(setcdr (nthcdr 2 args) (cons (nth 2 args) (nthcdr 3 args)))
+	(setcar (nthcdr 2 args) "fakecygpty")
+	(message "start process via fakecygpty"))
+  (apply orig-fun args))
+(advice-add 'start-process :around #'ad-start-process-to-fake '((depth . -100)))
 
 ;; emacs-24.4、emacs-24.5 では、4096バイトを超えるデータを一度にパイプ経由で
 ;; プロセスに送り込むと、レスポンスが帰ってこない状況となる。これを改善する。
@@ -32,20 +34,21 @@
 ;; 対策も兼ねるため、 4096バイトを超えない入力の場合でも一律同じ処理を実行している。)
 (defconst w32-pipe-limit 4096)
 
-(defadvice process-send-string (around ad-process-send-string activate)
-  (if (not (eq (process-type (ad-get-arg 0)) 'real))
-      ad-do-it
-    (let* ((process (or (ad-get-arg 0)
-                        (get-buffer-process (current-buffer))))
-           (send-string (encode-coding-string (ad-get-arg 1)
-                                              (cdr (process-coding-system (get-process process)))))
-           (send-string-length (length send-string)))
-      (let ((inhibit-eol-conversion t)
-            (from 0)
-            (to))
-        (while (< from send-string-length)
-          (setq to (min (+ from w32-pipe-limit) send-string-length))
-          (ad-set-arg 1 (substring send-string from to))
-          ad-do-it
-          (setq from to))))))
+(defun ad-process-send-string (orig-fun &rest args)
+  (if (not (eq (process-type (nth 0 args)) 'real))
+	  (apply orig-fun args)
+	(let* ((process (or (nth 0 args)
+						(get-buffer-process (current-buffer))))
+		   (send-string (encode-coding-string (nth 1 args)
+											  (cdr (process-coding-system (get-process process)))))
+		   (send-string-length (length send-string)))
+	  (let ((inhibit-eol-conversion t)
+			(from 0)
+			(to))
+		(while (< from send-string-length)
+		  (setq to (min (+ from w32-pipe-limit) send-string-length))
+		  (setcar (nthcdr 1 args) (substring send-string from to))
+		  (apply orig-fun args)
+		  (setq from to))))))
+(advice-add 'process-send-string :around #'ad-process-send-string)
 ;;------------------------------------------------------------------------------
