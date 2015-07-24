@@ -25,6 +25,16 @@
 ;;------------------------------------------------------------------------------
 ;; local functions
 ;;------------------------------------------------------------------------------
+(defun display-object-value (&rest args)
+  "Display Object Value"
+  (let ((buffer (get-buffer-create "*Ovject Value*")))
+	(set-buffer buffer)
+	(let ((list args))
+	  (while list
+		(insert (format "%s\n" (car list)))
+		(setq list (cdr list))))
+	(display-buffer (current-buffer))))
+
 (defun display-loading-error-message (filename)
   "Display Loading Error Message"
   (let ((buffer (get-buffer-create "*Loading Error*")))
@@ -45,6 +55,7 @@
 ;;------------------------------------------------------------------------------
 ;; load files(local)
 ;;------------------------------------------------------------------------------
+
 (dolist (loadfile '(;;-- addon --;;
 					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
 					"custom-auto-complete" ;; auto-complete 設定
@@ -57,23 +68,24 @@
 					"custom-shell-pop" ;; shell-pop 設定
 					"custom-smart-compile" ;; smart-compile 設定
 					"custom-tramp" ;; TRAMP 設定
-					;; "custom-twittering-mode" ;; twittering-mode 設定
+					"custom-twittering-mode" ;; twittering-mode 設定
 
 					;;-- built-in --;;
+					"add-hook-settings"
+					"calculate_bootup_time"
+					"custom-gdb"
+					"custom-set-faces"
 					"custom-set-variables"
 					"fringe_modeline_buffer"
-					"custom-set-faces"
-					"add-hook-settings"
 					"general-key-bind"
 					"print"
-					"coding-system"
 					"shell-settings"
-					"calculate_bootup_time"))
+					"coding-system"))
   (unless (load loadfile t)
 	(display-loading-error-message loadfile)))
 
 ;; ;; esup 確認用
-;; ;; -- from packages --;;
+;; ;; -- addon --;;
 ;; (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
 ;; (load "custom-auto-complete") ;; auto-complete 設定
 ;; (load "custom-c-eldoc") ;; c-eldoc 設定
@@ -88,13 +100,13 @@
 ;; (load "custom-twittering-mode") ;; twittering-mode 設定
 
 ;; ;;-- built in --;;
+;; (load "add-hook-settings")
+;; (load "calculate_bootup_time")
+;; (load "custom-gdb")
+;; (load "custom-set-faces")
 ;; (load "custom-set-variables")
 ;; (load "fringe_modeline_buffer")
-;; (load "custom-set-faces")
-;; (load "add-hook-settings")
 ;; (load "general-key-bind")
 ;; (load "print")
-;; (load "coding-system")
 ;; (load "shell-settings")
-;; (load "calculate_bootup_time")
-
+;; (load "coding-system")
