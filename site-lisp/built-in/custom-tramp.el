@@ -1,12 +1,12 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
-
+;;; Code:
 ;;------------------------------------------------------------------------------
 ;;; TRAMP(TransparentRemoteAccessMultipleProtocol) -----------------------------
 ;; emacsからリモートファイルを操作
 ;; emacs default
 ;;------------------------------------------------------------------------------
 
-(with-eval-after-load 'tramp 
+(with-eval-after-load 'tramp
   (defvar tramp-default-method)
   (setq tramp-default-method "scp")
   (defvar tramp-encoding-shell)
@@ -18,18 +18,4 @@
   (let ((process-environment tramp-remote-process-environment))
 	(setenv "LC_ALL" nil)
 	(setq tramp-remote-process-environment process-environment))
-
-  ;; ドライブレターの後の「：」が tramp-method の後の「：」と混同されるのを対策する
-  (defadvice tramp-do-copy-or-rename-file-out-of-band (around ad-tramp-do-copy-or-rename-file-out-of-band activate)
-	(let ((default-directory "/"))
-	  (unless (tramp-tramp-file-p (ad-get-arg 1))
-		(ad-set-arg 1 (substring (shell-command-to-string
-								  (concat "cygpath -u " (shell-quote-argument (ad-get-arg 1))))
-								 0 -1)))
-	  (unless (tramp-tramp-file-p (ad-get-arg 2))
-		(ad-set-arg 2 (substring (shell-command-to-string
-								  (concat "cygpath -u " (shell-quote-argument (ad-get-arg 2))))
-								 0 -1))))
-	ad-do-it
-	(sit-for 0.1)) ; delay(NTEmacs64 では必要)
   )
