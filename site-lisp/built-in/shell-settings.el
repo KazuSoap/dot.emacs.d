@@ -1,5 +1,5 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
-
+;;; Code:
 ;;------------------------------------------------------------------------------
 ;; SHELL
 ;;------------------------------------------------------------------------------
@@ -21,22 +21,11 @@
 (let ((loadfile "custom-fakecygpty"))
   (unless (load loadfile t) (display-loading-error-message loadfile)))
 
-(defvar explicit-shell-file-name)
-(setq explicit-shell-file-name "bash")
-(setq shell-command-switch "-c")
-
 ;;; (M-! and M-| and compile.el)
 (setq shell-file-name "bash")
-
-;; shell の割り込みを機能させる
-(defadvice comint-interrupt-subjob (around ad-comint-interrupt-subjob activate)
-  (process-send-string nil (kbd "C-c")))
-(defadvice comint-stop-subjob (around ad-comint-stop-subjob activate)
-  (process-send-string nil (kbd "C-z")))
-(defadvice comint-quit-subjob (around ad-comint-quit-subjob activate)
-  (process-send-string nil (kbd "C-\\")))
-(defadvice comint-send-eof (around ad-comint-send-eof activate)
-  (process-send-string nil (kbd "C-d")))
+(setq shell-command-switch "-c")
+(defvar explicit-shell-file-name)
+(setq explicit-shell-file-name shell-file-name)
 
 ;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に
 (defun set-shell-buffer-process-coding-system ()
