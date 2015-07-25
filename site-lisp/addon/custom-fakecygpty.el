@@ -1,5 +1,5 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
-
+;;; Code:
 ;;------------------------------------------------------------------------------
 ;; fakecygpty
 ;;------------------------------------------------------------------------------
@@ -8,25 +8,35 @@
 (defvar fakecygpty-program-list)
 (setq fakecygpty-program-list '(""))
 
-;; process-connection-type が nil 以外で start-process がコールされた際に、
-;; fakecygpty を経由したプロセスを走らせたいバッファの正規表現
-(defvar fakecygpty-exec-buffer-name-regexp)
-(setq fakecygpty-exec-buffer-name-regexp "^\\(*shell\\|*tramp\\)")
-
 ;; fakecygpty を経由するかを判断してプログラムを起動する
 (defun ad-start-process-to-fake (orig-fun &rest args)
-  (when (and (or process-connection-type
+  (when (and (nth 2 args)
+			 (or process-connection-type
 				 (member (replace-regexp-in-string "\\.exe$" "" (file-name-nondirectory (nth 2 args)))
-						 fakecygpty-program-list))
-			 (string-match fakecygpty-exec-buffer-name-regexp
-						   (if (bufferp (nth 1 args))
-							   (buffer-name (nth 1 args))
-							 (nth 1 args))))
+						 fakecygpty-program-list)))
 	(setcdr (nthcdr 2 args) (cons (nth 2 args) (nthcdr 3 args)))
-	(setcar (nthcdr 2 args) "fakecygpty")
-	(message "start process via fakecygpty"))
+	(setcar (nthcdr 2 args) "fakecygpty"))
   (apply orig-fun args))
 (advice-add 'start-process :around #'ad-start-process-to-fake '((depth . -100)))
+
+(defmacro fakecygpty-set-signal (function send-key)
+  `(defadvice ,function (around ,(intern (format "ad-%s" function)) activate)
+     (let ((process (or (ad-get-arg 0)
+                        (get-buffer-process (current-buffer)))))
+       (if (string= (car (process-command process)) "fakecygpty")
+           (process-send-string (ad-get-arg 0) (kbd ,send-key))
+         ad-do-it))))
+
+(fakecygpty-set-signal interrupt-process "C-c")
+(fakecygpty-set-signal stop-process "C-z")
+(fakecygpty-set-signal quit-process "C-\\")
+(fakecygpty-set-signal process-send-eof "C-d")
+
+;; (defadvice process-send-eof (around ad-process-send-eof activate)
+;;   (if (and (ad-get-arg 0)
+;; 		   (string= (car (process-command (ad-get-arg 0))) "fakecygpty"))
+;; 	  (process-send-string (ad-get-arg 0) (kbd "C-d"))
+;; 	ad-do-it))
 
 ;; emacs-24.4、emacs-24.5 では、4096バイトを超えるデータを一度にパイプ経由で
 ;; プロセスに送り込むと、レスポンスが帰ってこない状況となる。これを改善する。
