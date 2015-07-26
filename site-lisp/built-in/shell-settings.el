@@ -1,25 +1,23 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 ;;; Code:
 ;;------------------------------------------------------------------------------
-;; SHELL
-;;------------------------------------------------------------------------------
-;;; shell ----------------------------------------------------------------------
+;; shell
 ;; shell を有効化
 ;; emacs default
+;;------------------------------------------------------------------------------
 
 ;; correct exec-path ( 先頭小文字 , 末尾の"/"なし )
 (setq exec-path (mapcar #'directory-file-name exec-path))
 
 ;; load environment value
-(let ((loadfile "shell_env"))
-  (cond ((load loadfile t)
-		 (dolist (path (reverse (split-string (getenv "PATH") ";")))
-		   (add-to-list 'exec-path (directory-file-name path))))
-		(t (display-loading-error-message loadfile))))
+(cond ((load "shell_env" t)
+	   (dolist (path (reverse (split-string (getenv "PATH") ";")))
+		 (add-to-list 'exec-path (directory-file-name path))))
+	  (t (display-loading-error-message "shell_env")))
 
 ;; load fakecygpty setting
-(let ((loadfile "custom-fakecygpty"))
-  (unless (load loadfile t) (display-loading-error-message loadfile)))
+(unless (load "custom-fakecygpty" t)
+  (display-loading-error-message "custom-fakecygpty"))
 
 ;;; (M-! and M-| and compile.el)
 (setq shell-file-name "bash")

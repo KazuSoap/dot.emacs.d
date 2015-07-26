@@ -1,5 +1,5 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
-;;; Code:
+
 ;;------------------------------------------------------------------------------
 ;;; TRAMP(TransparentRemoteAccessMultipleProtocol) -----------------------------
 ;; emacsからリモートファイルを操作
@@ -17,5 +17,4 @@
   (defvar tramp-remote-process-environment)
   (let ((process-environment tramp-remote-process-environment))
 	(setenv "LC_ALL" nil)
-	(setq tramp-remote-process-environment process-environment))
-  )
+	(setq tramp-remote-process-environment process-environment)))

@@ -1,8 +1,11 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
-;;; Code:
+
 ;;------------------------------------------------------------------------------
 ;; fakecygpty
+;; NTEmacs の仮想端末偽装
+;; https://github.com/trueroad/fakecygpty
 ;;------------------------------------------------------------------------------
+
 ;; process-connection-type が nil で start-process がコールされるけれども、
 ;; fakecygpty を経由して起動したいプログラムの名称を列挙
 (defvar fakecygpty-program-list)
@@ -31,12 +34,6 @@
 (fakecygpty-set-signal stop-process "C-z")
 (fakecygpty-set-signal quit-process "C-\\")
 (fakecygpty-set-signal process-send-eof "C-d")
-
-;; (defadvice process-send-eof (around ad-process-send-eof activate)
-;;   (if (and (ad-get-arg 0)
-;; 		   (string= (car (process-command (ad-get-arg 0))) "fakecygpty"))
-;; 	  (process-send-string (ad-get-arg 0) (kbd "C-d"))
-;; 	ad-do-it))
 
 ;; emacs-24.4、emacs-24.5 では、4096バイトを超えるデータを一度にパイプ経由で
 ;; プロセスに送り込むと、レスポンスが帰ってこない状況となる。これを改善する。

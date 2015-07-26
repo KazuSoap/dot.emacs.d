@@ -23,24 +23,19 @@
       (normal-top-level-add-subdirs-to-load-path)))
 
 ;;------------------------------------------------------------------------------
-;; local functions
+;; local functions & macro
 ;;------------------------------------------------------------------------------
-(defun display-object-value (&rest args)
+(defun display-object-value (bufer_name &rest args)
   "Display Object Value"
-  (let ((buffer (get-buffer-create "*Ovject Value*")))
+  (let ((buffer (get-buffer-create bufer_name)))
 	(set-buffer buffer)
-	(let ((list args))
-	  (while list
-		(insert (format "%s\n" (car list)))
-		(setq list (cdr list))))
+	(dolist (i args)
+	  (insert (format "%s" i)))
 	(display-buffer (current-buffer))))
 
-(defun display-loading-error-message (filename)
+(defmacro display-loading-error-message (filename)
   "Display Loading Error Message"
-  (let ((buffer (get-buffer-create "*Loading Error*")))
-	(set-buffer buffer)
-	(insert "cannot load \"" filename "\"\n")
-	(display-buffer (current-buffer))))
+  `(display-object-value "*Loading Error*" "cannot load \"" ,filename "\"\n"))
 
 (defun autoload-if-found (function file &optional docstring interactive type)
   "set autoload iff. FILE has found."
@@ -52,8 +47,17 @@
   (let ((command (mapconcat #'identity (append (list "cygpath" option) args) "\s")))
 	(substring (directory-file-name (shell-command-to-string command)) 0 -1)))
 
+(defun message-startup-time ()
+  "calculate bootup time"
+    (message
+     "Emacs loaded in %dms"
+     (/ (- (+ (car (cdr (cdr after-init-time))) (* 1000000 (car (cdr after-init-time))))
+           (+ (car (cdr (cdr before-init-time))) (* 1000000 (car (cdr before-init-time)))))
+        1000)))
+(add-hook 'after-init-hook 'message-startup-time)
+
 ;;------------------------------------------------------------------------------
-;; load files(local)
+;; load files
 ;;------------------------------------------------------------------------------
 
 (dolist (loadfile '(;;-- addon --;;
@@ -72,7 +76,6 @@
 
 					;;-- built-in --;;
 					"add-hook-settings"
-					"calculate_bootup_time"
 					"custom-gdb"
 					"custom-set-faces"
 					"custom-set-variables"
@@ -101,7 +104,6 @@
 
 ;; ;;-- built in --;;
 ;; (load "add-hook-settings")
-;; (load "calculate_bootup_time")
 ;; (load "custom-gdb")
 ;; (load "custom-set-faces")
 ;; (load "custom-set-variables")

@@ -27,3 +27,7 @@
 )
 (add-hook 'c++-mode-hook 'flycheck-c++-mode-hooks)
 
+;; remove useless warnings
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+

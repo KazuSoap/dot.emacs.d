@@ -5,6 +5,7 @@
 ;; twittering-mode.el is a major mode for Twitter.
 ;; from : package system
 ;;------------------------------------------------------------------------------
+
 (with-eval-after-load "twittering-mode"
   ;; パスワード暗号ファイル保存先変更(デフォはホームディレクトリ)
   (defvar twittering-private-info-file)

@@ -28,7 +28,4 @@
                (delete-file winfile)))))))
 
 ;; lpr-buffer を実行する
-(global-set-key (kbd "C-c C-p")
-                (lambda ()
-                  (interactive)
-                  (lpr-buffer)))
+(global-set-key (kbd "C-c C-p") (lambda () (interactive) (lpr-buffer)))

@@ -78,11 +78,11 @@
 
 ;;-- cursor --;;
 (setq blink-cursor-mode 1) ;; cursor点滅表示
-;(setq scroll-preserve-screen-position t) ;; scroll時のcursor位置の維持
-;(setq next-screen-context-lines 1) ;; 画面scroll時の重複行数
-;(setq scroll-conservatively 35) ;; scroll行数(一行ごとのscroll)
-;(setq scroll-margin 0) ;;同上
-;(setq scroll-step 1) ;;同上
+(setq scroll-preserve-screen-position t) ;; scroll時のcursor位置の維持
+(setq next-screen-context-lines 1) ;; 画面scroll時の重複行数
+(setq scroll-conservatively 1) ;; scroll行数(一行ごとのscroll)
+(setq scroll-margin 1) ;;同上
+(setq scroll-step 1) ;;同上
 
 ;; don't accelerate scrolling
 (setq mouse-wheel-progressive-speed nil)
@@ -101,8 +101,6 @@
 ;;; whitespace -----------------------------------------------------------------
 ;; 不可視文字の可視化
 ;; emacs default
-
-;; see whitespace.el for more details
 
 (with-eval-after-load 'whitespace
   (defvar whitespace-style)
@@ -135,6 +133,7 @@
 ;;; my-mark-eob ----------------------------------------------------------------
 ;; バッファの最後に "[EOB]" を表示
 ;; http://www.emacswiki.org/cgi-bin/wiki?HighlightEndOfBuffer
+
 (defun my-mark-eob ()
   (let ((existing-overlays (overlays-in (point-max) (point-max)))
 	(eob-mark (make-overlay (point-max) (point-max) nil t t))
@@ -154,7 +153,6 @@
 ;;; uniquify -------------------------------------------------------------------
 ;; 同一buffer名にディレクトリ付与
 ;; emacs default
-(require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 (setq uniquify-ignore-buffers-re "*[^*]+*")
 

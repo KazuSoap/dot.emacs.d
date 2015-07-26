@@ -12,7 +12,6 @@
 ;; 特定のモードで自動的に有効化
 (defun auto-complete-mode-enable-hooks ()
   (auto-complete-mode t))
-
 (dolist (hook '(text-mode-hook emacs-lisp-mode-hook
 				sh-mode-hook makefile-mode-hook
 				c-mode-common-hook))
@@ -21,7 +20,6 @@
 ;; 特定のモードで無効化
 (defun auto-complete-mode-disable-hooks ()
   (auto-complete-mode 0))
-
 (dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
   (add-hook hook 'auto-complete-mode-disable-hooks))
 
@@ -31,17 +29,14 @@
   ;; ファイル名の補完をしない
   (defvar ac-sources)
   (defun ac-common-setup ()
-	(setq ac-sources '(
-					   ac-source-functions
+	(setq ac-sources '(ac-source-functions
 					   ac-source-variables
 					   ac-source-symbols
 					   ac-source-features
 					   ;;ac-source-filename
 					   ac-source-abbrev
 					   ac-source-dictionary
-					   ac-source-words-in-same-mode-buffers
-					   ))
-	)
+					   ac-source-words-in-same-mode-buffers)))
 
   ;; 曖昧マッチ
   (defvar ac-use-fuzzy)
@@ -63,17 +58,15 @@
 
 ;;------------------------------------------------------------------------------
 ;; auto-complete-c-headers
-;;------------------------------------------------------------------------------
 ;; C/C++ のヘッダの情報源
 ;; from package
+;;------------------------------------------------------------------------------
 
 ;; C/C++ モードで自動的に有効化
 (defun auto-complete-c-headers-hooks ()
   (add-to-list 'ac-sources 'ac-source-c-headers))
 
-(let ((loadfile "auto-complete-c-headers"))
-  (cond ((autoload-if-found 'ac-source-c-headers loadfile t)
-		 (dolist (hook '(c-mode-hook c++-mode-hook))
-		   (add-hook hook 'auto-complete-c-headers-hooks)))
-		(t (display-loading-error-message loadfile))))
-
+(cond ((autoload-if-found 'ac-source-c-headers "auto-complete-c-headers" t)
+	   (dolist (hook '(c-mode-hook c++-mode-hook))
+		 (add-hook hook 'auto-complete-c-headers-hooks)))
+	  (t (display-loading-error-message "auto-complete-c-headers")))
