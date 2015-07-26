@@ -63,10 +63,11 @@
 ;;------------------------------------------------------------------------------
 
 ;; C/C++ モードで自動的に有効化
+(require 'auto-complete-c-headers)
 (defun auto-complete-c-headers-hooks ()
-  (add-to-list 'ac-sources 'ac-source-c-headers))
-
-(cond ((autoload-if-found 'ac-source-c-headers "auto-complete-c-headers" t)
-	   (dolist (hook '(c-mode-hook c++-mode-hook))
-		 (add-hook hook 'auto-complete-c-headers-hooks)))
-	  (t (display-loading-error-message "auto-complete-c-headers")))
+  (add-to-list 'ac-sources 'ac-source-c-headers)
+  (add-to-list 'achead:include-directories
+			   (list "/mingw64/lib/gcc/../../include/c++/4.9.2"
+					 "")))
+(dolist (hook '(c-mode-hook c++-mode-hook))
+  (add-hook hook 'auto-complete-c-headers-hooks))

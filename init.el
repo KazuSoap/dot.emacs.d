@@ -68,6 +68,7 @@
 					"custom-flycheck" ;; flycheck 設定
 					"custom-ggtags" ;; ggtags 設定
 					"custom-helm" ;; helm 設定
+					"custom-irony" ;; irony 設定
 					"custom-migemo" ;; migemo 設定
 					"custom-shell-pop" ;; shell-pop 設定
 					"custom-smart-compile" ;; smart-compile 設定
@@ -96,6 +97,7 @@
 ;; (load "custom-flycheck") ;; flycheck 設定
 ;; (load "custom-ggtags") ;; ggtags 設定
 ;; (load "custom-helm") ;; helm 設定
+;; (load "custom-irony") ;; irony 設定
 ;; (load "custom-migemo") ;; migemo 設定
 ;; (load "custom-shell-pop") ;; shell-pop 設定
 ;; (load "custom-smart-compile") ;; smart-compile 設定
