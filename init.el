@@ -63,8 +63,9 @@
 
 (dolist (loadfile '(;;-- addon --;;
 					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
-					"custom-auto-complete" ;; auto-complete 設定
+;;					"custom-auto-complete" ;; auto-complete 設定
 					"custom-c-eldoc" ;; c-eldoc 設定
+					"custom-company" ;; company 設定
 					"custom-elscreen" ;; elscreen 設定
 					"custom-flycheck" ;; flycheck 設定
 					"custom-ggtags" ;; ggtags 設定
