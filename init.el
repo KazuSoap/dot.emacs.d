@@ -17,10 +17,11 @@
 ;; load path
 ;;------------------------------------------------------------------------------
 ;; site-lisp
-(let((default-directory (expand-file-name "~/.emacs.d/site-lisp")))
-  (add-to-list 'load-path default-directory)
-  (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-      (normal-top-level-add-subdirs-to-load-path)))
+(dolist (path '("~/.emacs.d/site-lisp" "~/.emacs.d/github"))
+  (let((default-directory (expand-file-name path)))
+	(add-to-list 'load-path default-directory)
+	(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+		(normal-top-level-add-subdirs-to-load-path))))
 
 ;;------------------------------------------------------------------------------
 ;; local functions & macro
@@ -83,8 +84,7 @@
 					"fringe_modeline_buffer"
 					"general-key-bind"
 					"print"
-					"shell-settings"
-					"coding-system"))
+					"shell-settings"))
   (unless (load loadfile t)
 	(display-loading-error-message loadfile)))
 
