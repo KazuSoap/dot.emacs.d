@@ -63,11 +63,23 @@
 ;;------------------------------------------------------------------------------
 
 ;; C/C++ モードで自動的に有効化
-(require 'auto-complete-c-headers)
 (defun auto-complete-c-headers-hooks ()
+  (defvar ac-sources)
   (add-to-list 'ac-sources 'ac-source-c-headers)
-  (add-to-list 'achead:include-directories
-			   (list "/mingw64/lib/gcc/../../include/c++/4.9.2"
-					 "")))
-(dolist (hook '(c-mode-hook c++-mode-hook))
-  (add-hook hook 'auto-complete-c-headers-hooks))
+  (defvar achead:include-directories)
+  (dolist (include-path
+		   '("d:/msys64/mingw64/include/c++/4.9.2"
+			 "d:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+			 "d:/msys64/mingw64/include"
+			 "d:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/4.9.2/include-fixed"
+			 "d:/msys64/mingw64/x86_64-w64-mingw32/include"
+			 "d:/msys64/mingw64/include/c++/4.9.2"
+			 "d:/msys64/mingw64/include/c++/4.9.2/x86_64-w64-mingw32"
+			 "d:/msys64/mingw64/include/c++/4.9.2/backward"))
+	(add-to-list 'achead:include-directories include-path)))
+
+(with-eval-after-load 'auto-complete
+  (require 'auto-complete-c-headers)
+  (dolist (hook '(c-mode-hook c++-mode-hook))
+	(add-hook hook 'auto-complete-c-headers-hooks)))
+
