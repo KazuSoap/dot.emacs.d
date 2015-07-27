@@ -2,6 +2,7 @@
 !site-lisp/
 *.*
 !*.el
+!*.sh
 shell_env.el
 recentf
 tramp
