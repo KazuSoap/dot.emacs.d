@@ -19,6 +19,7 @@
 						 fakecygpty-program-list)))
 	(setcdr (nthcdr 2 args) (cons (nth 2 args) (nthcdr 3 args)))
 	(setcar (nthcdr 2 args) "fakecygpty"))
+  ;;(display-object-value "debug" args "\n")
   (apply orig-fun args))
 (advice-add 'start-process :around #'ad-start-process-to-fake '((depth . -100)))
 
