@@ -10,13 +10,16 @@
 (defun ad-irony--install-server-read-command (orig-func &rest args)
   "add some option to irony-install-server command for msys2"
   (setenv "CC" "gcc") (setenv "CXX" "g++")
+  (defvar irony-cmake-executable)
   (setcar args
 		  (replace-regexp-in-string
-		   "^\\(.*?cmake\\)"
-		   "\\1 -G \"MSYS Makefiles\" -DLIBCLANG_LIBRARY=/mingw64/bin/clang.dll"
+		   (concat "^\\(.*?" (shell-quote-argument irony-cmake-executable) "\\)")
+		   (concat "\\1 -G \"MSYS Makefiles\" -DLIBCLANG_LIBRARY=/mingw64/bin/clang.dll")
 		   (car args)))
-  (apply orig-func args))
+	(apply orig-func args))
 (advice-add 'irony--install-server-read-command :around #'ad-irony--install-server-read-command)
+
+(setenv "LIBCLANG_LIBRARY" "/mingw64/bin/clang.dll")
 
 (add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'c-mode-hook 'irony-mode)
@@ -34,7 +37,17 @@
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 (with-eval-after-load 'irony
-  (setq w32-pipe-read-delay 0))
+   (when (eq system-type 'windows-nt)
+	 (setq w32-pipe-read-delay 0)))
+
+;; (defvar irony-lang-compile-option-alist)
+;; (setq irony-lang-compile-option-alist
+;;       '((c++-mode . ("c++" "-std=c++11" "-lstdc++" "-lm"))
+;;         (c-mode . ("c"))
+;;         (objc-mode . '("objective-c"))))
+;; (defun irony--lang-compile-option ()
+;;   (irony--awhen (cdr-safe (assq major-mode irony-lang-compile-option-alist))
+;;     (append '("-x") it)))
 
 ;;------------------------------------------------------------------------------
 ;; company-irony
@@ -48,33 +61,27 @@
 (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
 
 ;;------------------------------------------------------------------------------
-;; ac-irony
-;; Auto-complete support for irony-mode
-;; from https://github.com/Sarcasm/ac-irony
+;; company-irony-c-headers
+;; Company Irony C Headers
+;; from package
 ;;------------------------------------------------------------------------------
 
-;;(setenv "CC" "clang")
-;;(setenv "CXX" "clang++")
+(defun company-irony-c-headers-hooks ()
+  ;;Load with `irony-mode` as a grouped backend
+  (defvar company-backends)
+  (add-to-list
+   'company-backends '(company-irony-c-headers company-irony)))
 
-;; (require 'ac-irony)
+(with-eval-after-load 'company
+  (autoload 'company-irony-c-headers "company-irony-c-headers" t)
+  (dolist (hook '(c-mode-hook c++-mode-hook))
+	(add-hook hook 'company-irony-c-headers-hooks)))
 
-;; (defun my-ac-irony-setup ()
-;;   (add-to-list 'ac-sources 'ac-source-irony)
-;;   ;;(auto-complete-mode 1)
-;;   (define-key irony-mode-map (kbd "C-;") 'ac-complete-irony-async))
+;;------------------------------------------------------------------------------
+;; flycheck-irony
+;; Completion backend for irony-mode
+;; from package
+;;------------------------------------------------------------------------------
 
-;; (add-hook 'irony-mode-hook 'my-ac-irony-setup)
-
-;; (defun my-ac-irony-setup ()
-;;   ;; be cautious, if yas is not enabled before (auto-complete-mode 1), overlays
-;;   ;; *may* persist after an expansion.
-;; ;  (yas-minor-mode 1)
-;;   (auto-complete-mode 1)
-
-;;   (defvar ac-sources)
-;;   (add-to-list 'ac-sources 'ac-source-irony)
-
-;;   (defvar irony-mode-map)
-;;   (define-key irony-mode-map (kbd "M-RET") 'ac-complete-irony-async))
-
-;; (add-hook 'irony-mode-hook 'my-ac-irony-setup)
+(with-eval-after-load 'flycheck
+  (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
