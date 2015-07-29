@@ -92,8 +92,9 @@
 ;; ;; esup 確認用
 ;; ;; -- addon --;;
 ;; (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
-;; (load "custom-auto-complete") ;; auto-complete 設定
-;; (load "custom-c-eldoc") ;; c-eldoc 設定
+;; ;;(load "custom-auto-complete") ;; auto-complete 設定
+;; ;;(load "custom-c-eldoc") ;; c-eldoc 設定
+;; (load "custom-company") ;; company 設定
 ;; (load "custom-elscreen") ;; elscreen 設定
 ;; (load "custom-flycheck") ;; flycheck 設定
 ;; (load "custom-ggtags") ;; ggtags 設定
@@ -114,4 +115,3 @@
 ;; (load "general-key-bind")
 ;; (load "print")
 ;; (load "shell-settings")
-;; (load "coding-system")
