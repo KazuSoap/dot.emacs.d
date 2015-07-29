@@ -73,7 +73,7 @@
 ;; bufferのカスタマイズ
 
 ;;-- buffer --;;
-(set-default 'truncate-lines nil) ;; buffer画面外文字の切り詰め表示
+(set-default 'truncate-lines t) ;; buffer画面外文字の切り詰め表示
 (setq truncate-partial-width-windows t) ;; window縦分割時のbuffer画面外文字の切り詰め表示
 
 ;;-- cursor --;;
