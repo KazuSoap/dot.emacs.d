@@ -7,6 +7,7 @@
 ;;------------------------------------------------------------------------------
 
 ;; msys2 で irony-install-server command を動作させる設定
+;; https://github.com/Sarcasm/irony-mode/wiki/Setting-up-irony-mode-on-Windows-using-Msys2-and-Mingw-Packages
 (defun ad-irony--install-server-read-command (orig-func &rest args)
   "add some option to irony-install-server command for msys2"
   (setenv "CC" "gcc") (setenv "CXX" "g++")
@@ -19,7 +20,11 @@
 	(apply orig-func args))
 (advice-add 'irony--install-server-read-command :around #'ad-irony--install-server-read-command)
 
-(setenv "LIBCLANG_LIBRARY" "/mingw64/bin/clang.dll")
+;; (defun ad-irony-cdb-clang-complete--load-db (orig-func &rest args)
+;;   "add some option to irony-install-server command for msys2"
+;;   (display-object-value "hoge" (apply orig-func args))
+;;   )
+;; (advice-add 'irony-cdb-clang-complete--load-db :around #'ad-irony-cdb-clang-complete--load-db)
 
 (add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'c-mode-hook 'irony-mode)
@@ -39,15 +44,6 @@
 (with-eval-after-load 'irony
    (when (eq system-type 'windows-nt)
 	 (setq w32-pipe-read-delay 0)))
-
-;; (defvar irony-lang-compile-option-alist)
-;; (setq irony-lang-compile-option-alist
-;;       '((c++-mode . ("c++" "-std=c++11" "-lstdc++" "-lm"))
-;;         (c-mode . ("c"))
-;;         (objc-mode . '("objective-c"))))
-;; (defun irony--lang-compile-option ()
-;;   (irony--awhen (cdr-safe (assq major-mode irony-lang-compile-option-alist))
-;;     (append '("-x") it)))
 
 ;;------------------------------------------------------------------------------
 ;; company-irony
@@ -72,7 +68,7 @@
   (add-to-list
    'company-backends '(company-irony-c-headers company-irony)))
 
-(with-eval-after-load 'company
+(with-eval-after-load 'irony
   (autoload 'company-irony-c-headers "company-irony-c-headers" t)
   (dolist (hook '(c-mode-hook c++-mode-hook))
 	(add-hook hook 'company-irony-c-headers-hooks)))
@@ -83,5 +79,15 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
+(autoload 'flycheck-irony-setup "flycheck-irony")
 (with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+
+;;------------------------------------------------------------------------------
+;; irony-eldoc
+;; irony-mode support for eldoc-mode
+;; from package
+;;------------------------------------------------------------------------------
+
+;;(add-hook 'irony-mode-hook 'irony-eldoc)
+

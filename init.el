@@ -17,7 +17,7 @@
 ;; load path
 ;;------------------------------------------------------------------------------
 ;; site-lisp
-(dolist (path '("~/.emacs.d/site-lisp" "~/.emacs.d/github"))
+(dolist (path '("~/.emacs.d/site-lisp"))
   (let((default-directory (expand-file-name path)))
 	(add-to-list 'load-path default-directory)
 	(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
@@ -64,7 +64,7 @@
 (dolist (loadfile '(;;-- addon --;;
 					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
 ;;					"custom-auto-complete" ;; auto-complete 設定
-					"custom-c-eldoc" ;; c-eldoc 設定
+;;					"custom-c-eldoc" ;; c-eldoc 設定
 					"custom-company" ;; company 設定
 					"custom-elscreen" ;; elscreen 設定
 					"custom-flycheck" ;; flycheck 設定
