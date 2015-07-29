@@ -26,6 +26,17 @@
 ;;------------------------------------------------------------------------------
 ;; modeline
 ;;------------------------------------------------------------------------------
+;; モードラインに行番号表示
+(line-number-mode 0)
+;; モードラインに列番号表示
+(column-number-mode 0)
+;; モードラインにファイルサイズ表示
+(size-indication-mode 0)
+
+;; 総行数表示
+(setcar mode-line-position
+        '(:eval (format "%d" (count-lines (point-max) (point-min)))))
+
 ;;-- IME customize --;;
 ;; IMEのカスタマイズ
 (setq default-input-method "W32-IME") ;;標準IMEの設定
