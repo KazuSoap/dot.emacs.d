@@ -23,7 +23,7 @@
 (defun ad-irony-cdb-clang-complete--load-db (&rest args)
   "modify cannot load default include directory on msys2"
   (with-temp-buffer
-    (insert-file-contents (car args))
+	(insert-file-contents (car args))
 	(dolist (default_inc_path '("-Id:/msys64/mingw64/include/c++/4.9.2"
 								"-Id:/msys64/mingw64/include/c++/4.9.2/x86_64-w64-mingw32"
 								"-Id:/msys64/mingw64/include/c++/4.9.2/backward"
@@ -42,6 +42,26 @@
       ;; working directory
       (expand-file-name (file-name-directory (car args)))))))
 (advice-add 'irony-cdb-clang-complete--load-db :override #'ad-irony-cdb-clang-complete--load-db)
+
+;; コンパイルオプションを設定
+(custom-set-variables
+ '(irony-lang-compile-option-alist
+   (quote ((c++-mode . "c++ -std=c++11 -lstdc++")
+		   (c-mode . "c")
+		   (objc-mode . "objective-c")))))
+
+(defmacro irony--awhen (test &rest body)
+  (declare (indent 1))
+  `(let ((it ,test))
+     (when it
+       (progn ,@body))))
+
+(defun ad-irony--lang-compile-option ()
+  "modify cannot apply multiple compile options"
+  (defvar irony-lang-compile-option-alist)
+  (irony--awhen (cdr-safe (assq major-mode irony-lang-compile-option-alist))
+	  (append '("-x") (split-string it "\s"))))
+(advice-add 'irony--lang-compile-option :override #'ad-irony--lang-compile-option)
 
 ;; 特定のモードで有効化
 (add-hook 'c++-mode-hook 'irony-mode)
@@ -106,6 +126,21 @@
 ;; irony-mode support for eldoc-mode
 ;; from package
 ;;------------------------------------------------------------------------------
+;; <ソース修正>
+;; 402: lexical-let -> let
+;; 373, 387: remove-if-not -> cl-remove-if-not
 
-;;(add-hook 'irony-mode-hook 'irony-eldoc)
+(add-hook 'irony-mode-hook 'irony-eldoc)
 
+;; 文字化け対処
+(defun ad-irony-eldoc--strip-underscores (string)
+  (defvar irony-eldoc-strip-underscores)
+  (if (or (not string) (not irony-eldoc-strip-underscores))
+      string
+    (let ((new-string string)
+          (regexps '(("\\_<_+" . ""))))
+      (dolist (r regexps)
+        (setq new-string
+              (replace-regexp-in-string (car r) (cdr r) new-string)))
+      new-string)))
+(advice-add 'irony-eldoc--strip-underscores :override #'ad-irony-eldoc--strip-underscores)
