@@ -42,6 +42,6 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-(cond ((autoload-if-found 'elscreen-separate-buffer-list-mode "elscreen-separate-buffer-list" t)
-	   (elscreen-separate-buffer-list-mode 1))
-	  (t (display-loading-error-message "elscreen-separate-buffer-list")))
+;; (cond ((autoload-if-found 'elscreen-separate-buffer-list-mode "elscreen-separate-buffer-list" t)
+;; 	   (elscreen-separate-buffer-list-mode 1))
+;; 	  (t (display-loading-error-message "elscreen-separate-buffer-list")))

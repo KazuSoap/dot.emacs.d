@@ -50,17 +50,11 @@
 		   (c-mode . "c")
 		   (objc-mode . "objective-c")))))
 
-(defmacro irony--awhen (test &rest body)
-  (declare (indent 1))
-  `(let ((it ,test))
-     (when it
-       (progn ,@body))))
-
 (defun ad-irony--lang-compile-option ()
   "modify cannot apply multiple compile options"
   (defvar irony-lang-compile-option-alist)
-  (irony--awhen (cdr-safe (assq major-mode irony-lang-compile-option-alist))
-	  (append '("-x") (split-string it "\s"))))
+  (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
+	(when it (append '("-x") (split-string it "\s")))))
 (advice-add 'irony--lang-compile-option :override #'ad-irony--lang-compile-option)
 
 ;; 特定のモードで有効化
@@ -127,8 +121,8 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 ;; <ソース修正>
-;; 402: lexical-let -> let
-;; 373, 387: remove-if-not -> cl-remove-if-not
+;; 403: lexical-let -> let
+;; 374, 388: remove-if-not -> cl-remove-if-not
 
 (add-hook 'irony-mode-hook 'irony-eldoc)
 
