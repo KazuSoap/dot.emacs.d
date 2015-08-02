@@ -20,41 +20,25 @@
 	(apply orig-func args))
 (advice-add 'irony--install-server-read-command :around #'ad-irony--install-server-read-command)
 
-(defun ad-irony-cdb-clang-complete--load-db (&rest args)
-  "modify cannot load default include directory on msys2"
-  (with-temp-buffer
-	(insert-file-contents (car args))
-	(dolist (default_inc_path '("-Id:/msys64/mingw64/include/c++/4.9.2"
-								"-Id:/msys64/mingw64/include/c++/4.9.2/x86_64-w64-mingw32"
-								"-Id:/msys64/mingw64/include/c++/4.9.2/backward"
-								"-Id:/msys64/mingw64/lib/clang/3.6.1/include"
-								"-Id:/msys64/mingw64/x86_64-w64-mingw32/include"
-								"-Id:/msys64/mingw64/include"))
-	  (insert default_inc_path "\n"))
-    (list
-     (cons
-      ;; compile options with trailing whitespaces removed
-      (mapcar #'(lambda (line)
-                  (if (string-match "[ \t]+$" line)
-                      (replace-match "" t t line)
-                    line))
-              (split-string (buffer-string) "\n" t))
-      ;; working directory
-      (expand-file-name (file-name-directory (car args)))))))
-(advice-add 'irony-cdb-clang-complete--load-db :override #'ad-irony-cdb-clang-complete--load-db)
-
-;; コンパイルオプションを設定
-(custom-set-variables
- '(irony-lang-compile-option-alist
-   (quote ((c++-mode . "c++ -std=c++11 -lstdc++")
-		   (c-mode . "c")
-		   (objc-mode . "objective-c")))))
+;; 追加のコンパイルオプションを設定
+(defvar irony-extra-compile-option-alist)
+;; clang++ -E -x c++ - -v < /dev/null で確認
+(let ((default-inc-path '("-Id:/msys64/mingw64/include/c++/4.9.2"
+						  "-Id:/msys64/mingw64/include/c++/4.9.2/x86_64-w64-mingw32"
+						  "-Id:/msys64/mingw64/include/c++/4.9.2/backward"
+						  "-Id:/msys64/mingw64/lib/clang/3.6.1/include"
+						  "-Id:/msys64/mingw64/x86_64-w64-mingw32/include"
+						  "-Id:/msys64/mingw64/include")))
+  (setq irony-extra-compile-option-alist
+		`((c++-mode "-std=c++11" "-lstdc++" ,@default-inc-path)
+		  (c-mode ,@(nthcdr 3 default-inc-path)))))
 
 (defun ad-irony--lang-compile-option ()
-  "modify cannot apply multiple compile options"
+  "modify cannot apply multiple compile options and cannot load default include directory on msys2"
   (defvar irony-lang-compile-option-alist)
   (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
-	(when it (append '("-x") (split-string it "\s")))))
+	(when it
+	  (append `("-x" ,it) (cdr-safe (assq major-mode irony-extra-compile-option-alist))))))
 (advice-add 'irony--lang-compile-option :override #'ad-irony--lang-compile-option)
 
 ;; 特定のモードで有効化
