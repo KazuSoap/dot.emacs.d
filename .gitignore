@@ -1,8 +1,12 @@
 /*/
 !site-lisp/
+!registry
 *.*
 !*.el
 !*.sh
+!emacs_settings.reg
+!remove_emacs_settings.reg
+!.Xresources
 shell_env.el
 recentf
 tramp
