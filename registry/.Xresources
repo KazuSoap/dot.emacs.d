@@ -1,0 +1,18 @@
+! fontの種類と大きさ
+Emacs.Font: Ricty-9
+
+! windowの幅と高さ
+Emacs.Geometry: 100x30
+
+! 透過度
+Emacs.Alpha: 80
+
+! 行間隔
+Emacs.LineSpacing: 0
+
+! tool-bar非表示
+Emacs.toolBar: off
+
+! 左右フリンジ幅
+Emacs.LeftFringe: 0
+Emacs.RightFringe: 0
