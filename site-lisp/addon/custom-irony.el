@@ -34,7 +34,7 @@
 		  (c-mode ,@(nthcdr 3 default-inc-path)))))
 
 (defun ad-irony--lang-compile-option ()
-  "modify cannot apply multiple compile options and cannot load default include directory on msys2"
+  "modify cannot load default inc-path on msys2 and cannot apply multiple compile options"
   (defvar irony-lang-compile-option-alist)
   (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
 	(when it
@@ -77,54 +77,6 @@
 ;; Company Irony C Headers
 ;; from package
 ;;------------------------------------------------------------------------------
-
-(defvar company-irony-c-headers--compiler-executable)
-(defvar company-irony-c-headers--compiler-output)
-(autoload 'company-irony-c-headers--user-compiler-options "company-irony-c-headers")
-(autoload 'company-irony-c-headers--default-compiler-options "company-irony-c-headers")
-(defun ad-company-irony-c-headers-reload-compiler-output ()
-  "modify cannnot work if without .clang_complete file"
-  (interactive)
-  (when company-irony-c-headers--compiler-executable
-	(setq company-irony-c-headers--compiler-output
-		  (let ((uco (company-irony-c-headers--user-compiler-options))
-				(dco (company-irony-c-headers--default-compiler-options)))
-			(with-temp-buffer
-			  (apply 'call-process
-					 company-irony-c-headers--compiler-executable nil t nil
-					 (append uco dco))
-			  (goto-char (point-min))
-			  (let (quote-directories
-					angle-directories
-					(start "#include \"...\" search starts here:")
-					(second-start "#include <...> search starts here:")
-					(stop "End of search list."))
-				(when (search-forward start nil t)
-				  (forward-line 1)
-				  (while (not (looking-at-p second-start))
-					;; Skip whitespace at the begining of the line.
-					(skip-chars-forward "[:blank:]" (point-at-eol))
-					(let ((p
-						   (replace-regexp-in-string
-							"\\s-+(framework directory)"
-							"" (buffer-substring (point) (point-at-eol)))))
-					  (push p quote-directories))
-					(forward-line 1))
-				  (forward-line 1)
-				  (while (not (or (looking-at-p stop) (eolp)))
-					;; Skip whitespace at the begining of the line.
-					(skip-chars-forward "[:blank:]" (point-at-eol))
-					(let ((p
-						   (replace-regexp-in-string
-							"\\s-+(framework directory)"
-							"" (buffer-substring (point) (point-at-eol)))))
-					  (push p quote-directories)
-					  (push p angle-directories))
-					(forward-line 1)))
-				(list
-				 (reverse quote-directories)
-				 (reverse angle-directories))))))))
-(advice-add 'company-irony-c-headers-reload-compiler-output :override #'ad-company-irony-c-headers-reload-compiler-output)
 
 (defun company-irony-c-headers-hooks ()
   ;;Load with `irony-mode` as a grouped backend
