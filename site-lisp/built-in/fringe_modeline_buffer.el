@@ -38,33 +38,34 @@
         '(:eval (format "%d" (count-lines (point-max) (point-min)))))
 
 ;;-- IME customize --;;
-;; IMEのカスタマイズ
-(setq default-input-method "W32-IME") ;;標準IMEの設定
+(when (eq system-type 'windows-nt)
+  ;; IMEのカスタマイズ
+  (setq default-input-method "W32-IME") ;;標準IMEの設定
 
-;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
-(setq-default w32-ime-mode-line-state-indicator "[Aa]")
-(setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
+  ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
+  (setq-default w32-ime-mode-line-state-indicator "[Aa]")
+  (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
 
-;; IME の初期化
-(w32-ime-initialize)
+  ;; IME の初期化
+  (w32-ime-initialize)
 
-;; バッファ切り替え時にIME状態を引き継ぐ
-(setq w32-ime-buffer-switch-p t)
+  ;; バッファ切り替え時にIME状態を引き継ぐ
+  (setq w32-ime-buffer-switch-p t)
 
-;; IME ON/OFF時のカーソルカラー
-(add-hook 'input-method-activate-hook
-          (lambda() (set-cursor-color "#AA0000")))
-(add-hook 'input-method-inactivate-hook
-          (lambda() (set-cursor-color "yellow")))
+  ;; IME ON/OFF時のカーソルカラー
+  (add-hook 'input-method-activate-hook
+			(lambda() (set-cursor-color "#AA0000")))
+  (add-hook 'input-method-inactivate-hook
+			(lambda() (set-cursor-color "yellow")))
 
-;; IMEの制御（yes/noをタイプするところでは IME をオフにする）
-(wrap-function-to-control-ime 'universal-argument t nil)
-(wrap-function-to-control-ime 'read-string nil nil)
-(wrap-function-to-control-ime 'read-char nil nil)
-(wrap-function-to-control-ime 'read-from-minibuffer nil nil)
-(wrap-function-to-control-ime 'y-or-n-p nil nil)
-(wrap-function-to-control-ime 'yes-or-no-p nil nil)
-(wrap-function-to-control-ime 'map-y-or-n-p nil nil)
+  ;; IMEの制御（yes/noをタイプするところでは IME をオフにする）
+  (wrap-function-to-control-ime 'universal-argument t nil)
+  (wrap-function-to-control-ime 'read-string nil nil)
+  (wrap-function-to-control-ime 'read-char nil nil)
+  (wrap-function-to-control-ime 'read-from-minibuffer nil nil)
+  (wrap-function-to-control-ime 'y-or-n-p nil nil)
+  (wrap-function-to-control-ime 'yes-or-no-p nil nil)
+  (wrap-function-to-control-ime 'map-y-or-n-p nil nil))
 
 ;;; time -----------------------------------------------------------------------
 ;; 時刻の表示

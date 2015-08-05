@@ -25,11 +25,11 @@
 
 (defmacro fakecygpty-set-signal (function send-key)
   `(defadvice ,function (around ,(intern (format "ad-%s" function)) activate)
-     (let ((process (or (ad-get-arg 0)
-                        (get-buffer-process (current-buffer)))))
-       (if (string= (car (process-command process)) "fakecygpty")
-           (process-send-string (ad-get-arg 0) (kbd ,send-key))
-         ad-do-it))))
+	 (let ((process (or (ad-get-arg 0)
+						(get-buffer-process (current-buffer)))))
+	   (if (string= (car (process-command process)) "fakecygpty")
+		   (process-send-string (ad-get-arg 0) (kbd ,send-key))
+		 ad-do-it))))
 
 (fakecygpty-set-signal interrupt-process "C-c")
 (fakecygpty-set-signal stop-process "C-z")
@@ -59,4 +59,3 @@
 		  (apply orig-fun args)
 		  (setq from to))))))
 (advice-add 'process-send-string :around #'ad-process-send-string)
-;;------------------------------------------------------------------------------

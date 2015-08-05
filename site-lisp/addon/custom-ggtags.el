@@ -7,23 +7,19 @@
 ;;------------------------------------------------------------------------------
 
 ;; cygwin or msys2 版 GNU Global で使うための設定
-(defun ggtags-ensure-localname-Win (file)
-  "convert Windows path to UNIX path"
-  (cygpath "-u" (and file (or (file-remote-p file 'localname) file))))
-(advice-add 'ggtags-ensure-localname :override #'ggtags-ensure-localname-Win)
+(when (eq system-type 'windows-nt)
+  (defun ggtags-ensure-localname-Win (file)
+	"convert Windows path to UNIX path"
+	(cygpath "-u" (and file (or (file-remote-p file 'localname) file))))
+  (advice-add 'ggtags-ensure-localname :override #'ggtags-ensure-localname-Win)
 
-(defun ggtags-global-mode-Win ()
-  "if use fakecygpty, must set compilation-disable-input to nil"
-  (setq-local compilation-disable-input nil))
-(advice-add 'ggtags-global-mode :after #'ggtags-global-mode-Win)
-
-(defun ggtags-process-string-Win (orig-func program &rest args)
-  "if execute global -pr command, convert UNIX path to Windows path"
-  (let((arg (mapconcat #'identity (append (list program) args) nil)))
-	(cond ((string= "global-pr" arg)
-		   (cygpath "-m" (apply orig-func program args)))
-		  (t (apply orig-func program args)))))
-(advice-add 'ggtags-process-string :around #'ggtags-process-string-Win)
+  (defun ggtags-process-string-Win (orig-func program &rest args)
+	"if execute global -pr command, convert UNIX path to Windows path"
+	(let((arg (mapconcat #'identity (append (list program) args) nil)))
+	  (cond ((string= "global-pr" arg)
+			 (cygpath "-m" (apply orig-func program args)))
+			(t (apply orig-func program args)))))
+  (advice-add 'ggtags-process-string :around #'ggtags-process-string-Win))
 
 ;; 特定のモードで自動的に有効化
 (defun ggtags-mode-enable-hooks ()
