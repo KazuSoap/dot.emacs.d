@@ -43,18 +43,16 @@
   (and (locate-library file)
        (autoload function file docstring interactive type)))
 
-(defun cygpath (option &rest args)
-  "cygpath for emacs"
-  (let ((command (mapconcat #'identity (append (list "cygpath" option) args) "\s")))
-	(substring (directory-file-name (shell-command-to-string command)) 0 -1)))
+(when (eq system-type 'windows-nt)
+  (defun cygpath (option &rest args)
+	"cygpath for emacs"
+	(let ((command (mapconcat #'identity (append (list "cygpath" option) args) "\s")))
+	  (substring (directory-file-name (shell-command-to-string command)) 0 -1))))
 
 (defun message-startup-time ()
-  "calculate bootup time"
-    (message
-     "Emacs loaded in %dms"
-     (/ (- (+ (car (cdr (cdr after-init-time))) (* 1000000 (car (cdr after-init-time))))
-           (+ (car (cdr (cdr before-init-time))) (* 1000000 (car (cdr before-init-time)))))
-        1000)))
+  "echo bootup time in message buffer"
+  (message "Emacs loaded in %d ms"
+		   (* 1000 (float-time (time-subtract after-init-time before-init-time)))))
 (add-hook 'after-init-hook 'message-startup-time)
 
 ;;------------------------------------------------------------------------------
@@ -79,6 +77,7 @@
 
 					;;-- built-in --;;
 					"add-hook-settings"
+					"custom-aute-insert"
 					"custom-gdb"
 					"custom-set-faces"
 					"custom-set-variables"
@@ -108,6 +107,7 @@
 
 ;; ;;-- built in --;;
 ;; (load "add-hook-settings")
+;; (load "custom-aute-insert")
 ;; (load "custom-gdb")
 ;; (load "custom-set-faces")
 ;; (load "custom-set-variables")
