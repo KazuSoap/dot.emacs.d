@@ -24,10 +24,10 @@
   ;; 追加のコンパイルオプションを設定
   (defvar irony-extra-compile-option-alist)
   ;; clang++ -E -x c++ - -v < /dev/null で確認
-  (let ((default-inc-path '("-Id:/msys64/mingw64/include/c++/4.9.2"
-							"-Id:/msys64/mingw64/include/c++/4.9.2/x86_64-w64-mingw32"
-							"-Id:/msys64/mingw64/include/c++/4.9.2/backward"
-							"-Id:/msys64/mingw64/lib/clang/3.6.1/include"
+  (let ((default-inc-path '("-Id:/msys64/mingw64/include/c++/5.2.0"
+							"-Id:/msys64/mingw64/include/c++/5.2.0/x86_64-w64-mingw32"
+							"-Id:/msys64/mingw64/include/c++/5.2.0/backward"
+							"-Id:/msys64/mingw64/lib/clang/3.6.2/include"
 							"-Id:/msys64/mingw64/x86_64-w64-mingw32/include"
 							"-Id:/msys64/mingw64/include")))
 	(setq irony-extra-compile-option-alist
