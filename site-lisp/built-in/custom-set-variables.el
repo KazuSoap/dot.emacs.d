@@ -4,6 +4,9 @@
 ;; custom-set-variables
 ;;------------------------------------------------------------------------------
 
+;;-- color-theme --;;
+(load-theme 'wheatgrass t)
+
 ;;-- ファイルのフルパスをタイトルバーに表示 --;;
 (setq frame-title-format(format "%%f - Emacs"))
 

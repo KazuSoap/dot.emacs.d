@@ -1,21 +1,61 @@
 Windows Registry Editor Version 5.00
 
+[-HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
+
 [HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
-// fontの種類と大きさ
+//-- font --//
 "Emacs.Font"="VL Gothic-9"
 
-// windowの幅と高さ
+//-- windowの幅と高さ --//
 "Emacs.Geometry"="100x30"
 
-// 透過度
-"Emacs.Alpha"="80"
+//-- 透過度 --//
+"Emacs.Alpha"="85"
 
-// 行間隔
-"Emacs.LineSpacing"="0"
+//-- 行間 --//
+"Emacs.lineSpacing"="0"
 
-// tool-bar非表示
+//-- tool-bar --//
 "Emacs.toolbar"="off"
 
-// 左右フリンジ幅
+//-- 左右フリンジ --//
 "Emacs.leftfringe"="0"
 "Emacs.rightfringe"="0"
+
+//-- mode-line --//
+"Emacs.mode-line.attributeBackground"="DarkRed"
+"Emacs.mode-line.attributeForeground"="white"
+
+//-- linum --//
+"Emacs.linum.attributeBackground"="black"
+"Emacs.linum.attributeForeground"="gray"
+"Emacs.linum.attributeUnderline"="off"
+"Emacs.linum.attributeHeight"="0.8"
+
+//-- whitespace --//
+// space
+"Emacs.whitespace-space.attributeBackground"="black"
+"Emacs.whitespace-space.attributeForeground"="GreenYellow"
+
+// tab
+"Emacs.whitespace-tab.attributeBackground"="black"
+"Emacs.whitespace-tab.attributeForeground"="LightSkyBlue"
+"Emacs.whitespace-tab.attributeUnderline"="on"
+
+// newline
+"Emacs.whitespace-newline.attributeForeground"="DeepSkyBlue"
+
+// trailing
+"Emacs.whitespace-trailing.attributeBackground"="DeepPink"
+
+//-- elscreen --//
+// tab-background (header-line)
+"Emacs.elscreen-tab-background-face.attributeBackground"="black"
+
+// tab-current-screen (current-screen)
+"Emacs.elscreen-tab-current-screen-face.attributeBackground"="black"
+"Emacs.elscreen-tab-current-screen-face.attributeForeground"="yellow"
+
+// tab-other-screen (other-screen)
+"Emacs.elscreen-tab-other-screen-face.attributeBackground"="black"
+"Emacs.elscreen-tab-other-screen-face.attributeForeground"="Gray72"

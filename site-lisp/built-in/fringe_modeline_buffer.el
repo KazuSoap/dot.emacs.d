@@ -7,37 +7,35 @@
 ;; fringe
 ;;------------------------------------------------------------------------------
 ;;-- linum customize --;;
-;; linumのカスタマイズ
+(defun ad-linum-schedule ()
+  "modify linum refresh time"
+  (run-with-idle-timer 0.2 nil 'linum-update-current))
 
 (with-eval-after-load 'linum
   (defvar linum-format)
   (setq linum-format "%4d\u2502") ;; 行番号のフォーマット
 
-  ;; face
-  (custom-set-faces
-   '(linum ((t (:background "black" :foreground "gray" :height 0.8 :underline nil)))))
-
   ;; 行番号の表示遅延の修正
   (defvar linum-delay)
   (setq linum-delay t)
-  (defadvice linum-schedule (around my-linum-schedule () activate)
-	(run-with-idle-timer 0.2 nil #'linum-update-current)))
+  (advice-add 'linum-schedule :override 'ad-linum-schedule))
 
 ;;------------------------------------------------------------------------------
 ;; modeline
 ;;------------------------------------------------------------------------------
-;; モードラインに行番号表示
-(line-number-mode 0)
-;; モードラインに列番号表示
-(column-number-mode 0)
-;; モードラインにファイルサイズ表示
-(size-indication-mode 0)
+;;-- modeline customize --;;
+(line-number-mode 0) ;; モードラインに行番号表示
+(column-number-mode 0) ;; モードラインに列番号表示
+(size-indication-mode 0) ;; モードラインにファイルサイズ表示
 
 ;; 総行数表示
-(setcar mode-line-position
-        '(:eval (format "%d" (count-lines (point-max) (point-min)))))
+(setcar mode-line-position '(:eval (format "%d" (count-lines (point-max) (point-min)))))
 
 ;;-- IME customize --;;
+;; IME ON/OFF 時のカーソルカラー設定用関数
+(defun w32-ime-on-hooks () (set-cursor-color "yellow"))
+(defun w32-ime-off-hooks () (set-cursor-color "thistle"))
+
 (when (eq system-type 'windows-nt)
   ;; IMEのカスタマイズ
   (setq default-input-method "W32-IME") ;;標準IMEの設定
@@ -49,14 +47,9 @@
   ;; IME の初期化
   (w32-ime-initialize)
 
-  ;; バッファ切り替え時にIME状態を引き継ぐ
-  (setq w32-ime-buffer-switch-p t)
-
   ;; IME ON/OFF時のカーソルカラー
-  (add-hook 'input-method-activate-hook
-			(lambda() (set-cursor-color "#AA0000")))
-  (add-hook 'input-method-inactivate-hook
-			(lambda() (set-cursor-color "yellow")))
+  (add-hook 'w32-ime-on-hook 'w32-ime-on-hooks)
+  (add-hook 'w32-ime-off-hook 'w32-ime-off-hooks)
 
   ;; IMEの制御（yes/noをタイプするところでは IME をオフにする）
   (wrap-function-to-control-ime 'universal-argument t nil)
@@ -82,12 +75,6 @@
 ;; buffer
 ;;------------------------------------------------------------------------------
 ;;-- buffer customize --;;
-;; bufferのカスタマイズ
-
-;;-- buffer --;;
-(set-default 'truncate-lines t) ;; buffer画面外文字の切り詰め表示
-(setq truncate-partial-width-windows t) ;; window縦分割時のbuffer画面外文字の切り詰め表示
-
 ;;-- cursor --;;
 (setq blink-cursor-mode 1) ;; cursor点滅表示
 (setq scroll-preserve-screen-position t) ;; scroll時のcursor位置の維持
@@ -103,12 +90,12 @@
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
 ;; 2 line at a time
-(global-set-key [double-wheel-up] '(lambda () (interactive) (scroll-down 2)))
-(global-set-key [double-wheel-down] '(lambda () (interactive) (scroll-up 2)))
+(global-set-key [double-wheel-up] (lambda () (interactive) (scroll-down 2)))
+(global-set-key [double-wheel-down] (lambda () (interactive) (scroll-up 2)))
 
 ;; 3 line at a time
-(global-set-key [triple-wheel-up] '(lambda () (interactive) (scroll-down 4)))
-(global-set-key [triple-wheel-down] '(lambda () (interactive) (scroll-up 4)))
+(global-set-key [triple-wheel-up] (lambda () (interactive) (scroll-down 4)))
+(global-set-key [triple-wheel-down] (lambda () (interactive) (scroll-up 4)))
 
 ;;; whitespace -----------------------------------------------------------------
 ;; 不可視文字の可視化
@@ -116,7 +103,9 @@
 
 (with-eval-after-load 'whitespace
   (defvar whitespace-style)
-  (setq whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
+  (setq whitespace-style
+		'(face tabs tab-mark newline newline-mark spaces space-mark trailing))
+
   ;; 表示の変更
   (defvar whitespace-display-mappings)
   (setq whitespace-display-mappings
@@ -128,19 +117,14 @@
 		  (space-mark ?\xF20 [?\xF24] [?_])
 		  ;; full-width-space → "□"
 		  (space-mark ?\u3000 [?\u25a1] [?_ ?_])
-		  ;; tab → "»"
+		  ;; tab → "»" with underline
 		  (tab-mark     ?\t    [?\xBB ?\t]   [?\\ ?\t])
 		  ;; newline → "｣"
 		  (newline-mark ?\n    [?\uFF63 ?\n] [?$ ?\n])))
+
   ;; 以下の正規表現にマッチするものを"space"と認識
   (defvar whitespace-space-regexp)
-  (setq whitespace-space-regexp "\\(\u3000+\\)")
-
-  (custom-set-faces
-   '(whitespace-space ((t (:background nil :foreground "GreenYellow"))))
-   '(whitespace-tab ((t (:background nil :foreground "LightSkyBlue" :underline t))))
-   '(whitespace-newline ((t (:background nil :foreground "DeepSkyBlue"))))
-   '(whitespace-trailing ((t (:background "DeepPink" :foreground nil))))))
+  (setq whitespace-space-regexp "\\(\u3000+\\)"))
 
 ;;; my-mark-eob ----------------------------------------------------------------
 ;; バッファの最後に "[EOB]" を表示
@@ -160,7 +144,7 @@
                        'face '(foreground-color . "slate gray") eob-text)
     (overlay-put eob-mark 'eob-overlay t)
     (overlay-put eob-mark 'after-string eob-text)))
-(add-hook 'find-file-hook 'my-mark-eob)
+(add-hook 'find-file-hook #'my-mark-eob)
 
 ;;; uniquify -------------------------------------------------------------------
 ;; 同一buffer名にディレクトリ付与

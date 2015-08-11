@@ -6,35 +6,24 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-;; elscreen の起動
 (cond ((autoload-if-found 'elscreen-start "elscreen" t)
-	   (elscreen-start)
+	   (elscreen-start) ;; elscreen の起動
 
-	   ;; プレフィクスキーはC-z
-	   (defvar elscreen-prefix-key)
+	   (defvar elscreen-prefix-key) ;; プレフィクスキーはC-z
 	   (setq elscreen-prefix-key (kbd "C-z"))
 
-	   ;; tabの表示および幅の設定
-	   (defvar elscreen-display-tab)
+	   (defvar elscreen-display-tab) ;; tabの表示および幅の設定
 	   (setq elscreen-display-tab t)
 
-	   ;; modelineへの番号表示
-	   (defvar elscreen-display-screen-number)
+	   (defvar elscreen-display-screen-number) ;; modelineへの番号表示
 	   (setq elscreen-display-screen-number nil)
 
-	   ;; タブの先頭に[X]を表示しない
-	   (defvar elscreen-tab-display-kill-screen)
+	   (defvar elscreen-tab-display-kill-screen) ;; タブの先頭に[X]を表示しない
 	   (setq elscreen-tab-display-kill-screen nil)
 
-	   ;; header-lineの先頭に[<->]を表示しない
-	   (defvar elscreen-tab-display-control)
-	   (setq elscreen-tab-display-control nil)
-
-	   (custom-set-faces
-		'(elscreen-tab-background-face ((t (:background "black")))) ;; header-line
-		'(elscreen-tab-current-screen-face ((t (:background "black" :foreground "yellow")))) ;;current-screen
-		'(elscreen-tab-other-screen-face ((t (:background "black" :foreground "Gray72")))))) ;;other-screen
-	  (t (display-loading-error-message "auto-async-byte-compile")))
+	   (defvar elscreen-tab-display-control) ;; header-lineの先頭に[<->]を表示しない
+	   (setq elscreen-tab-display-control nil))
+	  (t (display-loading-error-message "elscreen")))
 
 ;;------------------------------------------------------------------------------
 ;; elscreen-separate-buffer-list

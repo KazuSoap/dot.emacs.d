@@ -60,9 +60,4 @@
 
   ;; 先頭に"*helm"が付いたバッファーは表示しない
   (defvar helm-boring-buffer-regexp-list)
-  (setq helm-boring-buffer-regexp-list '("^*helm"))
-
-  ;; ハイライト色の変更
-  (custom-set-faces
-   '(helm-match ((t (:inherit match :foreground "#d70035")))))
-)
+  (setq helm-boring-buffer-regexp-list '("^*helm")))
