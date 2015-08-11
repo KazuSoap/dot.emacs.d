@@ -19,7 +19,7 @@
 			 (concat "\\1 -G \"MSYS Makefiles\" -DLIBCLANG_LIBRARY=/mingw64/bin/clang.dll")
 			 (car args)))
 	(apply orig-func args))
-  (advice-add 'irony--install-server-read-command :around #'ad-irony--install-server-read-command)
+  (advice-add 'irony--install-server-read-command :around 'ad-irony--install-server-read-command)
 
   ;; 追加のコンパイルオプションを設定
   (defvar irony-extra-compile-option-alist)
@@ -40,7 +40,7 @@
   (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
 	(when it
 	  (append `("-x" ,it) (cdr-safe (assq major-mode irony-extra-compile-option-alist))))))
-(advice-add 'irony--lang-compile-option :override #'ad-irony--lang-compile-option)
+(advice-add 'irony--lang-compile-option :override 'ad-irony--lang-compile-option)
 
 (with-eval-after-load 'irony
    (setq w32-pipe-read-delay 0)))

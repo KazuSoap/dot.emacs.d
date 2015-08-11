@@ -46,7 +46,7 @@
 (when (eq system-type 'windows-nt)
   (defun cygpath (option &rest args)
 	"cygpath for emacs"
-	(let ((command (mapconcat #'identity (append (list "cygpath" option) args) "\s")))
+	(let ((command (mapconcat 'identity (append (list "cygpath" option) args) "\s")))
 	  (substring (directory-file-name (shell-command-to-string command)) 0 -1))))
 
 (defun message-startup-time ()
@@ -59,59 +59,54 @@
 ;; load files
 ;;------------------------------------------------------------------------------
 
-(dolist (loadfile '(;;-- addon --;;
-					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
-;;					"custom-auto-complete" ;; auto-complete 設定
-;;					"custom-c-eldoc" ;; c-eldoc 設定
-					"custom-company" ;; company 設定
-					"custom-elscreen" ;; elscreen 設定
-					"custom-flycheck" ;; flycheck 設定
-					"custom-ggtags" ;; ggtags 設定
-					"custom-helm" ;; helm 設定
-					"custom-irony" ;; irony 設定
-					"custom-migemo" ;; migemo 設定
-					"custom-shell-pop" ;; shell-pop 設定
-					"custom-smart-compile" ;; smart-compile 設定
-					"custom-tramp" ;; TRAMP 設定
-					"custom-twittering-mode" ;; twittering-mode 設定
+;; (dolist (loadfile '(;;-- addon --;;
+;; 					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
+;; 					"custom-company" ;; company 設定
+;; 					"custom-elscreen" ;; elscreen 設定
+;; 					"custom-flycheck" ;; flycheck 設定
+;; 					"custom-ggtags" ;; ggtags 設定
+;; 					"custom-helm" ;; helm 設定
+;; 					"custom-irony" ;; irony 設定
+;; 					"custom-migemo" ;; migemo 設定
+;; 					"custom-shell-pop" ;; shell-pop 設定
+;; 					"custom-smart-compile" ;; smart-compile 設定
+;; 					"custom-twittering-mode" ;; twittering-mode 設定
 
-					;;-- built-in --;;
-					"add-hook-settings"
-					"custom-aute-insert"
-					"custom-gdb"
-					"custom-set-faces"
-					"custom-set-variables"
-					"fringe_modeline_buffer"
-					"general-key-bind"
-					"print"
-					"shell-settings"))
-  (unless (load loadfile t)
-	(display-loading-error-message loadfile)))
+;; 					;;-- built-in --;;
+;; 					"add-hook-settings"
+;; 					"custom-aute-insert"
+;; 					"custom-gdb"
+;; 					"custom-tramp" ;; TRAMP 設定
+;; 					"fringe_modeline_buffer"
+;; 					"general-key-bind"
+;; 					"print"
+;; 					"shell-settings"
+;; 					"custom-set-variables"))
+;;   (unless (load loadfile t)
+;; 	(display-loading-error-message loadfile)))
 
-;; ;; esup 確認用
-;; ;; -- addon --;;
-;; (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
-;; ;;(load "custom-auto-complete") ;; auto-complete 設定
-;; ;;(load "custom-c-eldoc") ;; c-eldoc 設定
-;; (load "custom-company") ;; company 設定
-;; (load "custom-elscreen") ;; elscreen 設定
-;; (load "custom-flycheck") ;; flycheck 設定
-;; (load "custom-ggtags") ;; ggtags 設定
-;; (load "custom-helm") ;; helm 設定
-;; (load "custom-irony") ;; irony 設定
-;; (load "custom-migemo") ;; migemo 設定
-;; (load "custom-shell-pop") ;; shell-pop 設定
-;; (load "custom-smart-compile") ;; smart-compile 設定
-;; (load "custom-tramp") ;; TRAMP 設定
-;; (load "custom-twittering-mode") ;; twittering-mode 設定
+;; esup 確認用
+;; -- addon --;;
+(load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
+(load "custom-company") ;; company 設定
+(load "custom-elscreen") ;; elscreen 設定
+(load "custom-flycheck") ;; flycheck 設定
+(load "custom-ggtags") ;; ggtags 設定
+(load "custom-helm") ;; helm 設定
+(load "custom-irony") ;; irony 設定
+(load "custom-migemo") ;; migemo 設定
+(load "custom-shell-pop") ;; shell-pop 設定
+(load "custom-smart-compile") ;; smart-compile 設定
+(load "custom-twittering-mode") ;; twittering-mode 設定
 
-;; ;;-- built in --;;
-;; (load "add-hook-settings")
-;; (load "custom-aute-insert")
-;; (load "custom-gdb")
-;; (load "custom-set-faces")
-;; (load "custom-set-variables")
-;; (load "fringe_modeline_buffer")
-;; (load "general-key-bind")
-;; (load "print")
-;; (load "shell-settings")
+;;-- built in --;;
+(load "add-hook-settings")
+(load "custom-aute-insert")
+(load "custom-gdb")
+(load "custom-tramp") ;; TRAMP 設定
+(load "fringe_modeline_buffer")
+(load "general-key-bind")
+(load "print")
+(load "shell-settings")
+(load "custom-set-variables")
+

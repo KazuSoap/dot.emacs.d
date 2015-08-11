@@ -16,6 +16,7 @@
 
 ;; 特定のモードで無効化
 (defun flycheck-mode-disable-hooks ()
+  (setq left-fringe-width 0) ;; 左フリンジを無効化
   (flycheck-mode 0))
 (dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
   (add-hook hook 'flycheck-mode-disable-hooks))

@@ -8,7 +8,7 @@
 
 (when (eq system-type 'windows-nt)
   ;; correct exec-path ( 先頭小文字 , 末尾の"/"なし )
-  (setq exec-path (mapcar #'directory-file-name exec-path))
+  (setq exec-path (mapcar 'directory-file-name exec-path))
 
   ;; load environment value
   (cond ((load "shell_env" t)

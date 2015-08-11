@@ -17,7 +17,7 @@
 ;; 特定のモードで無効化
 (defun company-mode-disable-hooks ()
   (company-mode 0))
-(dolist (hook '(lisp-interaction-mode-hook emacs-lisp-byte-code-mode-hook))
+(dolist (hook '(emacs-lisp-byte-code-mode-hook))
   (add-hook hook 'company-mode-disable-hooks))
 
 ;; TAB キーの挙動をカスタマイズ
@@ -30,8 +30,7 @@
 	  (if (equal company-prefix candidate)
 		  (company-select-next)
 		(delete-region (- (point) (length company-prefix)) (point))
-		(insert candidate))
-	  )))
+		(insert candidate)))))
 
 (defvar company-candidates)
 (defvar company-common)
@@ -44,15 +43,14 @@
 		(company-complete-selection)
 	  (company--insert-candidate2 company-common))))
 
-(with-eval-after-load 'company.el
+(with-eval-after-load 'company
   (define-key company-active-map [tab] 'company-complete-common2)
   (define-key company-active-map [backtab] 'company-select-previous) ; おまけ
 
   ;; 基本設定
-  (defvar company-idle-delay)
-  (setq company-idle-delay 0)
-  (defvar company-minimum-prefix-length)
-  (setq company-minimum-prefix-length 2)
-  (defvar company-selection-wrap-around)
-  (setq company-selection-wrap-around t) ;; 最下時に↓で最初に戻る
-)
+  (defvar company-idle-delay)  ;; 遅延
+  (setq company-idle-delay 0.2)
+  (defvar company-minimum-prefix-length) ;; 補完開始文字長
+  (setq company-minimum-prefix-length 3)
+  (defvar company-selection-wrap-around)  ;; 最下時に↓で最初に戻る
+  (setq company-selection-wrap-around t))
