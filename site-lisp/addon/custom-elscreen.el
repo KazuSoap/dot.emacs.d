@@ -6,24 +6,23 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-(cond ((autoload-if-found 'elscreen-start "elscreen" t)
-	   (elscreen-start) ;; elscreen の起動
+(autoload 'elscreen-start "elscreen" t)
+(elscreen-start) ;; elscreen の起動
 
-	   (defvar elscreen-prefix-key) ;; プレフィクスキーはC-z
-	   (setq elscreen-prefix-key (kbd "C-z"))
+(defvar elscreen-prefix-key) ;; プレフィクスキーはC-z
+(setq elscreen-prefix-key (kbd "C-z"))
 
-	   (defvar elscreen-display-tab) ;; tabの表示および幅の設定
-	   (setq elscreen-display-tab t)
+(defvar elscreen-display-tab) ;; tabの表示および幅の設定
+(setq elscreen-display-tab t)
 
-	   (defvar elscreen-display-screen-number) ;; modelineへの番号表示
-	   (setq elscreen-display-screen-number nil)
+(defvar elscreen-display-screen-number) ;; modelineへの番号表示
+(setq elscreen-display-screen-number nil)
 
-	   (defvar elscreen-tab-display-kill-screen) ;; タブの先頭に[X]を表示しない
-	   (setq elscreen-tab-display-kill-screen nil)
+(defvar elscreen-tab-display-kill-screen) ;; タブの先頭に[X]を表示しない
+(setq elscreen-tab-display-kill-screen nil)
 
-	   (defvar elscreen-tab-display-control) ;; header-lineの先頭に[<->]を表示しない
-	   (setq elscreen-tab-display-control nil))
-	  (t (display-loading-error-message "elscreen")))
+(defvar elscreen-tab-display-control) ;; header-lineの先頭に[<->]を表示しない
+(setq elscreen-tab-display-control nil)
 
 ;;------------------------------------------------------------------------------
 ;; elscreen-separate-buffer-list
@@ -31,6 +30,5 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-;; (cond ((autoload-if-found 'elscreen-separate-buffer-list-mode "elscreen-separate-buffer-list" t)
-;; 	   (elscreen-separate-buffer-list-mode 1))
-;; 	  (t (display-loading-error-message "elscreen-separate-buffer-list")))
+(autoload 'elscreen-separate-buffer-list-mode "elscreen-separate-buffer-list" t)
+(elscreen-separate-buffer-list-mode 1)

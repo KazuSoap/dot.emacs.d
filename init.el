@@ -34,10 +34,6 @@
 	  (insert (format "%s" i)))
 	(display-buffer (current-buffer))))
 
-(defmacro display-loading-error-message (filename)
-  "Display Loading Error Message"
-  `(display-object-value "*Loading Error*" "cannot load \"" ,filename "\"\n"))
-
 (defun autoload-if-found (function file &optional docstring interactive type)
   "set autoload iff. FILE has found."
   (and (locate-library file)
@@ -58,34 +54,6 @@
 ;;------------------------------------------------------------------------------
 ;; load files
 ;;------------------------------------------------------------------------------
-
-;; (dolist (loadfile '(;;-- addon --;;
-;; 					"custom-auto-async-byte-compile" ;; auto-async-byte-compile 設定
-;; 					"custom-company" ;; company 設定
-;; 					"custom-elscreen" ;; elscreen 設定
-;; 					"custom-flycheck" ;; flycheck 設定
-;; 					"custom-ggtags" ;; ggtags 設定
-;; 					"custom-helm" ;; helm 設定
-;; 					"custom-irony" ;; irony 設定
-;; 					"custom-migemo" ;; migemo 設定
-;; 					"custom-shell-pop" ;; shell-pop 設定
-;; 					"custom-smart-compile" ;; smart-compile 設定
-;; 					"custom-twittering-mode" ;; twittering-mode 設定
-
-;; 					;;-- built-in --;;
-;; 					"add-hook-settings"
-;; 					"custom-aute-insert"
-;; 					"custom-gdb"
-;; 					"custom-tramp" ;; TRAMP 設定
-;; 					"fringe_modeline_buffer"
-;; 					"general-key-bind"
-;; 					"print"
-;; 					"shell-settings"
-;; 					"custom-set-variables"))
-;;   (unless (load loadfile t)
-;; 	(display-loading-error-message loadfile)))
-
-;; esup 確認用
 ;; -- addon --;;
 (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
 (load "custom-company") ;; company 設定
