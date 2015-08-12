@@ -23,10 +23,11 @@
   (whitespace-mode t) ;; whitespace
   (linum-mode 1) ;; linum
   (cua-mode t) ;; cua
-  (show-paren-mode t)) ;; 括弧のハイライト
+  (show-paren-mode t) ;; 括弧のハイライト
+  (company-mode 1)) ;; company
 (dolist (hook '(text-mode-hook emacs-lisp-mode-hook
 				sh-mode-hook makefile-mode-hook
-				c-mode-common-hook))
+				c-mode-common-hook css-mode-hook))
   (add-hook hook 'common-mode-enable-hooks))
 
 ;; プログラミング言語 共通設定
@@ -35,15 +36,19 @@
   (setq truncate-lines t) ;; 画面外文字の切り詰め
   (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
   (eldoc-mode t) ;; eldoc
-  (setq eldoc-idle-delay 0.5)) ;; eldoc 遅延
-(dolist (hook '(emacs-lisp-mode-hook c-mode-common-hook))
+  (setq eldoc-idle-delay 0.5)  ;; eldoc 遅延
+  (setq left-fringe-width 8) ;; 左フリンジを有効化
+  (flycheck-mode t)) ;; flycheck
+(dolist (hook '(emacs-lisp-mode-hook c-mode-common-hook sh-mode-hook css-mode-hook))
   (add-hook hook 'common-programing-mode-enable-hooks))
 
 ;; c,c++mode
 (defun c_c++-mode-hooks ()
-  (vs-set-c-style))
+  (vs-set-c-style)
+  (ggtags-mode 1) ;; ggtags
+  (irony-mode)) ;; irony
 (autoload 'vs-set-c-style "vs-set-c-style")
-(dolist (hook '(c-mode-hook c++-mode-hook))
+(dolist (hook '(c-mode-hook c++-mode-hook objc-mode-hook))
   (add-hook hook 'c_c++-mode-hooks))
 
 ;; 共通設定 (無効化)
@@ -54,7 +59,10 @@
   (linum-mode 0)
   (cua-mode 0)
   (show-paren-mode 0)
-  (eldoc-mode 0))
+  (eldoc-mode 0)
+  (company-mode 0)
+  (setq left-fringe-width 0) ;; 左フリンジを無効化
+  (flycheck-mode 0))
 (dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook))
   (add-hook hook 'common-mode-disable-hooks))
 

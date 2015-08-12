@@ -6,20 +6,6 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-;; 特定のモードで自動的に有効化
-(defun company-mode-enable-hooks ()
-  (company-mode 1))
-(dolist (hook '(text-mode-hook emacs-lisp-mode-hook
-				sh-mode-hook makefile-mode-hook
-				c-mode-common-hook))
-  (add-hook hook 'company-mode-enable-hooks))
-
-;; 特定のモードで無効化
-(defun company-mode-disable-hooks ()
-  (company-mode 0))
-(dolist (hook '(emacs-lisp-byte-code-mode-hook))
-  (add-hook hook 'company-mode-disable-hooks))
-
 ;; TAB キーの挙動をカスタマイズ
 (defvar company-prefix)
 (defun company--insert-candidate2 (candidate)

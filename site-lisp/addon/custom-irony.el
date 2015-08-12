@@ -45,11 +45,6 @@
 (with-eval-after-load 'irony
    (setq w32-pipe-read-delay 0)))
 
-;; 特定のモードで有効化
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-
 ;; replace the `completion-at-point' and `complete-symbol' bindings in
 ;; irony-mode's buffers by irony-mode's function
 (defun my-irony-mode-hook ()
@@ -95,7 +90,7 @@
 
 (autoload 'flycheck-irony-setup "flycheck-irony")
 (with-eval-after-load 'flycheck
-  (add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+  (add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
 
 ;;------------------------------------------------------------------------------
 ;; irony-eldoc
@@ -119,4 +114,4 @@
         (setq new-string
               (replace-regexp-in-string (car r) (cdr r) new-string)))
       new-string)))
-(advice-add 'irony-eldoc--strip-underscores :override #'ad-irony-eldoc--strip-underscores)
+(advice-add 'irony-eldoc--strip-underscores :override 'ad-irony-eldoc--strip-underscores)
