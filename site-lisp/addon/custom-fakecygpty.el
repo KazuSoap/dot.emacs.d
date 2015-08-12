@@ -19,9 +19,8 @@
 						 fakecygpty-program-list)))
 	(setcdr (nthcdr 2 args) (cons (nth 2 args) (nthcdr 3 args)))
 	(setcar (nthcdr 2 args) "fakecygpty"))
-  ;;(display-object-value "debug" args "\n")
   (apply orig-fun args))
-(advice-add 'start-process :around #'ad-start-process-to-fake '((depth . -100)))
+(advice-add 'start-process :around 'ad-start-process-to-fake '((depth . -100)))
 
 (defmacro fakecygpty-set-signal (function send-key)
   `(defadvice ,function (around ,(intern (format "ad-%s" function)) activate)
@@ -58,4 +57,4 @@
 		  (setcar (nthcdr 1 args) (substring send-string from to))
 		  (apply orig-fun args)
 		  (setq from to))))))
-(advice-add 'process-send-string :around #'ad-process-send-string)
+(advice-add 'process-send-string :around 'ad-process-send-string)

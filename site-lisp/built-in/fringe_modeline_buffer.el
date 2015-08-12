@@ -144,7 +144,7 @@
                        'face '(foreground-color . "slate gray") eob-text)
     (overlay-put eob-mark 'eob-overlay t)
     (overlay-put eob-mark 'after-string eob-text)))
-(add-hook 'find-file-hook #'my-mark-eob)
+(add-hook 'find-file-hook 'my-mark-eob)
 
 ;;; uniquify -------------------------------------------------------------------
 ;; 同一buffer名にディレクトリ付与
