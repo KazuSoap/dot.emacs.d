@@ -9,6 +9,9 @@
 (global-set-key [backspace] 'backward-delete-char)
 (global-set-key (kbd "C-x <pause>") 'save-buffers-kill-emacs);for -nw mode
 
+;; reload buffer
+(global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
+
 ;(global-set-key (kbd "C-c a")   'align)
 ;(global-set-key (kbd "C-c M-a") 'align-regexp)
 ;(global-set-key (kbd "C-c d")   'delete-indentation)
