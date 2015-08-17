@@ -13,8 +13,9 @@
 
 ;; 各ファイルによってテンプレートを切り替える
 (setq auto-insert-alist
-	  (nconc '(("\\.cpp$" . ["template.cpp" my-template])
-			   ("\\.h$"   . ["template.h" my-template]))
+	  (nconc '(("\\.cpp$"   . ["template.cpp" my-template])
+			   ("\\.h$"     . ["template.h" my-template])
+			   ("Makefile$" . ["template.make" my-template]))
 			 auto-insert-alist))
 
 ;; テンプレート中で展開してほしいテンプレート変数を定義
