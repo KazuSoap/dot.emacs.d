@@ -64,6 +64,6 @@
 				  (volatile) (match identity)))
 		source)))
 
-(with-eval-after-load 'helm-lib
-  (require 'helm-migemo nil t))
+(with-eval-after-load 'helm
+  (require 'helm-migemo))
 
