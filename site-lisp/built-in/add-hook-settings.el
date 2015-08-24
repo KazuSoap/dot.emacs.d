@@ -74,6 +74,13 @@
   (company-mode 0)
   (setq left-fringe-width 0) ;; 左フリンジを無効化
   (flycheck-mode 0))
-(dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook))
+(dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook lisp-interaction-mode-hook))
   (add-hook hook 'common-mode-disable-hooks))
 
+;; ;;(dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook lisp-interaction-mode-hook))
+;; (dolist (hook '(emacs-lisp-mode-hook))
+;;   (dolist (func '(common-mode-enable-hooks
+;;   				  common-programing-mode-enable-hooks
+;;   				  eldoc-enable-hooks
+;;   				  flycheck-enable-hooks))
+;;   (remove-hook hook func)))
