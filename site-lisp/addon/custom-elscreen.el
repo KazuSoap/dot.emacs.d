@@ -30,5 +30,5 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-(autoload 'elscreen-separate-buffer-list-mode "elscreen-separate-buffer-list" t)
-(elscreen-separate-buffer-list-mode 1)
+;; (autoload 'elscreen-separate-buffer-list-mode "elscreen-separate-buffer-list" t)
+;; (elscreen-separate-buffer-list-mode 1)
