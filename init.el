@@ -40,12 +40,6 @@
        (autoload function file docstring interactive type)))
 
 (when (eq system-type 'windows-nt)
-  ;; (defun cygpath (option &rest args)
-  ;; 	"cygpath for emacs"
-  ;; 	(let* ((cygpath_path "D:/msys64/usr/bin/cygpath")
-  ;; 		   (command (mapconcat 'identity (append (list cygpath_path option) args) "\s")))
-  ;; 	  (substring (directory-file-name (shell-command-to-string command)) 0 -1))))
-
   (defun cygpath (option path)
 	"cygpath for emacs"
 	(let* ((cygpath_path "\"D:/msys64/usr/bin/cygpath\"")
