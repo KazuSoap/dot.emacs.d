@@ -6,23 +6,28 @@
 ;; emacs default
 ;;------------------------------------------------------------------------------
 
-(when (eq system-type 'windows-nt)
-  ;; correct exec-path ( 先頭小文字 , 末尾の"/"なし )
-  (setq exec-path (mapcar 'directory-file-name exec-path))
-
-  ;; load environment value
-  (load "shell_env" t)
-  (dolist (path (reverse (split-string (getenv "PATH") ";")))
-	(add-to-list 'exec-path (directory-file-name path)))
-
-  ;; load fakecygpty setting
-  (load "custom-fakecygpty" t))
-
 ;;; (M-! and M-| and compile.el)
-(setq shell-file-name "bash")
+;; (setq shell-file-name "bash")
+(setq shell-file-name (directory-file-name "D:/msys64/usr/bin/bash"))
 (setq shell-command-switch "-c")
 (defvar explicit-shell-file-name)
 (setq explicit-shell-file-name shell-file-name)
+
+(when (and (eq system-type 'windows-nt) (not (getenv "MSYSTEM")))
+  (defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
+	(when (string=  (nth 0 args) "PATH")
+	  (setcar (nthcdr 1 args) (cygpath "-amp" (nth 1 args))))
+	(apply orig-fun args))
+  (advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv)
+
+  (setenv "SHELL" shell-file-name)
+  (setenv "MSYSTEM" "MINGW64")
+
+  (let ((envs '("PATH" "MANPATH" "PKG_CONFIG_PATH")))
+	(exec-path-from-shell-copy-envs envs))
+
+  ;; load fakecygpty setting
+  (load "custom-fakecygpty" t))
 
 ;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に
 (defun set-shell-buffer-process-coding-system (&rest args)
