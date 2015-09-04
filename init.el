@@ -40,10 +40,18 @@
        (autoload function file docstring interactive type)))
 
 (when (eq system-type 'windows-nt)
-  (defun cygpath (option &rest args)
+  ;; (defun cygpath (option &rest args)
+  ;; 	"cygpath for emacs"
+  ;; 	(let* ((cygpath_path "D:/msys64/usr/bin/cygpath")
+  ;; 		   (command (mapconcat 'identity (append (list cygpath_path option) args) "\s")))
+  ;; 	  (substring (directory-file-name (shell-command-to-string command)) 0 -1))))
+
+  (defun cygpath (option path)
 	"cygpath for emacs"
-	(let ((command (mapconcat 'identity (append (list "cygpath" option) args) "\s")))
-	  (substring (directory-file-name (shell-command-to-string command)) 0 -1))))
+	(let* ((cygpath_path "\"D:/msys64/usr/bin/cygpath\"")
+		   (quote_path (concat "\"" path "\""))
+		   (command (mapconcat 'identity (list cygpath_path option quote_path) "\s")))
+	  (substring (shell-command-to-string command) 0 -1))))
 
 (defun message-startup-time ()
   "echo bootup time in message buffer"
