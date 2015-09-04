@@ -56,8 +56,4 @@
   ;; http://fukuyama.co/nonexpansion
   ;; 自動補完を無効にする
   (defvar helm-ff-auto-update-initial-value)
-  (setq helm-ff-auto-update-initial-value nil)
-
-  ;; 先頭に"*helm"が付いたバッファーは表示しない
-  (defvar helm-boring-buffer-regexp-list)
-  (setq helm-boring-buffer-regexp-list '("^*helm")))
+  (setq helm-ff-auto-update-initial-value nil))
