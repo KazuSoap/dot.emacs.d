@@ -41,10 +41,10 @@
 
 (when (eq system-type 'windows-nt)
   (defun cygpath (option path)
-	"cygpath for emacs"
-	(let* ((cygpath_path "\"D:/msys64/usr/bin/cygpath\"")
-		   (quote_path (concat "\"" path "\""))
-		   (command (mapconcat 'identity (list cygpath_path option quote_path) "\s")))
+	"cygpath for emacs lisp"
+	(let ((command (mapconcat 'identity (list "D:/msys64/usr/bin/cygpath"
+											   option
+											   (shell-quote-argument path)) "\s")))
 	  (substring (shell-command-to-string command) 0 -1))))
 
 (defun message-startup-time ()
