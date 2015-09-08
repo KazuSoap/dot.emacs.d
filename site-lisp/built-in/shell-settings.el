@@ -16,7 +16,10 @@
 (when (and (eq system-type 'windows-nt) (not (getenv "MSYSTEM")))
   (defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
 	(when (string=  (nth 0 args) "PATH")
-	  (setcar (nthcdr 1 args) (cygpath "-amp" (nth 1 args))))
+	  (let (win_path)
+		(dolist (path (split-string (nth 1 args) ":"))
+		  (setq win_path (concat win_path (expand-file-name path) ";")))
+		(setcar (nthcdr 1 args) win_path)))
 	(apply orig-fun args))
   (advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv)
 

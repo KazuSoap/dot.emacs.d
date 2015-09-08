@@ -10,7 +10,7 @@
 ;;------------------------------------------------------------------------------
 (package-initialize)
 (defvar package-archives)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
 ;;------------------------------------------------------------------------------
@@ -39,13 +39,39 @@
   (and (locate-library file)
        (autoload function file docstring interactive type)))
 
-(when (eq system-type 'windows-nt)
-  (defun cygpath (option path)
-	"cygpath for emacs lisp"
-	(let ((command (mapconcat 'identity (list "D:/msys64/usr/bin/cygpath"
-											   option
-											   (shell-quote-argument path)) "\s")))
-	  (substring (shell-command-to-string command) 0 -1))))
+;; (when (eq system-type 'windows-nt)
+;;   (defun cygpath (option path)
+;; 	"cygpath for emacs lisp"
+;; 	(let ((command (mapconcat 'identity (list "D:/msys64/usr/bin/cygpath"
+;; 											   option
+;; 											   (shell-quote-argument path)) "\s")))
+;; 	  (substring (shell-command-to-string command) 0 -1))))
+
+(defvar cygwin-mount-table--internal)
+(defun windows-path-substitute-longest-mount-name (name)
+  "Substitute NAME with mount device or return NAME."
+  (and name
+	   (save-match-data
+		 (let ((mounts cygwin-mount-table--internal)
+			   (len (length (file-name-as-directory name)))
+			   match)
+		   (while mounts
+			 (let ((mount (file-name-as-directory (caar mounts))))
+			   (and (>= len (length mount))
+					(string= mount
+							 (file-name-as-directory
+							  (substring (file-name-as-directory name)
+										 0 (length mount))))
+					(or (null match)
+						(> (length (caar mounts)) (length (car match))))
+					(setq match (car mounts))))
+			 (setq mounts (cdr mounts)))
+		   (if match
+			   (concat (file-name-as-directory (cdr match))
+					   (if (>= (length (file-name-as-directory (car match))) len)
+						   ""
+						 (substring name (length (file-name-as-directory (car match))))))
+			 name)))))
 
 (defun message-startup-time ()
   "echo bootup time in message buffer"
@@ -68,6 +94,7 @@
 ;; load files
 ;;------------------------------------------------------------------------------
 ;; -- addon --;;
+(load "custom-cygwin-mount") ;; cygwin-mount 設定
 (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
 (load "custom-company") ;; company 設定
 (load "custom-elscreen") ;; elscreen 設定
