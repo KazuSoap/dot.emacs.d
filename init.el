@@ -39,13 +39,13 @@
   (and (locate-library file)
        (autoload function file docstring interactive type)))
 
-;; (when (eq system-type 'windows-nt)
-;;   (defun cygpath (option path)
-;; 	"cygpath for emacs lisp"
-;; 	(let ((command (mapconcat 'identity (list "D:/msys64/usr/bin/cygpath"
-;; 											   option
-;; 											   (shell-quote-argument path)) "\s")))
-;; 	  (substring (shell-command-to-string command) 0 -1))))
+(when (eq system-type 'windows-nt)
+  (defun cygpath (&optional option path)
+	"cygpath for emacs lisp"
+	(let ((command (mapconcat 'identity (list "D:/msys64/usr/bin/cygpath"
+											  option
+											  (shell-quote-argument path)) "\s")))
+	  (substring (shell-command-to-string command) 0 -1))))
 
 (defvar cygwin-mount-table--internal)
 (defun windows-path-substitute-longest-mount-name (name)
