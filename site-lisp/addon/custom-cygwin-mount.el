@@ -6,9 +6,9 @@
 ;; from : package system
 ;;------------------------------------------------------------------------------
 
-(require 'cygwin-mount)
-(setq cygwin-mount-program "D:/msys64/usr/bin/mount")
-(setq cygwin-mount-uname-program "D:/msys64/usr/bin/uname")
+;; (require 'cygwin-mount)
+;; (setq cygwin-mount-program "D:/msys64/usr/bin/mount")
+;; (setq cygwin-mount-uname-program "D:/msys64/usr/bin/uname")
 
 ;; (if (equal cygwin-mount-table t)
 ;; 	(cygwin-mount-build-table-internal)
@@ -18,4 +18,4 @@
 ;; (setq cygwin-mount-cygwin-style3-regexp
 ;; 	  (concat "^" cygwin-mount-cygdrive-prefix--internal "[A-Za-z]/"))
 
-(cygwin-mount-activate)
+;; (cygwin-mount-activate)
