@@ -65,5 +65,8 @@
 		source)))
 
 (with-eval-after-load 'helm
-  (require 'helm-migemo))
+  (require 'helm-migemo)
+  ;; [2015-09-06 Sun]helm-match-plugin -> helm-multi-match変更の煽りを受けて
+  (defalias 'helm-mp-3-get-patterns 'helm-mm-3-get-patterns)
+  (defalias 'helm-mp-3-search-base 'helm-mm-3-search-base))
 
