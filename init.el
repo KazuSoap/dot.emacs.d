@@ -42,36 +42,10 @@
 (when (eq system-type 'windows-nt)
   (defun cygpath (&optional option path)
 	"cygpath for emacs lisp"
-	(let ((command (mapconcat 'identity (list "D:/msys64/usr/bin/cygpath"
-											  option
-											  (shell-quote-argument path)) "\s")))
+	(let ((command (format "D:/msys64/usr/bin/cygpath %s %s"
+						   option
+						   (shell-quote-argument path))))
 	  (substring (shell-command-to-string command) 0 -1))))
-
-(defvar cygwin-mount-table--internal)
-(defun windows-path-substitute-longest-mount-name (name)
-  "Substitute NAME with mount device or return NAME."
-  (and name
-	   (save-match-data
-		 (let ((mounts cygwin-mount-table--internal)
-			   (len (length (file-name-as-directory name)))
-			   match)
-		   (while mounts
-			 (let ((mount (file-name-as-directory (caar mounts))))
-			   (and (>= len (length mount))
-					(string= mount
-							 (file-name-as-directory
-							  (substring (file-name-as-directory name)
-										 0 (length mount))))
-					(or (null match)
-						(> (length (caar mounts)) (length (car match))))
-					(setq match (car mounts))))
-			 (setq mounts (cdr mounts)))
-		   (if match
-			   (concat (file-name-as-directory (cdr match))
-					   (if (>= (length (file-name-as-directory (car match))) len)
-						   ""
-						 (substring name (length (file-name-as-directory (car match))))))
-			 name)))))
 
 (defun message-startup-time ()
   "echo bootup time in message buffer"
@@ -102,6 +76,7 @@
 (load "custom-ggtags") ;; ggtags 設定
 (load "custom-helm") ;; helm 設定
 (load "custom-irony") ;; irony 設定
+(load "custom-magit") ;;magit 設定
 (load "custom-migemo") ;; migemo 設定
 (load "custom-shell-pop") ;; shell-pop 設定
 (load "custom-smart-compile") ;; smart-compile 設定
@@ -117,4 +92,3 @@
 (load "print")
 (load "shell-settings")
 (load "custom-set-variables")
-
