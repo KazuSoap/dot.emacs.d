@@ -42,10 +42,10 @@
 (when (eq system-type 'windows-nt)
   (defun cygpath (&optional option path)
 	"cygpath for emacs lisp"
-	(let ((command (format "D:/msys64/usr/bin/cygpath %s %s"
-						   option
-						   (shell-quote-argument path))))
-	  (substring (shell-command-to-string command) 0 -1))))
+	(substring (shell-command-to-string
+				(format "D:/msys64/usr/bin/cygpath %s %s"
+						option
+						(shell-quote-argument path))) 0 -1)))
 
 (defun message-startup-time ()
   "echo bootup time in message buffer"
