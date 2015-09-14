@@ -29,7 +29,7 @@
 		 (if (string= (car (process-command process)) "fakecygpty")
 			 (process-send-string (car args) (kbd ,send-key))
 		   (apply orig-fun args))))
-	 (advice-add (quote ,fun-name) :around (quote ,(intern (format "ad-%s" fun-name))))))
+	 (advice-add (quote ,fun-name) :around (quote ,(format "ad-%s" fun-name)))))
 
 (fakecygpty-set-signal interrupt-process "C-c")
 (fakecygpty-set-signal stop-process "C-z")
