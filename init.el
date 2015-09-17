@@ -26,14 +26,6 @@
 ;;------------------------------------------------------------------------------
 ;; local functions & macro
 ;;------------------------------------------------------------------------------
-(defun display-object-value (bufer_name &rest args)
-  "Display Object Value"
-  (let ((buffer (get-buffer-create bufer_name)))
-	(set-buffer buffer)
-	(dolist (i args)
-	  (insert (format "%s" i)))
-	(display-buffer (current-buffer))))
-
 (defun autoload-if-found (function file &optional docstring interactive type)
   "set autoload iff. FILE has found."
   (and (locate-library file)
