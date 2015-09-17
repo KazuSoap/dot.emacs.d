@@ -7,17 +7,16 @@
 ;;------------------------------------------------------------------------------
 
 (when (eq system-type 'windows-nt)
-  (defun ad-ggtags-ensure-localname (file)
+  (defun ad-ggtags-ensure-localname (orig-func &rest args)
 	"convert Windows path to UNIX path"
-	(cygpath "-u" (and file (or (file-remote-p file 'localname) file))))
-  (advice-add 'ggtags-ensure-localname :override 'ad-ggtags-ensure-localname)
+	(cygpath "-u" (apply orig-func args)))
+  (advice-add 'ggtags-ensure-localname :around 'ad-ggtags-ensure-localname)
 
-  (defun ad-ggtags-process-string (orig-func program &rest args)
+  (defun ad-ggtags-process-string (orig-func &rest args)
 	"if execute global -pr command, convert UNIX path to Windows path"
-	(let((arg (mapconcat 'identity (append (list program) args) nil)))
-	  (cond ((string= "global-pr" arg)
-			 (cygpath "-am" (apply orig-func program args)))
-			(t (apply orig-func program args)))))
+	(if (and (string= "global" (car args)) (string= "-pr" (nth 1 args)))
+		(cygpath "-am" (apply orig-func args))
+	  (apply orig-func args)))
   (advice-add 'ggtags-process-string :around 'ad-ggtags-process-string))
 
 ;; use helm

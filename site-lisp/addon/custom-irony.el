@@ -15,8 +15,8 @@
 	(defvar irony-cmake-executable)
 	(setcar args
 			(replace-regexp-in-string
-			 (concat "^\\(.*?" (shell-quote-argument irony-cmake-executable) "\\)")
-			 (concat "\\1 -G \"MSYS Makefiles\" -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll")
+			 (format "^\\(.*?%s\\)" (shell-quote-argument irony-cmake-executable))
+			 "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll"
 			 (car args)))
 	(apply orig-func args))
   (advice-add 'irony--install-server-read-command :around 'ad-irony--install-server-read-command)
