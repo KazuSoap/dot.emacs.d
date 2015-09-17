@@ -69,7 +69,6 @@
 ;; load files
 ;;------------------------------------------------------------------------------
 ;; -- addon --;;
-(load "custom-cygwin-mount") ;; cygwin-mount 設定
 (load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
 (load "custom-company") ;; company 設定
 (load "custom-elscreen") ;; elscreen 設定
