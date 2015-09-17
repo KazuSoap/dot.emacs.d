@@ -34,11 +34,12 @@
 (when (eq system-type 'windows-nt)
   (defun cygpath (&optional option path)
 	"cygpath for emacs lisp"
-	(with-temp-buffer
-	  (process-file "D:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
-	  (unless (bobp)
-		(goto-char (point-min))
-		(buffer-substring-no-properties (point) (line-end-position))))))
+	(if path
+		(with-temp-buffer
+		  (process-file "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
+		  (unless (bobp)
+			(goto-char (point-min))
+			(buffer-substring-no-properties (point) (line-end-position)))))))
 
 (defun message-startup-time ()
   "echo bootup time in message buffer"
@@ -64,6 +65,7 @@
 (load "custom-auto-async-byte-compile")
 (load "custom-company")
 (load "custom-elscreen")
+(load "custom-fakecygpty")
 (load "custom-flycheck")
 (load "custom-ggtags")
 (load "custom-helm")
