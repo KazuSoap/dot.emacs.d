@@ -9,8 +9,8 @@
 (autoload 'elscreen-start "elscreen" t)
 (elscreen-start) ;; elscreen の起動
 
-(defvar elscreen-prefix-key) ;; プレフィクスキーはC-z
-(setq elscreen-prefix-key (kbd "C-z"))
+;;(defvar elscreen-prefix-key) ;; プレフィクスキーはC-z
+;;(setq elscreen-prefix-key (kbd "C-z"))
 
 (defvar elscreen-display-tab) ;; tabの表示および幅の設定
 (setq elscreen-display-tab t)

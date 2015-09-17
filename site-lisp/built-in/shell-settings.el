@@ -22,8 +22,7 @@
   (setenv "SHELL" shell-file-name)
   (setenv "MSYSTEM" "MINGW64")
 
-  (let ((envs '("PATH" "MANPATH" "PKG_CONFIG_PATH")))
-	(exec-path-from-shell-copy-envs envs)))
+  (exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH")))
 
 ;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に
 ;; shellバッファで、コマンド実行結果出力前に set-shell-buffer-process-coding-system を実行する。
