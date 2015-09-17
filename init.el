@@ -16,9 +16,8 @@
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
-;; site-lisp
-(dolist (path '("~/.emacs.d/site-lisp"))
-  (let((default-directory (expand-file-name path)))
+(dolist (dir '("site-lisp"))
+  (let((default-directory (expand-file-name(concat user-emacs-directory dir))))
 	(add-to-list 'load-path default-directory)
 	(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
 		(normal-top-level-add-subdirs-to-load-path))))
@@ -36,7 +35,7 @@
 	"cygpath for emacs lisp"
 	(if path
 		(with-temp-buffer
-		  (process-file "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
+		  (call-process "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
 		  (unless (bobp)
 			(goto-char (point-min))
 			(buffer-substring-no-properties (point) (line-end-position)))))))
