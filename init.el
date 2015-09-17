@@ -61,24 +61,24 @@
 ;; load files
 ;;------------------------------------------------------------------------------
 ;; -- addon --;;
-(load "custom-auto-async-byte-compile") ;; auto-async-byte-compile 設定
-(load "custom-company") ;; company 設定
-(load "custom-elscreen") ;; elscreen 設定
-(load "custom-flycheck") ;; flycheck 設定
-(load "custom-ggtags") ;; ggtags 設定
-(load "custom-helm") ;; helm 設定
-(load "custom-irony") ;; irony 設定
-(load "custom-magit") ;;magit 設定
-(load "custom-migemo") ;; migemo 設定
-(load "custom-shell-pop") ;; shell-pop 設定
-(load "custom-smart-compile") ;; smart-compile 設定
-(load "custom-twittering-mode") ;; twittering-mode 設定
+(load "custom-auto-async-byte-compile")
+(load "custom-company")
+(load "custom-elscreen")
+(load "custom-flycheck")
+(load "custom-ggtags")
+(load "custom-helm")
+(load "custom-irony")
+(load "custom-magit")
+(load "custom-migemo")
+(load "custom-shell-pop")
+(load "custom-smart-compile")
+(load "custom-twittering-mode")
 
 ;;-- built in --;;
 (load "add-hook-settings")
 (load "custom-aute-insert")
 (load "custom-gdb")
-(load "custom-tramp") ;; TRAMP 設定
+(load "custom-tramp")
 (load "fringe_modeline_buffer")
 (load "general-key-bind")
 (load "print")
