@@ -8,21 +8,22 @@
 
 (setq shell-command-switch "-c")
 
-(when (not (getenv "SHLVL"))
-  (when (eq system-type 'windows-nt)
-	(setq shell-file-name "d:/msys64/usr/bin/bash")
-	(defvar explicit-shell-file-name)
-	(setq explicit-shell-file-name shell-file-name)
-	(setenv "SHELL" shell-file-name)
-	(setenv "MSYSTEM" "MINGW64")
+(let ((shell-level (getenv "SHLVL")))
+  (when (or (not shell-level) (string= "0" shell-level))
+	(when (eq system-type 'windows-nt)
+	  (setq shell-file-name "d:/msys64/usr/bin/bash")
+	  (defvar explicit-shell-file-name)
+	  (setq explicit-shell-file-name shell-file-name)
+	  (setenv "SHELL" shell-file-name)
+	  (setenv "MSYSTEM" "MINGW64")
 
-	(defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
-	  (when (string= (car args) "PATH")
-		(setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-	  (apply orig-fun args))
-	(advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv))
+	  (defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
+		(when (and (string= (car args) "PATH") (fboundp 'cygpath))
+		  (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
+		(apply orig-fun args))
+	  (advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv))
 
-  (exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH")))
+	(exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH"))))
 
 (when (eq system-type 'windows-nt)
   ;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に

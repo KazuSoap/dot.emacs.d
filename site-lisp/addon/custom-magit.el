@@ -18,7 +18,7 @@
   (advice-add 'magit-process-git-arguments :around 'ad-magit-process-git-arguments)
 
   (defun ad-magit-git-str|ing (orig-fun &rest args)
-	(if (string= (nth 1 args) "--show-toplevel")
+	(if (and (string= (nth 1 args) "--show-toplevel") (fboundp 'cygpath))
 		(cygpath "-am" (apply orig-fun args))
 	  (apply orig-fun args)))
   (advice-add 'magit-git-str :around 'ad-magit-git-str|ing)
