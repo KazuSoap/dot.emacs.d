@@ -1,18 +1,56 @@
-! fontの種類と大きさ
+!!-- font -- !!
 Emacs.Font: Ricty-9
 
-! windowの幅と高さ
-Emacs.Geometry: 100x30
+!!-- windowの幅と高さ --!!
+Emacs.Geometry: 100x32
 
-! 透過度
-Emacs.Alpha: 80
+!!-- 透過度 --!!
+Emacs.Alpha: 85
 
-! 行間隔
-Emacs.LineSpacing: 0
+!!-- 行間 --!!
+Emacs.LineSpacing: 1
 
-! tool-bar非表示
+!!-- tool-bar --!!
 Emacs.toolBar: off
 
-! 左右フリンジ幅
+!!-- 左右フリンジ --!!
 Emacs.LeftFringe: 0
 Emacs.RightFringe: 0
+
+!!-- mode-line --!!
+Emacs.mode-line.attributeBackground: DarkRed
+Emacs.mode-line.attributeForeground: white
+
+!!-- linum --!!
+Emacs.linum.attributeBackground: black
+Emacs.linum.attributeForeground: gray
+Emacs.linum.attributeUnderline: off
+Emacs.linum.attributeHeight: 0.8
+
+!!-- whitespace --!!
+!! space
+Emacs.whitespace-space.attributeBackground: black
+Emacs.whitespace-space.attributeForeground: GreenYellow
+
+!! tab
+Emacs.whitespace-tab.attributeBackground: black
+Emacs.whitespace-tab.attributeForeground: LightSkyBlue
+Emacs.whitespace-tab.attributeUnderline: on
+
+!! newline
+Emacs.whitespace-newline.attributeForeground: DeepSkyBlue
+
+!! trailing
+Emacs.whitespace-trailing.attributeBackground: DeepPink
+
+!!-- elscreen --!!
+!! tab-background (header-line)
+Emacs.elscreen-tab-background-face.attributeBackground: black
+
+!! tab-current-screen (current-screen)
+Emacs.elscreen-tab-current-screen-face.attributeBackground: black
+Emacs.elscreen-tab-current-screen-face.attributeForeground: yellow
+
+!! tab-other-screen (other-screen)
+Emacs.elscreen-tab-other-screen-face.attributeBackground: black
+Emacs.elscreen-tab-other-screen-face.attributeForeground: Gray72
