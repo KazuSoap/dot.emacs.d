@@ -23,19 +23,10 @@
 
   ;; 追加のコンパイルオプションを設定
   (defvar irony-extra-compile-option-alist)
-  ;; clang++ -E -x c++ - -v < /dev/null で確認
-  (let ((default-inc-path '("-Id:/msys64/mingw64/include/c++/5.2.0"
-							"-Id:/msys64/mingw64/include/c++/5.2.0/x86_64-w64-mingw32"
-							"-Id:/msys64/mingw64/include/c++/5.2.0/backward"
-							"-Id:/msys64/mingw64/lib/clang/3.6.2/include"
-							"-Id:/msys64/mingw64/x86_64-w64-mingw32/include"
-							"-Id:/msys64/mingw64/include")))
-	(setq irony-extra-compile-option-alist
-		  `((c++-mode "-std=c++11" "-lstdc++" ,@default-inc-path)
-			(c-mode ,@(nthcdr 3 default-inc-path)))))
+  (setq irony-extra-compile-option-alist `((c++-mode "-std=c++11" "-lstdc++")))
 
 (defun ad-irony--lang-compile-option ()
-  "modify cannot load default inc-path on msys2 and cannot apply multiple compile options"
+  "modify cannot apply multiple compile options"
   (defvar irony-lang-compile-option-alist)
   (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
 	(when it

@@ -15,7 +15,9 @@
 (defun ad-start-process-to-fake (orig-fun &rest args)
   (when (and (nth 2 args)
 			 (or process-connection-type
-				 (member (replace-regexp-in-string "\\.exe$" "" (file-name-nondirectory (nth 2 args)))
+				 (member (replace-regexp-in-string "\\.exe$"
+												   ""
+												   (file-name-nondirectory (nth 2 args)))
 						 fakecygpty-program-list)))
 	(push "fakecygpty" (nthcdr 2 args)))
   (apply orig-fun args))

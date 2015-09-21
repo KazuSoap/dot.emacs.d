@@ -27,11 +27,10 @@
 
 (defun my-template ()
   (time-stamp)
-  (mapc (lambda(c) (progn
-					 (goto-char (point-min))
-					 (while (search-forward (car c) nil t)
-					   (replace-match (funcall (cdr c))))))
-		template-replacements-alists)
+  (dolist (c template-replacements-alists)
+	(goto-char (point-min))
+	(while (search-forward (car c) nil t)
+	  (replace-match (funcall (cdr c)))))
   (goto-char (point-max))
   (message "done."))
 (add-hook 'find-file-not-found-hooks 'auto-insert)

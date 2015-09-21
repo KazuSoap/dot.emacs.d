@@ -24,12 +24,12 @@
 ;; modeline
 ;;------------------------------------------------------------------------------
 ;;-- modeline customize --;;
-(line-number-mode 0) ;; モードラインに行番号表示
-(column-number-mode 0) ;; モードラインに列番号表示
-(size-indication-mode 0) ;; モードラインにファイルサイズ表示
+(line-number-mode -1) ;; モードラインに行番号表示
+(column-number-mode -1) ;; モードラインに列番号表示
+(size-indication-mode -1) ;; モードラインにファイルサイズ表示
 
 ;; 総行数表示
-(setcar mode-line-position '(:eval (format "%d" (count-lines (point-max) (point-min)))))
+(setf mode-line-position '(:eval (format "%d" (count-lines (point-max) (point-min)))))
 
 ;;-- IME customize --;;
 ;; IME ON/OFF 時のカーソルカラー設定用関数
@@ -132,18 +132,18 @@
 
 (defun my-mark-eob ()
   (let ((existing-overlays (overlays-in (point-max) (point-max)))
-	(eob-mark (make-overlay (point-max) (point-max) nil t t))
-	(eob-text "[EOB]"))
-    ;; Delete any previous EOB markers.  Necessary so that they don't
-    ;; accumulate on calls to revert-buffer.
-    (dolist (next-overlay existing-overlays)
-      (if (overlay-get next-overlay 'eob-overlay)
-	  (delete-overlay next-overlay)))
-    ;; Add a new EOB marker.
-    (put-text-property 0 (length eob-text)
-                       'face '(foreground-color . "slate gray") eob-text)
-    (overlay-put eob-mark 'eob-overlay t)
-    (overlay-put eob-mark 'after-string eob-text)))
+		(eob-mark (make-overlay (point-max) (point-max) nil t t))
+		(eob-text "[EOB]"))
+	;; Delete any previous EOB markers.  Necessary so that they don't
+	;; accumulate on calls to revert-buffer.
+	(dolist (next-overlay existing-overlays)
+	  (if (overlay-get next-overlay 'eob-overlay)
+		  (delete-overlay next-overlay)))
+	;; Add a new EOB marker.
+	(put-text-property 0 (length eob-text)
+					   'face '(foreground-color . "slate gray") eob-text)
+	(overlay-put eob-mark 'eob-overlay t)
+	(overlay-put eob-mark 'after-string eob-text)))
 (add-hook 'find-file-hook 'my-mark-eob)
 
 ;;; uniquify -------------------------------------------------------------------

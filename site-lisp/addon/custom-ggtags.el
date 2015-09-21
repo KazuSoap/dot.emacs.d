@@ -5,7 +5,6 @@
 ;; タグジャンプツール. GNU Global を利用
 ;; from : package system
 ;;------------------------------------------------------------------------------
-
 (when (eq system-type 'windows-nt)
   (defun ad-ggtags-ensure-localname (orig-func &rest args)
 	"convert Windows path to UNIX path"
@@ -18,7 +17,3 @@
 		(cygpath "-am" (apply orig-func args))
 	  (apply orig-func args)))
   (advice-add 'ggtags-process-string :around 'ad-ggtags-process-string))
-
-;; use helm
-(defvar ggtags-completing-read-function)
-(setq ggtags-completing-read-function nil)

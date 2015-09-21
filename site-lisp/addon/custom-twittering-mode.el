@@ -77,7 +77,8 @@
   (setq twittering-icon-storage-file "~/.emacs.d/twittering-mode/.twittering-mode-icons.gz")
 
   ;; アイコンサイズ変更
-										;(setq twittering-convert-fix-size 50)
+  ;; (defvar twittering-convert-fix-size)
+  ;; (setq twittering-convert-fix-size 50)
 
   ;; タイムラインを90秒間隔で更新
   (defvar twittering-timer-interval)
