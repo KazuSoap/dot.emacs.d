@@ -6,22 +6,22 @@
 ;; emacs default
 ;;------------------------------------------------------------------------------
 
-;;; (M-! and M-| and compile.el)
-(when (and (eq system-type 'windows-nt) (not (getenv "MSYSTEM")))
-	(setq shell-file-name "d:/msys64/usr/bin/bash"))
 (setq shell-command-switch "-c")
-(defvar explicit-shell-file-name)
-(setq explicit-shell-file-name shell-file-name)
 
-(when (and (eq system-type 'windows-nt) (not (getenv "MSYSTEM")))
-  (defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
-	(when (string= (car args) "PATH")
-	  (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-	(apply orig-fun args))
-  (advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv)
+(when (not (getenv "SHLVL"))
+  (when (eq system-type 'windows-nt)
+	(setq shell-file-name "d:/msys64/usr/bin/bash")
+	(defvar explicit-shell-file-name)
+	(setq explicit-shell-file-name shell-file-name)
+	(setenv "SHELL" shell-file-name)
+	(setenv "MSYSTEM" "MINGW64")
 
-  (setenv "SHELL" shell-file-name)
-  (setenv "MSYSTEM" "MINGW64")
+	(defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
+	  (when (string= (car args) "PATH")
+		(setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
+	  (apply orig-fun args))
+	(advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv))
+
   (exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH")))
 
 (when (eq system-type 'windows-nt)
