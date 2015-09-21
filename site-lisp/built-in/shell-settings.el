@@ -6,7 +6,6 @@
 ;; emacs default
 ;;------------------------------------------------------------------------------
 
-(setenv "TERM" "xterm-256-coler")
 (setq shell-command-switch "-c")
 
 (let ((shell-level (getenv "SHLVL")))
