@@ -11,20 +11,9 @@
 ;; 2. 対象の情報の選択
 ;; 3. 対象の情報に対するアクション(ファイルを開く，削除する)
 ;; このフレームワーク上で作られた機能は全て同じ操作方式で機能を利用できる
-;; 絞り込み -> 選択 -> アクション の操作性を様々な機能に提供するのがhelmの本質
-
-;; global-set-key
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x C-r") 'helm-recentf)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-c i") 'helm-imenu)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-(global-set-key (kbd "C-z C-e") 'helm-elscreen)
+;; 絞り込み -> 選択 -> アクション の操作性を様々な機能に提供するのが helm の本質
 
 (with-eval-after-load 'helm
-  (helm-mode 1)
-
   ;; tramp で remote-directory を開いているときに、helm-for-files を起動すると反応が悪い
   ;; 原因は helm-source-files-in-current-dir だったので、この情報源の指定を削除する
   ;; また、一部表示順を変更する

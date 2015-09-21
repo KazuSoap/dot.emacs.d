@@ -6,7 +6,7 @@
 ;; from : package system
 ;;------------------------------------------------------------------------------
 
-(require 'migemo nil t)
+(require 'migemo)
 (defvar migemo-command)
 (defvar migemo-dictionary)
 (cond ((eq system-type 'windows-nt)
@@ -17,7 +17,7 @@
 	   (setq migemo-dictionary (expand-file-name "/usr/share/cmigemo/utf-8/migemo-dict"))))
 
 (defvar migemo-options)
-(setq migemo-options '("-q" "--emacs"))
+(setq migemo-options '("-q" "--emacs" "-i" "\g"))
 
 (defvar migemo-user-dictionary)
 (setq migemo-user-dictionary nil)
@@ -30,13 +30,6 @@
 
 (load-library "migemo")
 (migemo-init)
-
-;; local key-bind
-(define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
-(define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
-(define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
-(define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
-(define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)
 
 ;;------------------------------------------------------------------------------
 ;; helm-migemo

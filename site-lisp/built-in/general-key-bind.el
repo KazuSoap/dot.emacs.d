@@ -3,24 +3,35 @@
 ;;------------------------------------------------------------------------------
 ;; general key bind
 ;;------------------------------------------------------------------------------
-;; kbd -> C-.
+
+;; C-hでBS, shift+C-hでHelp
+(keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to DEL
+(keyboard-translate ?\C-? ?\C-h)  ; translate DEL to `C-h'
+
 (global-set-key (kbd "C-/") 'undo)
-(global-set-key (kbd "C-h") 'backward-delete-char)
-(global-set-key [backspace] 'backward-delete-char)
-(global-set-key (kbd "C-x <pause>") 'save-buffers-kill-emacs);for -nw mode
+(global-set-key (kbd "C-x <pause>") 'save-buffers-kill-emacs) ; for -nw mode
+(global-set-key (kbd "<f5>") 'revert-buffer-no-confirm) ; reload buffer
 
-;; reload buffer
-(global-set-key (kbd "<f5>") 'revert-buffer-no-confirm)
+;; helm
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x C-r") 'helm-recentf)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-c i") 'helm-imenu)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "C-z C-e") 'helm-elscreen)
 
-;(global-set-key (kbd "C-c a")   'align)
-;(global-set-key (kbd "C-c M-a") 'align-regexp)
-;(global-set-key (kbd "C-c d")   'delete-indentation)
-;(global-set-key (kbd "M-g")     'goto-line)
-;(global-set-key (kbd "C-S-i")   'indent-region)
-;(global-set-key (kbd "C-m")     'newline-and-indent)
-;(global-set-key (kbd "C-t")     'next-multiframe-window)
-;(global-set-key (kbd "M-<RET>") 'ns-toggle-fullscreen)
-;(global-set-key (kbd "C-S-t")   'previous-multiframe-window)
-;(global-set-key (kbd "C-M-r")   'replace-regexp)
-;(global-set-key (kbd "C-r")     'replace-string)
+;; migemo
+(defun ad-migemo-register-isearch-keybinding ()
+  (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
+  (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
+  (define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
+  (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
+  (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill))
+(advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding)
 
+;; shell-pop
+(global-set-key [f8] 'shell-pop)
+
+;; smart-compile
+(global-set-key (kbd "C-x c") 'smart-compile)

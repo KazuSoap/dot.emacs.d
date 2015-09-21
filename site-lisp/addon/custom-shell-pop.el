@@ -6,8 +6,6 @@
 ;; from : package system
 ;;------------------------------------------------------------------------------
 ;; shell-pop 設定
-(global-set-key [f8] 'shell-pop)
-
 (with-eval-after-load 'shell-pop
   (defvar shell-pop-internal-mode)
   (setq shell-pop-internal-mode "shell")
