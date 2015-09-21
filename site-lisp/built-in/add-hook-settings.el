@@ -1,86 +1,80 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; add-hook-mode
+;; add-hook
 ;;------------------------------------------------------------------------------
 
 ;;-- デフォルトのメジャーモード --;;
 (setq-default major-mode 'text-mode)
 
 ;; -- 拡張子の関連付け --;;
-(setq auto-mode-alist
-	  (append '(("\\.h$" . c++-mode))
-			  auto-mode-alist))
+(dolist (assoc-extension '(("\\.h$" . c++-mode)))
+  (add-to-list 'auto-mode-alist assoc-extension))
 
 ;;-- 不要なhookを外す --;;
-;; (remove-hook 'find-file-hook 'vc-find-file-hook)
-;; (remove-hook 'kill-buffer-hook 'vc-kill-buffer-hook)
+(remove-hook 'find-file-hook 'vc-find-file-hook)
+(remove-hook 'kill-buffer-hook 'vc-kill-buffer-hook)
 
 ;;-- mode設定 --;;
-;; 共通設定
-(defun common-mode-enable-hooks ()
+;; 共通
+(defun common-enable-hooks ()
+  (whitespace-mode +1) ;; whitespace
+  (linum-mode +1) ;; linum
+  (cua-mode +1) ;; cua
+  (company-mode +1)) ;; company
+
+;; プログラミング言語共通
+(defun common-programing-enable-hooks ()
   (setq tab-width 4) ;; tab 幅
-  (whitespace-mode t) ;; whitespace
-  (linum-mode 1) ;; linum
-  (cua-mode t) ;; cua
-  (show-paren-mode t) ;; 括弧のハイライト
-  (company-mode 1)) ;; company
-(dolist (hook '(text-mode-hook emacs-lisp-mode-hook
-				sh-mode-hook makefile-mode-hook js-mode-hook
-				c-mode-common-hook css-mode-hook))
-  (add-hook hook 'common-mode-enable-hooks))
-
-;; プログラミング言語 共通設定
-(defvar eldoc-idle-delay)
-(defun common-programing-mode-enable-hooks ()
-  (setq truncate-lines t) ;; 画面外文字の切り詰め
-  (setq truncate-partial-width-windows t)) ;; 縦分割時の画面外文字の切り詰め
-(dolist (hook '(emacs-lisp-mode-hook sh-mode-hook makefile-mode-hook
-				js-mode-hook c-mode-common-hook css-mode-hook))
-  (add-hook hook 'common-programing-mode-enable-hooks))
-
-;; c&c++mode
-(defun c&c++-mode-hooks ()
-  (vs-set-c-style)
-  (ggtags-mode 1) ;; ggtags
-  (irony-mode)) ;; irony
-(autoload 'vs-set-c-style "vs-set-c-style")
-(dolist (hook '(c-mode-hook c++-mode-hook objc-mode-hook))
-  (add-hook hook 'c&c++-mode-hooks))
+  (show-paren-mode +1) ;; 括弧のハイライト
+  (setq truncate-lines +1) ;; 画面外文字の切り詰め
+  (setq truncate-partial-width-windows +1)) ;; 縦分割時の画面外文字の切り詰め
 
 ;; eldoc
+(defvar eldoc-idle-delay)
 (defun eldoc-enable-hooks ()
-  (eldoc-mode t) ;; eldoc
+  (eldoc-mode +1) ;; eldoc
   (setq eldoc-idle-delay 0.5)) ;; eldoc 遅延
-(dolist (hook '(emacs-lisp-mode-hook c-mode-hook c++-mode-hook))
-  (add-hook hook 'eldoc-enable-hooks))
 
 ;; flycheck
 (defun flycheck-enable-hooks ()
   (setq left-fringe-width 8) ;; 左フリンジを有効化
-  (flycheck-mode t)) ;; flycheck
-(dolist (hook '(emacs-lisp-mode-hook c-mode-hook c++-mode-hook sh-mode-hook))
-  (add-hook hook 'flycheck-enable-hooks))
+  (flycheck-mode +1)) ;; flycheck
 
-;; 共通設定 (無効化)
-(defun common-mode-disable-hooks ()
-  (setq truncate-lines nil)
-  (setq truncate-partial-width-windows nil)
-  (whitespace-mode 0)
-  (linum-mode 0)
-  (cua-mode 0)
-  (show-paren-mode 0)
-  (eldoc-mode 0)
-  (company-mode 0)
-  (setq left-fringe-width 0) ;; 左フリンジを無効化
-  (flycheck-mode 0))
-(dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook lisp-interaction-mode-hook))
-  (add-hook hook 'common-mode-disable-hooks))
+;; text-mode
+(add-hook 'text-mode-hook 'common-enable-hooks)
 
-;; ;;(dolist (hook '(esup-mode-hook emacs-lisp-byte-code-mode-hook lisp-interaction-mode-hook))
-;; (dolist (hook '(emacs-lisp-mode-hook))
-;;   (dolist (func '(common-mode-enable-hooks
-;;   				  common-programing-mode-enable-hooks
-;;   				  eldoc-enable-hooks
-;;   				  flycheck-enable-hooks))
-;;   (remove-hook hook func)))
+;; emacs-lisp-mode
+(defun emacs-lisp-enable-hooks ()
+  (when (and buffer-file-name (string-match "\\.el$" buffer-file-name))
+	(enable-auto-async-byte-compile-mode)
+	(common-enable-hooks)
+	(common-programing-enable-hooks)
+	(eldoc-enable-hooks)
+	(flycheck-enable-hooks)))
+(autoload 'enable-auto-async-byte-compile-mode "auto-async-byte-compile" t)
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-enable-hooks)
+
+;; c/c++-mode
+(defun c/c++-enable-hooks ()
+  (common-enable-hooks)
+  (common-programing-enable-hooks)
+  (eldoc-enable-hooks)
+  (flycheck-enable-hooks)
+  (vs-set-c-style)
+  (ggtags-mode +1) ;; ggtags
+  (irony-mode +1)) ;; irony
+(autoload 'vs-set-c-style "vs-set-c-style")
+(dolist (hook '(c-mode-hook c++-mode-hook))
+  (add-hook hook 'c/c++-enable-hooks))
+
+;; sh-mode
+(dolist (hook-func '(common-enable-hooks
+					 common-programing-enable-hooks
+					 flycheck-enable-hooks))
+  (add-hook 'sh-mode-hook hook-func))
+
+;; makefile/css/js-mode
+(dolist (hook '(makefile-mode-hook css-mode-hook js-mode-hook))
+  (dolist (hook-func '(common-enable-hooks common-programing-enable-hooks))
+	(add-hook hook hook-func)))
