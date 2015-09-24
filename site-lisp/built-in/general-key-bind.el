@@ -11,6 +11,7 @@
 (global-set-key (kbd "C-/") 'undo)
 (global-set-key (kbd "C-x <pause>") 'save-buffers-kill-emacs) ; for -nw mode
 (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm) ; reload buffer
+(global-set-key (kbd "C-c C-r") 'my-window-resizer)
 
 ;; helm
 (global-set-key (kbd "M-x") 'helm-M-x)
@@ -21,7 +22,7 @@
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "C-z C-e") 'helm-elscreen)
 
-;; migemo
+;; migemo ((require 'migemo) する前に実行すべし!!)
 (defun ad-migemo-register-isearch-keybinding ()
   (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
   (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
