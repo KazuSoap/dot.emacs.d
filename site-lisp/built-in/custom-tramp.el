@@ -16,5 +16,5 @@
   ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
   (defvar tramp-remote-process-environment)
   (let ((process-environment tramp-remote-process-environment))
-	(setenv "LC_ALL" nil)
-	(setq tramp-remote-process-environment process-environment)))
+    (setenv "LC_ALL" nil)
+    (setq tramp-remote-process-environment process-environment)))

@@ -58,7 +58,7 @@
   ;; default : "%i %s,  %@:\\n%FILL{  %T // from %f%L%r%R}\n \"
   (defvar twittering-status-format)
   (setq twittering-status-format
-		"%i %FACE[solid]{%S} %FACE[shadow]{@%s}%p%L %@{  }\n%FILL{%T}\n%FACE[shadow]{[%f]%r %RT{RT by %s}}\n--------------------------------------------------")
+        "%i %FACE[solid]{%S} %FACE[shadow]{@%s}%p%L %@{  }\n%FILL{%T}\n%FACE[shadow]{[%f]%r %RT{RT by %s}}\n--------------------------------------------------")
 
   ;; %FILL中の文字幅
   (defvar twittering-fill-column)
@@ -95,7 +95,6 @@
   ;; 最初に開くタイムラインを設定する
   (defvar twittering-initial-timeline-spec-string)
   (setq twittering-initial-timeline-spec-string
-		'(":replies"
-		  ":home"
-		  ))
-  )
+        '(":replies"
+          ":home"
+          )))

@@ -10,11 +10,11 @@
 (defvar migemo-command)
 (defvar migemo-dictionary)
 (cond ((eq system-type 'windows-nt)
-	   (setq migemo-command "d:/Program Files/cmigemo/cmigemo")
-	   (setq migemo-dictionary (expand-file-name "d:/Program Files/cmigemo/dict/utf-8/migemo-dict")))
-	  ((eq system-type 'gnu/linux)
-	   (setq migemo-command "cmigemo")
-	   (setq migemo-dictionary (expand-file-name "/usr/share/cmigemo/utf-8/migemo-dict"))))
+       (setq migemo-command "d:/Program Files/cmigemo/cmigemo")
+       (setq migemo-dictionary (expand-file-name "d:/Program Files/cmigemo/dict/utf-8/migemo-dict")))
+      ((eq system-type 'gnu/linux)
+       (setq migemo-command "cmigemo")
+       (setq migemo-dictionary (expand-file-name "/usr/share/cmigemo/utf-8/migemo-dict"))))
 
 (defvar migemo-options)
 (setq migemo-options '("-q" "--emacs" "-i" "\g"))
@@ -46,16 +46,16 @@
 
 (defun helm-compile-source--candidates-in-buffer (source)
   (let ((test-form (assoc 'candidates-in-buffer source)))
-	  (if test-form
-		  (append source
-				`((candidates
-				   . ,(or (cdr test-form)
-						  (lambda ()
-							;; Do not use `source' because other plugins
-							;; (such as helm-migemo) may change it
-							(helm-candidates-in-buffer (helm-get-current-source)))))
-				  (volatile) (match identity)))
-		source)))
+    (if test-form
+        (append source
+                `((candidates
+                   . ,(or (cdr test-form)
+                          (lambda ()
+                            ;; Do not use `source' because other plugins
+                            ;; (such as helm-migemo) may change it
+                            (helm-candidates-in-buffer (helm-get-current-source)))))
+                  (volatile) (match identity)))
+      source)))
 
 (with-eval-after-load 'helm
   (require 'helm-migemo)

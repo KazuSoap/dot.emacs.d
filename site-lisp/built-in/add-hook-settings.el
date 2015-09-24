@@ -47,11 +47,11 @@
 ;; emacs-lisp-mode
 (defun emacs-lisp-enable-hooks ()
   (when (and buffer-file-name (string-match "\\.el$" buffer-file-name))
-	(enable-auto-async-byte-compile-mode)
-	(common-enable-hooks)
-	(common-programing-enable-hooks)
-	(eldoc-enable-hooks)
-	(flycheck-enable-hooks)))
+    (enable-auto-async-byte-compile-mode)
+    (common-enable-hooks)
+    (common-programing-enable-hooks)
+    (eldoc-enable-hooks)
+    (flycheck-enable-hooks)))
 (autoload 'enable-auto-async-byte-compile-mode "auto-async-byte-compile" t)
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-enable-hooks)
 
@@ -70,11 +70,11 @@
 
 ;; sh-mode
 (dolist (hook-func '(common-enable-hooks
-					 common-programing-enable-hooks
-					 flycheck-enable-hooks))
+                     common-programing-enable-hooks
+                     flycheck-enable-hooks))
   (add-hook 'sh-mode-hook hook-func))
 
 ;; makefile/css/js-mode
 (dolist (hook '(makefile-mode-hook css-mode-hook js-mode-hook))
   (dolist (hook-func '(common-enable-hooks common-programing-enable-hooks))
-	(add-hook hook hook-func)))
+    (add-hook hook hook-func)))

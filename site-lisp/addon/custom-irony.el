@@ -10,31 +10,31 @@
 ;; https://github.com/Sarcasm/irony-mode/wiki/Setting-up-irony-mode-on-Windows-using-Msys2-and-Mingw-Packages
 (when (eq system-type 'windows-nt)
   (defun ad-irony--install-server-read-command (orig-func &rest args)
-	"modify irony--install-server-read-command for msys2"
-	(setenv "CC" "gcc") (setenv "CXX" "g++")
-	(defvar irony-cmake-executable)
-	(setcar args
-			(replace-regexp-in-string
-			 (format "^\\(.*?%s\\)" (shell-quote-argument irony-cmake-executable))
-			 "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll"
-			 (car args)))
-	(apply orig-func args))
+    "modify irony--install-server-read-command for msys2"
+    (setenv "CC" "gcc") (setenv "CXX" "g++")
+    (defvar irony-cmake-executable)
+    (setcar args
+            (replace-regexp-in-string
+             (format "^\\(.*?%s\\)" (shell-quote-argument irony-cmake-executable))
+             "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll"
+             (car args)))
+    (apply orig-func args))
   (advice-add 'irony--install-server-read-command :around 'ad-irony--install-server-read-command)
 
   ;; 追加のコンパイルオプションを設定
   (defvar irony-extra-compile-option-alist)
   (setq irony-extra-compile-option-alist `((c++-mode "-std=c++11" "-lstdc++")))
 
-(defun ad-irony--lang-compile-option ()
-  "modify cannot apply multiple compile options"
-  (defvar irony-lang-compile-option-alist)
-  (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
-	(when it
-	  (append `("-x" ,it) (cdr-safe (assq major-mode irony-extra-compile-option-alist))))))
-(advice-add 'irony--lang-compile-option :override 'ad-irony--lang-compile-option)
+  (defun ad-irony--lang-compile-option ()
+    "modify cannot apply multiple compile options"
+    (defvar irony-lang-compile-option-alist)
+    (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
+      (when it
+        (append `("-x" ,it) (cdr-safe (assq major-mode irony-extra-compile-option-alist))))))
+  (advice-add 'irony--lang-compile-option :override 'ad-irony--lang-compile-option)
 
-(with-eval-after-load 'irony
-   (setq w32-pipe-read-delay 0)))
+  (with-eval-after-load 'irony
+    (setq w32-pipe-read-delay 0)))
 
 ;; replace the `completion-at-point' and `complete-symbol' bindings in
 ;; irony-mode's buffers by irony-mode's function
@@ -43,7 +43,7 @@
   (define-key irony-mode-map [remap completion-at-point]
     'irony-completion-at-point-async)
   (define-key irony-mode-map [remap complete-symbol]
-	'irony-completion-at-point-async))
+    'irony-completion-at-point-async))
 (add-hook 'irony-mode-hook 'my-irony-mode-hook)
 (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
@@ -71,7 +71,7 @@
 (with-eval-after-load 'company
   (autoload 'company-irony-c-headers "company-irony-c-headers" t)
   (dolist (hook '(c-mode-hook c++-mode-hook))
-	(add-hook hook 'company-irony-c-headers-hooks)))
+    (add-hook hook 'company-irony-c-headers-hooks)))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck-irony

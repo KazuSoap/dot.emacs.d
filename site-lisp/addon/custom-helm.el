@@ -19,12 +19,12 @@
   ;; また、一部表示順を変更する
   (defvar helm-for-files-preferred-list)
   (setq helm-for-files-preferred-list
-		'(helm-source-buffers-list
-		  helm-source-bookmarks
-		  helm-source-recentf
-		  helm-source-file-cache
-		  ;; helm-source-files-in-current-dir
-		  helm-source-locate))
+        '(helm-source-buffers-list
+          helm-source-bookmarks
+          helm-source-recentf
+          helm-source-file-cache
+          ;; helm-source-files-in-current-dir
+          helm-source-locate))
 
   ;; helm-source-buffers-list を詳細に表示しない
   (defvar helm-buffer-details-flag)
