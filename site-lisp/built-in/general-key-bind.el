@@ -19,7 +19,7 @@
 (global-set-key (kbd "C-x C-r") 'helm-recentf)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (global-set-key (kbd "C-c i") 'helm-imenu)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
 (global-set-key (kbd "C-z C-e") 'helm-elscreen)
 
 ;; migemo ((require 'migemo) する前に実行すべし!!)
