@@ -13,7 +13,11 @@
 ;; このフレームワーク上で作られた機能は全て同じ操作方式で機能を利用できる
 ;; 絞り込み -> 選択 -> アクション の操作性を様々な機能に提供するのが helm の本質
 
+(autoload 'helm-migemo-mode "helm-multi-match")
 (with-eval-after-load 'helm
+  ;; helm-migemo を有効化
+  (helm-migemo-mode 1)
+
   ;; tramp で remote-directory を開いているときに、helm-for-files を起動すると反応が悪い
   ;; 原因は helm-source-files-in-current-dir だったので、この情報源の指定を削除する
   ;; また、一部表示順を変更する

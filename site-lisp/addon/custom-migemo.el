@@ -30,36 +30,3 @@
 
 (load-library "migemo")
 (migemo-init)
-
-;;------------------------------------------------------------------------------
-;; helm-migemo
-;; helmでmigemo検索
-;; from : package system
-;;------------------------------------------------------------------------------
-
-;; helm で正しく migemo を動作させるための対策
-;; http://rubikitch.com/2014/12/19/helm-migemo/
-;; https://github.com/emacs-helm/helm/pull/379
-
-(autoload 'helm-candidates-in-buffer "helm" t)
-(autoload 'helm-get-current-source "helm" t)
-
-(defun helm-compile-source--candidates-in-buffer (source)
-  (let ((test-form (assoc 'candidates-in-buffer source)))
-    (if test-form
-        (append source
-                `((candidates
-                   . ,(or (cdr test-form)
-                          (lambda ()
-                            ;; Do not use `source' because other plugins
-                            ;; (such as helm-migemo) may change it
-                            (helm-candidates-in-buffer (helm-get-current-source)))))
-                  (volatile) (match identity)))
-      source)))
-
-(with-eval-after-load 'helm
-  (require 'helm-migemo)
-  ;; [2015-09-06 Sun]helm-match-plugin -> helm-multi-match変更の煽りを受けて
-  (defalias 'helm-mp-3-get-patterns 'helm-mm-3-get-patterns)
-  (defalias 'helm-mp-3-search-base 'helm-mm-3-search-base))
-
