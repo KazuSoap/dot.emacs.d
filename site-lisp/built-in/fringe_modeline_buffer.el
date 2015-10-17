@@ -102,6 +102,9 @@
 ;; emacs default
 
 (with-eval-after-load 'whitespace
+  ;; 保存時に行末の空白を削除する
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
   (defvar whitespace-style)
   (setq whitespace-style
         '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
