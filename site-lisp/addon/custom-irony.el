@@ -86,12 +86,10 @@
 ;;------------------------------------------------------------------------------
 ;; irony-eldoc
 ;; irony-mode support for eldoc-mode
-;; from package
+;; from https://github.com/josteink/irony-eldoc
+;; 本家の更新がないのでフォーク版を使用
 ;;------------------------------------------------------------------------------
-;; <ソース修正>
-;; 403: lexical-let -> let
-;; 374, 388: remove-if-not -> cl-remove-if-not
-
+(autoload 'irony-eldoc "irony-eldoc")
 (add-hook 'irony-mode-hook 'irony-eldoc)
 
 ;; 文字化け対処

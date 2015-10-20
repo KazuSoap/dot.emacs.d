@@ -10,13 +10,12 @@
 ;;------------------------------------------------------------------------------
 (package-initialize)
 (defvar package-archives)
-;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.milkbox.net/packages/") t)
 
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
-(dolist (dir '("site-lisp"))
+(dolist (dir '("site-lisp" "extra_modules"))
   (let((default-directory (expand-file-name(concat user-emacs-directory dir))))
     (add-to-list 'load-path default-directory)
     (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
