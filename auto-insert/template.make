@@ -11,13 +11,11 @@ SRC_DIR = src
 HEADER_DIR = include
 PROGRAM_DIR = $(OUT_DIR)/bin
 OBJ_DIR = $(OUT_DIR)/obj
-DEPEND_DIR = $(OUT_DIR)/depend
 
-# src files
+# input files
 SRCS = $(notdir $(wildcard $(SRC_DIR)/*.cpp))
-
-# generated files
-DEPENDS = $(addprefix $(DEPEND_DIR)/,$(SRCS:.cpp=.depend))
+OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.o))
+DEPS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.d))
 
 # compiler
 CXX = g++ -std=c++11
@@ -39,22 +37,21 @@ debug: CXX += -g -O0
 debug: all
 
 # all
-all: $(DEPENDS) $(TARGET)
-$(TARGET): $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.o))
+all: $(TARGET)
+$(TARGET): $(OBJS)
 	@mkdir -p $(PROGRAM_DIR)
+	@if [ ! -f $(PROGRAM_DIR)/opencv_ffmpeg300_64.dll ]; then \
+		cp -p /mingw64/local/opencv-3.0.0/bin/opencv_ffmpeg300_64.dll $(PROGRAM_DIR); \
+	fi
 	$(CXX) $(STATICFLAG) $^ $(LDFLAGS) -o $(PROGRAM_DIR)/$@
-
-$(DEPEND_DIR)/%.depend: $(SRC_DIR)/%.cpp $(wildcard $(HEADER_DIR)/*.h)
-	@echo "generating $@"
-	@mkdir -p $(DEPEND_DIR)
-	@$(CXX) -I./$(HEADER_DIR) -MM -MP $< > $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $^ -o $@
+	$(CXX) $(CXXFLAGS) -c -MMD -MP -MF $(@:%.o=%.d) $< -o $@
 
+# コマンドラインから与えた最終ターゲットが "clean" 以外
 ifneq "$(MAKECMDGOALS)" "clean"
--include $(DEPENDS)
+-include $(DEPS)
 endif
 
 # clean
