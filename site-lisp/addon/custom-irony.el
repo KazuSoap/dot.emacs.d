@@ -23,7 +23,7 @@
 
   ;; 追加のコンパイルオプションを設定
   (defvar irony-extra-compile-option-alist)
-  (setq irony-extra-compile-option-alist `((c++-mode "-std=c++11" "-lstdc++")))
+  (setq irony-extra-compile-option-alist `((c++-mode "-std=c++14" "-lstdc++")))
 
   (defun ad-irony--lang-compile-option ()
     "modify cannot apply multiple compile options"
