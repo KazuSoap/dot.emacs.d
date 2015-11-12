@@ -18,7 +18,7 @@ OBJS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.o))
 DEPS = $(addprefix $(OBJ_DIR)/,$(SRCS:.cpp=.d))
 
 # compiler
-CXX = g++ -std=c++11
+CXX = g++ -std=c++14
 CXXFLAGS = -I./$(HEADER_DIR) `pkg-config --cflags opencv`
 LDFLAGS  = `pkg-config --libs opencv`
 
@@ -26,7 +26,7 @@ LDFLAGS  = `pkg-config --libs opencv`
 .PHONY : release debug all clean
 
 # release
-release: CXX += -s -O2
+release: CXX += -O2
 release: STATICFLAG = -static
 release: CXXFLAGS = -I./$(HEADER_DIR) `pkg-config --cflags opencv_static`
 release: LDFLAGS  = `pkg-config --libs opencv_static`
