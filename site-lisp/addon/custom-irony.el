@@ -89,18 +89,18 @@
 ;; from https://github.com/josteink/irony-eldoc
 ;; 本家の更新がないのでフォーク版を使用
 ;;------------------------------------------------------------------------------
-(autoload 'irony-eldoc "irony-eldoc")
-(add-hook 'irony-mode-hook 'irony-eldoc)
+;; (autoload 'irony-eldoc "irony-eldoc")
+;; (add-hook 'irony-mode-hook 'irony-eldoc)
 
-;; 文字化け対処
-(defun ad-irony-eldoc--strip-underscores (string)
-  (defvar irony-eldoc-strip-underscores)
-  (if (or (not string) (not irony-eldoc-strip-underscores))
-      string
-    (let ((new-string string)
-          (regexps '(("\\_<_+" . ""))))
-      (dolist (r regexps)
-        (setq new-string
-              (replace-regexp-in-string (car r) (cdr r) new-string)))
-      new-string)))
-(advice-add 'irony-eldoc--strip-underscores :override 'ad-irony-eldoc--strip-underscores)
+;; ;; 文字化け対処
+;; (defun ad-irony-eldoc--strip-underscores (string)
+;;   (defvar irony-eldoc-strip-underscores)
+;;   (if (or (not string) (not irony-eldoc-strip-underscores))
+;;       string
+;;     (let ((new-string string)
+;;           (regexps '(("\\_<_+" . ""))))
+;;       (dolist (r regexps)
+;;         (setq new-string
+;;               (replace-regexp-in-string (car r) (cdr r) new-string)))
+;;       new-string)))
+;; (advice-add 'irony-eldoc--strip-underscores :override 'ad-irony-eldoc--strip-underscores)
