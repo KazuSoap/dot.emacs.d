@@ -59,7 +59,7 @@
 (defun c/c++-enable-hooks ()
   (common-enable-hooks)
   (common-programing-enable-hooks)
-  (eldoc-enable-hooks)
+  ;; (eldoc-enable-hooks)
   (flycheck-enable-hooks)
   (vs-set-c-style)
   (ggtags-mode +1) ;; ggtags
