@@ -71,7 +71,8 @@
 ;; sh-mode
 (dolist (hook-func '(common-enable-hooks
                      common-programing-enable-hooks
-                     flycheck-enable-hooks))
+                     ;;flycheck-enable-hooks
+                     ))
   (add-hook 'sh-mode-hook hook-func))
 
 ;; makefile/css/js-mode
