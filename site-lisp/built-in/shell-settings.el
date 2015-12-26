@@ -33,6 +33,7 @@
   ;; .bashrc の PS1 の設定の後に「export PS1="$(sleep 0.1)$PS1"」を追加すれば、回避できる模様。
   (defun set-shell-buffer-process-coding-system (&rest args)
     (let ((process (car args)))
+      (message "%s" process)
       (if (and process (string-match "^shell" (process-name process)))
           (let ((coding-system (process-coding-system process)))
             (set-process-coding-system process
@@ -41,10 +42,10 @@
                                        (cdr coding-system))))))
   (advice-add 'comint-output-filter :before 'set-shell-buffer-process-coding-system)
 
-  ;; emacs-24.4、emacs-24.5 では、4096バイトを超えるデータを一度にパイプ経由で
-  ;; プロセスに送り込むと、レスポンスが帰ってこない状況となる。これを改善する。
-  ;; (NTEmacsスレッド４ 714 の投稿を一部修正したもの。NTEmacsスレッド４ 734、737 の
-  ;; 対策も兼ねるため、 4096バイトを超えない入力の場合でも一律同じ処理を実行している。)
+  ;; emacs-24.4 or later において、4096 byte を超えるデータを一度に pipe 経由で
+  ;; サブプロセスに送り込むと、レスポンスが帰ってこなくなる。
+  ;; -> 4096 byte ごとにデータを区切って pipe に送るようにする。
+  ;; 参考：2ch NTEmacsスレッド４ 699 以降
   (defun ad-process-send-string (orig-fun &rest args)
     (if (not (eq (process-type (car args)) 'real))
         (apply orig-fun args)
