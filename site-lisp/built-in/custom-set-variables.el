@@ -48,3 +48,21 @@
 ;; ② サブプロセスでの IO
 ;; ③ 他の項目が指定されていない場合のデフォルト値
 (prefer-coding-system 'utf-8-unix)
+
+;; サブプロセスに渡すパラメータの文字コードを cp932 にする
+(defmacro set-function-args-encode (fun-name args-number)
+  `(progn
+     (defun  ,(intern (format "ad-%s" fun-name)) (orig-fun &rest args)
+       (if (nthcdr ,args-number args)
+           (setf (nthcdr ,args-number args)
+                 (mapcar (lambda (arg)
+                           (if (multibyte-string-p arg)
+                               (encode-coding-string arg 'cp932)
+                             arg))
+                         (nthcdr ,args-number args))))
+       (apply orig-fun args))
+     (advice-add (quote ,fun-name) :around (quote ,(intern (format "ad-%s" fun-name))))))
+
+(set-function-args-encode call-process-region 6)
+(set-function-args-encode call-process 4)
+(set-function-args-encode start-process 3)
