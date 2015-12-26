@@ -49,6 +49,9 @@
 ;; ③ 他の項目が指定されていない場合のデフォルト値
 (prefer-coding-system 'utf-8-unix)
 
+;; サブプロセス I/O に使用するコーディングシステム
+(setq default-process-coding-system '(undecided . utf-8))
+
 ;; サブプロセスに渡すパラメータの文字コードを cp932 にする
 (defmacro set-function-args-encode (fun-name args-number)
   `(progn
