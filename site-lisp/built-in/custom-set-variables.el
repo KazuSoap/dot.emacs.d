@@ -49,8 +49,8 @@
 ;; ③ 他の項目が指定されていない場合のデフォルト値
 (prefer-coding-system 'utf-8-unix)
 
-;; サブプロセス I/O に使用するコーディングシステム
-(setq default-process-coding-system '(undecided . utf-8))
+;; サブプロセスが出力する文字コードを判定して、process-coding-system の設定値を決定
+(setq default-process-coding-system '(undecided . utf-8-unix))
 
 ;; サブプロセスに渡すパラメータの文字コードを cp932 にする
 (defmacro set-function-args-encode (fun-name args-number)
@@ -69,3 +69,18 @@
 (set-function-args-encode call-process-region 6)
 (set-function-args-encode call-process 4)
 (set-function-args-encode start-process 3)
+
+;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に
+;; shellバッファで、コマンド実行結果出力前に set-shell-buffer-process-coding-system を実行する。
+;; この設定により、shellバッファで utf-8 の出力をする cygwin コマンドと、cp932 の出力をする
+;; Windowsコマンドの漢字の文字化けが回避される。また、漢字を含むプロンプトが文字化けする場合には、
+;; .bashrc の PS1 の設定の後に「export PS1="$(sleep 0.1)$PS1"」を追加すれば、回避できる模様。
+(defun set-shell-buffer-process-coding-system (&rest args)
+  (let ((process (car args)))
+    (if (and process (string-match "^shell" (process-name process)))
+        (let ((coding-system (process-coding-system process)))
+          (set-process-coding-system process
+                                     (coding-system-change-text-conversion
+                                      (car coding-system) 'undecided)
+                                     (cdr coding-system))))))
+(advice-add 'comint-output-filter :before 'set-shell-buffer-process-coding-system)
