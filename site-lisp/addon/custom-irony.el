@@ -11,7 +11,7 @@
 (when (eq system-type 'windows-nt)
   (defun ad-irony--install-server-read-command (orig-func &rest args)
     "modify irony--install-server-read-command for msys2"
-    (setenv "CC" "gcc") (setenv "CXX" "g++")
+    ;; (setenv "CC" "gcc") (setenv "CXX" "g++")
     (defvar irony-cmake-executable)
     (setcar args
             (replace-regexp-in-string
@@ -23,7 +23,7 @@
 
   ;; 追加のコンパイルオプションを設定
   (defvar irony-extra-compile-option-alist)
-  (setq irony-extra-compile-option-alist `((c++-mode "-std=c++14" "-lstdc++")))
+  (setq irony-extra-compile-option-alist `((c++-mode "-std=c++14")))
 
   (defun ad-irony--lang-compile-option ()
     "modify cannot apply multiple compile options"
@@ -33,8 +33,7 @@
         (append `("-x" ,it) (cdr-safe (assq major-mode irony-extra-compile-option-alist))))))
   (advice-add 'irony--lang-compile-option :override 'ad-irony--lang-compile-option)
 
-  (with-eval-after-load 'irony
-    (setq w32-pipe-read-delay 0)))
+  (setq w32-pipe-read-delay 0))
 
 ;; replace the `completion-at-point' and `complete-symbol' bindings in
 ;; irony-mode's buffers by irony-mode's function
@@ -66,12 +65,11 @@
 
 (defun company-irony-c-headers-hooks ()
   ;;Load with `irony-mode` as a grouped backend
-  (defvar company-backends)
-  (add-to-list 'company-backends '(company-irony-c-headers company-irony)))
-(with-eval-after-load 'company
-  (autoload 'company-irony-c-headers "company-irony-c-headers" t)
-  (dolist (hook '(c-mode-hook c++-mode-hook))
-    (add-hook hook 'company-irony-c-headers-hooks)))
+  (with-eval-after-load 'company
+    (defvar company-backends)
+    (add-to-list 'company-backends '(company-irony-c-headers company-irony))))
+(dolist (hook '(c-mode-hook c++-mode-hook))
+  (add-hook hook 'company-irony-c-headers-hooks))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck-irony
