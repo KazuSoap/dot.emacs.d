@@ -21,19 +21,10 @@
     (apply orig-func args))
   (advice-add 'irony--install-server-read-command :around 'ad-irony--install-server-read-command)
 
-  ;; 追加のコンパイルオプションを設定
-  (defvar irony-extra-compile-option-alist)
-  (setq irony-extra-compile-option-alist `((c++-mode "-std=c++14")))
-
-  (defun ad-irony--lang-compile-option ()
-    "modify cannot apply multiple compile options"
-    (defvar irony-lang-compile-option-alist)
-    (let ((it (cdr-safe (assq major-mode irony-lang-compile-option-alist))))
-      (when it
-        (append `("-x" ,it) (cdr-safe (assq major-mode irony-extra-compile-option-alist))))))
-  (advice-add 'irony--lang-compile-option :override 'ad-irony--lang-compile-option)
-
   (setq w32-pipe-read-delay 0))
+
+;; 追加のコンパイルオプションを設定
+(setq irony-additional-clang-options '("-std=c++14"))
 
 ;; replace the `completion-at-point' and `complete-symbol' bindings in
 ;; irony-mode's buffers by irony-mode's function
