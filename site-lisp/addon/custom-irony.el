@@ -11,7 +11,7 @@
 (when (eq system-type 'windows-nt)
   (defun ad-irony--install-server-read-command (orig-func &rest args)
     "modify irony--install-server-read-command for msys2"
-    ;; (setenv "CC" "gcc") (setenv "CXX" "g++")
+    (setenv "CC" "clang") (setenv "CXX" "clang++")
     (defvar irony-cmake-executable)
     (setcar args
             (replace-regexp-in-string
