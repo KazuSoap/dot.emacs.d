@@ -53,14 +53,13 @@
 ;; Company Irony C Headers
 ;; from package
 ;;------------------------------------------------------------------------------
-
-;; (defun company-irony-c-headers-hooks ()
-;;   ;;Load with `irony-mode` as a grouped backend
-;;   (with-eval-after-load 'company
-;;     (defvar company-backends)
-;;     (add-to-list 'company-backends '(company-irony-c-headers company-irony))))
-;; (dolist (hook '(c-mode-hook c++-mode-hook))
-;;   (add-hook hook 'company-irony-c-headers-hooks))
+(defun company-irony-c-headers-hooks ()
+  ;;Load with `irony-mode` as a grouped backend
+  (with-eval-after-load 'company
+    (defvar company-backends)
+    (add-to-list 'company-backends '(company-irony-c-headers company-irony))))
+(dolist (hook '(c-mode-hook c++-mode-hook))
+  (add-hook hook 'company-irony-c-headers-hooks))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck-irony
