@@ -42,11 +42,12 @@
 ;; Completion backend for irony-mode
 ;; from package
 ;;------------------------------------------------------------------------------
-
-(with-eval-after-load 'company
-  (defvar company-backends)
-  (add-to-list 'company-backends 'company-irony))
-(add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+(defun company-irony-hooks ()
+  ;;Load with `irony-mode` as a grouped backend
+  (with-eval-after-load 'company
+    (defvar company-backends)
+    (add-to-list 'company-backends 'company-irony)))
+(add-hook 'irony-mode-hook 'company-irony-hooks)
 
 ;;------------------------------------------------------------------------------
 ;; company-irony-c-headers
