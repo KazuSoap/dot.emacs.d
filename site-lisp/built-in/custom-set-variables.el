@@ -50,7 +50,7 @@
 (prefer-coding-system 'utf-8-unix)
 
 ;; サブプロセスが出力する文字コードを判定して、process-coding-system の設定値を決定
-(setq default-process-coding-system '(undecided . utf-8-unix))
+(setq default-process-coding-system '(undecided-dos . utf-8-unix))
 
 ;; サブプロセスに渡すパラメータの文字コードを cp932 にする
 (defmacro set-function-args-encode (fun-name args-number)
