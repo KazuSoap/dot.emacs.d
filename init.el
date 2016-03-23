@@ -98,3 +98,4 @@
 (load "print")
 (load "shell-settings")
 (load "custom-set-variables")
+(load "kkc-cmd.el")
