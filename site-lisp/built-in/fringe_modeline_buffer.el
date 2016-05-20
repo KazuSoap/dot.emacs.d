@@ -24,12 +24,12 @@
 ;; modeline
 ;;------------------------------------------------------------------------------
 ;;-- modeline customize --;;
-(line-number-mode -1) ;; モードラインに行番号表示
-(column-number-mode -1) ;; モードラインに列番号表示
+(line-number-mode 1) ;; モードラインに行番号表示
+(column-number-mode 1) ;; モードラインに列番号表示
 (size-indication-mode -1) ;; モードラインにファイルサイズ表示
 
 ;; 総行数表示
-(setf mode-line-position '(:eval (format "%d" (count-lines (point-max) (point-min)))))
+;; (setf mode-line-position '(:eval (format "%d" (count-lines (point-max) (point-min)))))
 
 ;;-- IME customize --;;
 ;; IME ON/OFF 時のカーソルカラー設定用関数
