@@ -42,6 +42,10 @@
 ;; vcを起動しないようにする
 (setq vc-handled-backends nil)
 
+;; kkc による日本語入力で「nn」→「ん」に変換
+(defvar quail-japanese-use-double-n nil)
+(setq quail-japanese-use-double-n t)
+
 ;; デフォルトの文字コードを設定
 ;; 指定される文字コードは以下の項目
 ;; ① ファイルを新規作成した場合のデフォルト
