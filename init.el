@@ -98,18 +98,6 @@
 (load "print")
 (load "shell-settings")
 (load "custom-set-variables")
-
-;; ;; (load "kkc-cmd")
-;; (defvar quail-japanese-use-double-n)
-;; (setq quail-japanese-use-double-n t)
-
-;; (defvar kkc-show-conversion-list-count)
-;; (setq kkc-show-conversion-list-count 0)
-
-;; (require 'popup)
-;; (defvar kkc-current-conversions)
-;; (defun ad-kkc-update-conversion ()
-;;   (popup-menu* kkc-current-conversions)
-;;   )
-
-;; ;; (advice-add 'kkc-update-conversion :before 'ad-kkc-update-conversion)
+(with-eval-after-load 'kkc
+  (load "kkc-cmd")
+  (load "kkc-popup"))
