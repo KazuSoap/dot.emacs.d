@@ -7,7 +7,6 @@
 (defvar kkc-show-conversion-list-count)
 (setq kkc-show-conversion-list-count 0)
 
-(defvar kkc-popup-min-width 20)
 (defvar kkc-popup-width kkc-popup-min-width)
 (defvar kkc-cand-popup nil)
 
@@ -19,11 +18,12 @@
          (this-idx (aref first-slot 0))
          (next-idx (aref first-slot 1))
          (msg (aref first-slot 2))
-         (max-width kkc-popup-width))
+         (max-width kkc-popup-width)
+         (min-width 20))
     (if (< current-idx this-idx)
-        (setq this-idx 1 msg nil max-width kkc-popup-min-width)
+        (setq this-idx 1 msg nil max-width min-width)
       (if (>= current-idx next-idx)
-          (setq this-idx next-idx msg nil max-width kkc-popup-min-width)))
+          (setq this-idx next-idx msg nil max-width min-width)))
     (if (not msg)
         (let ((len (length kkc-current-conversions))
               (width-table kkc-current-conversions-width)
