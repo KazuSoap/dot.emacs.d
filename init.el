@@ -98,6 +98,6 @@
 (load "print")
 (load "shell-settings")
 (load "custom-set-variables")
-(with-eval-after-load 'kkc
-  (load "kkc-cmd")
-  (load "kkc-popup"))
+;; (with-eval-after-load 'kkc
+;;   (load "kkc-cmd")
+;;   (load "kkc-popup"))
