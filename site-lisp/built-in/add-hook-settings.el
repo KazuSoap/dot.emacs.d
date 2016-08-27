@@ -19,7 +19,7 @@
 ;; 共通
 (defun common-enable-hooks ()
   (whitespace-mode +1) ;; whitespace
-  (linum-mode +1) ;; linum
+  (nlinum-mode +1) ;; linum
   (cua-mode +1) ;; cua
   (company-mode +1)) ;; company
 

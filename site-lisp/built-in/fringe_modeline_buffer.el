@@ -7,18 +7,31 @@
 ;; fringe
 ;;------------------------------------------------------------------------------
 ;;-- linum customize --;;
-(defun ad-linum-schedule ()
-  "modify linum refresh time"
-  (run-with-idle-timer 0.2 nil 'linum-update-current))
+;; (defun ad-linum-schedule ()
+;;   "modify linum refresh time"
+;;   (run-with-idle-timer 0.2 nil 'linum-update-current))
 
-(with-eval-after-load 'linum
-  (defvar linum-format)
-  (setq linum-format "%4d\u2502") ;; 行番号のフォーマット
+;; (with-eval-after-load 'linum
+;;   (defvar linum-format)
+;;   (setq linum-format "%4d\u2502") ;; 行番号のフォーマット
 
-  ;; 行番号の表示遅延の修正
-  (defvar linum-delay)
-  (setq linum-delay t)
-  (advice-add 'linum-schedule :override 'ad-linum-schedule))
+;;   ;; 行番号の表示遅延の修正
+;;   (defvar linum-delay)
+;;   (setq linum-delay t)
+;;   (advice-add 'linum-schedule :override 'ad-linum-schedule))
+
+(defvar nlinum-mode)
+(defvar nlinum-format)
+(defun my-nlinum-mode-hook ()
+  (when nlinum-mode
+    (setq-local nlinum-format
+                (concat "%" (number-to-string
+                             ;; Guesstimate number of buffer lines.
+                             (ceiling (log (max 1 (/ (buffer-size) 80)) 10)))
+                        "d\u007c"))))
+
+(with-eval-after-load 'nlinum
+  (add-hook 'nlinum-mode-hook #'my-nlinum-mode-hook))
 
 ;;------------------------------------------------------------------------------
 ;; modeline
