@@ -25,7 +25,7 @@ Emacs.mode-line.attributeForeground: white
 Emacs.linum.attributeBackground: black
 Emacs.linum.attributeForeground: gray
 Emacs.linum.attributeUnderline: off
-Emacs.linum.attributeHeight: 0.8
+!! Emacs.linum.attributeHeight: 0.8
 
 !!-- whitespace --!!
 !! space

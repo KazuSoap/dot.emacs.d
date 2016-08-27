@@ -15,7 +15,15 @@
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
-(dolist (dir '("site-lisp" "extra_modules"))
+(defvar add-dir-list)
+(setq add-dir-list '("site-lisp/built-in" "site-lisp/addon" "extra_modules"))
+
+(cond ((eq system-type 'windows-nt)
+       (add-to-list 'add-dir-list "site-lisp/win"))
+      ((eq system-type 'gnu/linux)
+       (add-to-list 'add-dir-list "site-lisp/linux")))
+
+(dolist (dir add-dir-list)
   (let((default-directory (expand-file-name(concat user-emacs-directory dir))))
     (add-to-list 'load-path default-directory)
     (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
@@ -29,15 +37,6 @@
   (message "Emacs loaded in %d ms"
            (* 1000 (float-time (time-subtract after-init-time before-init-time)))))
 (add-hook 'after-init-hook 'message-startup-time)
-
-(when (eq system-type 'windows-nt)
-  (defun cygpath (&optional option path)
-    "cygpath for emacs lisp"
-    (if path (with-temp-buffer
-               (call-process "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
-               (unless (bobp)
-                 (goto-char (point-min))
-                 (buffer-substring-no-properties (point) (line-end-position)))))))
 
 (defun revert-buffer-no-confirm (&optional force-reverting)
   "Interactive call to revert-buffer. Ignoring the auto-save
@@ -72,17 +71,19 @@
 ;;------------------------------------------------------------------------------
 ;; load files
 ;;------------------------------------------------------------------------------
+;; -- win or linux -- ;;
+(cond ((eq system-type 'windows-nt)
+       (load "init-win"))
+      ((eq system-type 'gnu/linux)
+       (load "init-linux")))
+
 ;; -- addon --;;
 (load "custom-auto-async-byte-compile")
 (load "custom-company")
 (load "custom-elscreen")
-(when (eq system-type 'windows-nt)
-  (load "custom-fakecygpty"))
 (load "custom-flycheck")
-(load "custom-ggtags")
 (load "custom-helm")
 (load "custom-irony")
-(load "custom-magit")
 (with-eval-after-load "general-key-bind"
   (load "custom-migemo"))
 (load "custom-shell-pop")
@@ -95,7 +96,6 @@
 (load "custom-tramp")
 (load "fringe_modeline_buffer")
 (load "general-key-bind")
-(load "print")
 (load "shell-settings")
 (load "custom-set-variables")
 ;; (with-eval-after-load 'kkc
