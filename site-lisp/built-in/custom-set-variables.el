@@ -14,6 +14,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; 非表示,消音
+(if window-system (menu-bar-mode 1) (menu-bar-mode -1)) ;; memubar(gui:on, 端末:off)
 (setq inhibit-startup-screen t) ;; startup-message
 (setq ring-bell-function 'ignore) ;; beep音,画面flash
 
