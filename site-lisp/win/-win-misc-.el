@@ -98,7 +98,7 @@
 (add-hook 'w32-ime-on-hook 'w32-ime-on-hooks)
 (add-hook 'w32-ime-off-hook 'w32-ime-off-hooks)
 
-;; IMEの制御（yes/noをタイプするところでは IME をオフにする）
+;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
 (wrap-function-to-control-ime 'universal-argument t nil)
 (wrap-function-to-control-ime 'read-string nil nil)
 (wrap-function-to-control-ime 'read-char nil nil)

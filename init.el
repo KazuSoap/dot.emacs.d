@@ -16,7 +16,7 @@
 ;; load path
 ;;------------------------------------------------------------------------------
 (defvar add-dir-list)
-(setq add-dir-list '("site-lisp/built-in" "site-lisp/addon" "extra_modules"))
+(setq add-dir-list '("site-lisp/common" "extra_modules"))
 
 (cond ((eq system-type 'windows-nt)
        (add-to-list 'add-dir-list "site-lisp/win"))
@@ -73,31 +73,27 @@
 ;;------------------------------------------------------------------------------
 ;; -- win or linux -- ;;
 (cond ((eq system-type 'windows-nt)
-       (load "init-win"))
+       (load "-win-misc-")
+       (load "-fix-win-bugs-")
+       (load "-print-"))
       ((eq system-type 'gnu/linux)
-       (load "init-linux")))
+       (load "-linux-misc-")))
 
-;; -- addon --;;
-(load "custom-auto-async-byte-compile")
-(load "custom-company")
-(load "custom-elscreen")
-(load "custom-flycheck")
-(load "custom-helm")
-(load "custom-irony")
-(with-eval-after-load "general-key-bind"
-  (load "custom-migemo"))
-(load "custom-shell-pop")
-(load "custom-twittering-mode")
-
-;; -- built in -- ;;
-(load "add-hook-settings")
-(load "custom-aute-insert")
-(load "custom-gdb")
-(load "custom-tramp")
-(load "fringe_modeline_buffer")
-(load "general-key-bind")
-(load "shell-settings")
-(load "custom-set-variables")
+;; -- common --;;
+(load "-company-")
+(load "-elscreen-")
+(load "-flycheck-")
+(load "-helm-")
+(load "-irony-")
+(load "-migemo-")
+(load "-twittering-mode-")
+(load "-add-hook-")
+(load "-aute-insert-")
+(load "-gdb-")
+(load "-fringe_modeline_buffer-")
+(load "-general-key-bind-")
+(load "-shell-")
+(load "-custom-set-variables-")
 ;; (with-eval-after-load 'kkc
-;;   (load "kkc-cmd")
-;;   (load "kkc-popup"))
+;;   (load "-kkc-cmd-")
+;;   (load "-kkc-popup-"))

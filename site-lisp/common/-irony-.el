@@ -6,23 +6,6 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-;; msys2 で irony を動作させる設定
-;; https://github.com/Sarcasm/irony-mode/wiki/Setting-up-irony-mode-on-Windows-using-Msys2-and-Mingw-Packages
-(when (eq system-type 'windows-nt)
-  (defun ad-irony--install-server-read-command (orig-func &rest args)
-    "modify irony--install-server-read-command for msys2"
-    (setenv "CC" "clang") (setenv "CXX" "clang++")
-    (defvar irony-cmake-executable)
-    (setcar args
-            (replace-regexp-in-string
-             (format "^\\(.*?%s\\)" (shell-quote-argument irony-cmake-executable))
-             "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll"
-             (car args)))
-    (apply orig-func args))
-  (advice-add 'irony--install-server-read-command :around 'ad-irony--install-server-read-command)
-
-  (setq w32-pipe-read-delay 0))
-
 ;; 追加のコンパイルオプションを設定
 (setq irony-additional-clang-options '("-std=c++14"))
 

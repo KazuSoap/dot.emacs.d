@@ -47,12 +47,10 @@
 ;; emacs-lisp-mode
 (defun emacs-lisp-enable-hooks ()
   (when (and buffer-file-name (string-match "\\.el$" buffer-file-name))
-    (enable-auto-async-byte-compile-mode)
     (common-enable-hooks)
     (common-programing-enable-hooks)
     (eldoc-enable-hooks)
     (flycheck-enable-hooks)))
-(autoload 'enable-auto-async-byte-compile-mode "auto-async-byte-compile" t)
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-enable-hooks)
 
 ;; c/c++-mode
@@ -64,7 +62,7 @@
   (vs-set-c-style)
   (ggtags-mode +1) ;; ggtags
   (irony-mode +1)) ;; irony
-(autoload 'vs-set-c-style "vs-set-c-style")
+(autoload 'vs-set-c-style "-vs-set-c-style-")
 (dolist (hook '(c-mode-hook c++-mode-hook))
   (add-hook hook 'c/c++-enable-hooks))
 
