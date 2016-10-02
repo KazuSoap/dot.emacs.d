@@ -37,5 +37,4 @@
 ;; misc
 ;;------------------------------------------------------------------------------
 ;; -- 左右 fringe --;;
-(setq right-fringe-width 0)
-(setq left-fringe-width 0)
+(fringe-mode 0)
