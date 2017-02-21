@@ -21,22 +21,19 @@
 (setq default-process-coding-system '(undecided-dos . utf-8-unix))
 
 ;; サブプロセスに渡すパラメータの文字コードを cp932 にする
-(defmacro set-function-args-encode (fun-name args-number)
+(defmacro set-function-args-encode (fun-name)
   `(progn
-     (defun  ,(intern (format "ad-%s" fun-name)) (orig-fun &rest args)
-       (if (nthcdr ,args-number args)
-           (setf (nthcdr ,args-number args)
-                 (mapcar (lambda (arg)
-                           (if (multibyte-string-p arg)
-                               (encode-coding-string arg 'cp932)
-                             arg))
-                         (nthcdr ,args-number args))))
-       (apply orig-fun args))
-     (advice-add (quote ,fun-name) :around (quote ,(intern (format "ad-%s" fun-name))))))
+     (defun ,(intern (format "ad-%s" fun-name)) (args)
+       (mapcar (lambda (arg)
+                 (if (multibyte-string-p arg)
+                     (encode-coding-string arg 'cp932)
+                   arg))
+               args))
+     (advice-add ',fun-name :filter-args ',(intern (format "ad-%s" fun-name)))))
 
-(set-function-args-encode call-process-region 6)
-(set-function-args-encode call-process 4)
-(set-function-args-encode start-process 3)
+(set-function-args-encode call-process-region)
+(set-function-args-encode call-process)
+(set-function-args-encode start-process)
 
 ;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に
 ;; shellバッファで、コマンド実行結果出力前に set-shell-buffer-process-coding-system を実行する。
@@ -79,30 +76,30 @@
 ;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
-;; ;;-- IME customize --;;
-;; ;; IME ON/OFF 時のカーソルカラー設定用関数
-;; (defun w32-ime-on-hooks () (set-cursor-color "yellow"))
-;; (defun w32-ime-off-hooks () (set-cursor-color "thistle"))
+;;-- IME customize --;;
+;; IME ON/OFF 時のカーソルカラー設定用関数
+(defun w32-ime-on-hooks () (set-cursor-color "yellow"))
+(defun w32-ime-off-hooks () (set-cursor-color "thistle"))
 
-;; ;; IMEのカスタマイズ
-;; (setq default-input-method "W32-IME") ;;標準IMEの設定
+;; IMEのカスタマイズ
+(setq default-input-method "W32-IME") ;;標準IMEの設定
 
-;; ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
-;; (setq-default w32-ime-mode-line-state-indicator "[Aa]")
-;; (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
+;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
+(setq-default w32-ime-mode-line-state-indicator "[Aa]")
+(setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
 
-;; ;; IME の初期化
-;; (w32-ime-initialize)
+;; IME の初期化
+(w32-ime-initialize)
 
-;; ;; IME ON/OFF時のカーソルカラー
-;; (add-hook 'w32-ime-on-hook 'w32-ime-on-hooks)
-;; (add-hook 'w32-ime-off-hook 'w32-ime-off-hooks)
+;; IME ON/OFF時のカーソルカラー
+(add-hook 'w32-ime-on-hook 'w32-ime-on-hooks)
+(add-hook 'w32-ime-off-hook 'w32-ime-off-hooks)
 
-;; ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
-;; (wrap-function-to-control-ime 'universal-argument t nil)
-;; (wrap-function-to-control-ime 'read-string nil nil)
-;; (wrap-function-to-control-ime 'read-char nil nil)
-;; (wrap-function-to-control-ime 'read-from-minibuffer nil nil)
-;; (wrap-function-to-control-ime 'y-or-n-p nil nil)
-;; (wrap-function-to-control-ime 'yes-or-no-p nil nil)
-;; (wrap-function-to-control-ime 'map-y-or-n-p nil nil)
+;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
+(wrap-function-to-control-ime 'universal-argument t nil)
+(wrap-function-to-control-ime 'read-string nil nil)
+(wrap-function-to-control-ime 'read-char nil nil)
+(wrap-function-to-control-ime 'read-from-minibuffer nil nil)
+(wrap-function-to-control-ime 'y-or-n-p nil nil)
+(wrap-function-to-control-ime 'yes-or-no-p nil nil)
+(wrap-function-to-control-ime 'map-y-or-n-p nil nil)

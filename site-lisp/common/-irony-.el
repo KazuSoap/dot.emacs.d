@@ -6,6 +6,21 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
+;; irony-server-install に失敗する問題の修正
+;; コンパイラに clang を指定
+(defun ad-irony--install-server-read-command (args)
+  "modify irony--install-server-read-command"
+  (setenv "CC" "clang") (setenv "CXX" "clang++")
+  (defvar irony-cmake-executable)
+  `(,(replace-regexp-in-string
+      (format "^\\(%s\\)" (shell-quote-argument irony-cmake-executable))
+      (cond ((eq system-type 'windows-nt)
+             "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll")
+            ((eq system-type 'gnu/linux)
+             "\\1 -DLIBCLANG_LIBRARY=/usr/lib/llvm-3.8/lib/libclang.so"))
+      (car args))))
+(advice-add 'irony--install-server-read-command :filter-args 'ad-irony--install-server-read-command)
+
 ;; 追加のコンパイルオプションを設定
 (setq irony-additional-clang-options '("-std=c++14"))
 

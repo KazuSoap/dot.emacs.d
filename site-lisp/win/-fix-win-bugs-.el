@@ -11,11 +11,11 @@
     (setenv "SHELL" shell-file-name)
     (setenv "MSYSTEM" "MINGW64")
 
-    (defun ad-exec-path-from-shell-setenv (orig-fun &rest args)
+    (defun ad-exec-path-from-shell-setenv (args)
       (when (and (string= (car args) "PATH") (fboundp 'cygpath))
         (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-      (apply orig-fun args))
-    (advice-add 'exec-path-from-shell-setenv :around 'ad-exec-path-from-shell-setenv)))
+      args)
+    (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)))
 
 ;;------------------------------------------------------------------------------
 ;; fakecygpty
@@ -53,10 +53,10 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-(defun ad-magit-read-repository (orig-fun &optional args)
-  (let ((ret_val (apply orig-fun args)))
-    (if (file-directory-p ret_val) (file-truename ret_val))))
-(advice-add 'magit-read-repository :around 'ad-magit-read-repository)
+(defun ad-magit-read-repository (args)
+  (when (file-directory-p args)
+    (file-truename args)))
+(advice-add 'magit-read-repository :filter-return 'ad-magit-read-repository)
 
 ;;------------------------------------------------------------------------------
 ;; irony
@@ -67,16 +67,37 @@
 ;; msys2 で irony を動作させる設定
 ;; https://github.com/Sarcasm/irony-mode/wiki/Setting-up-irony-mode-on-Windows-using-Msys2-and-Mingw-Packages
 (when (eq system-type 'windows-nt)
-  (defun ad-irony--install-server-read-command (orig-func &rest args)
-    "modify irony--install-server-read-command for msys2"
-    (setenv "CC" "clang") (setenv "CXX" "clang++")
-    (defvar irony-cmake-executable)
-    (setcar args
-            (replace-regexp-in-string
-             (format "^\\(.*?%s\\)" (shell-quote-argument irony-cmake-executable))
-             "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll"
-             (car args)))
-    (apply orig-func args))
-  (advice-add 'irony--install-server-read-command :around 'ad-irony--install-server-read-command)
+  ;; bash on Ubuntu on Windows の irony-server と共存するための設定
+  (defvar irony-server-install-prefix)
+
+  (defun ad-irony--locate-server-executable ()
+    (let* ((irony--server-name "irony-server.exe")
+           (exe (expand-file-name (concat "bin/" irony--server-name) irony-server-install-prefix)))
+      (condition-case err
+          (let ((irony-server-version (car (process-lines exe "--version"))))
+            (if (and (string-match "^irony-server version " irony-server-version)
+                     (version= (irony-version)
+                               (substring irony-server-version
+                                          (length "irony-server version "))))
+                ;; irony-server is working and up-to-date!
+                exe
+              (message "irony-server version mismatch: %s"
+                       (substitute-command-keys
+                        "type `\\[irony-install-server]' to reinstall"))
+              nil))
+        (error
+         (if (file-executable-p exe)
+             ;; failed to execute due to a runtime problem, i.e: libclang.so isn't
+             ;; in the ld paths
+             (message "error: irony-server is broken, good luck buddy! %s"
+                      (error-message-string err))
+           ;; irony-server doesn't exists, first time irony-mode is used? inform
+           ;; the user about how to build the executable
+           (message "%s"
+                    (substitute-command-keys
+                     "Type `\\[irony-install-server]' to install irony-server")))
+         ;; return nil on error
+         nil))))
+  (advice-add 'irony--locate-server-executable :override 'ad-irony--locate-server-executable)
 
   (setq w32-pipe-read-delay 0))
