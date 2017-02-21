@@ -1,14 +1,27 @@
 !!-- font -- !!
-Emacs.Font: Ricty-9
+Emacs.Fontset-0:-*-ricty-medium-r-normal--12-*-*-*-m-*-fontset-Ricty,\
+        ascii:-*-*-*-*-*-*-*-*-*-*-*-*-iso8859-1,\
+        latin-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-jisx0201.1976-0,\
+	katakana-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-jisx0201.1976-0,\
+	japanese-jisx0208:-*-*-*-*-*-*-*-*-*-*-*-*-jisx0208.1990-0
+
+Emacs.Fontset-1:-*-vl gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,\
+        ascii:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1,\
+        latin-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1,\
+	katakana-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1,\
+	japanese-jisx0208:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1
+
+! Emacs.Font: fontset-Ricty
+Emacs.Font: fontset-VL_Gothic
 
 !!-- windowの幅と高さ --!!
-Emacs.Geometry: 100x32
+Emacs.Geometry: 100x30
 
 !!-- 透過度 --!!
 Emacs.Alpha: 85
 
 !!-- 行間 --!!
-Emacs.LineSpacing: 1
+Emacs.LineSpacing: 0
 
 !!-- tool-bar --!!
 Emacs.toolBar: off
