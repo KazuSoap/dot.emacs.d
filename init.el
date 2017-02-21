@@ -93,7 +93,7 @@
 (load "-fringe_modeline_buffer-")
 (load "-general-key-bind-")
 (load "-shell-")
-(load "-custom-set-variables-")
+(load (setq custom-file "-custom-set-variables-"))
 ;; (with-eval-after-load 'kkc
 ;;   (load "-kkc-cmd-")
 ;;   (load "-kkc-popup-"))
