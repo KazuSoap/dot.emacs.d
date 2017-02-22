@@ -8,20 +8,16 @@
 ;;------------------------------------------------------------------------------
 (defun cygpath (&optional option path)
   "cygpath for emacs lisp"
-  (if path (with-temp-buffer
-             (call-process "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
-             (unless (bobp)
-               (goto-char (point-min))
-               (buffer-substring-no-properties (point) (line-end-position))))))
+  (if path
+      (with-temp-buffer
+        (call-process "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
+        (unless (bobp)
+          (goto-char (point-min))
+          (buffer-substring-no-properties (point) (line-end-position))))))
 
 ;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
-;;-- IME customize --;;
-;; IME ON/OFF 時のカーソルカラー設定用関数
-(defun w32-ime-on-hooks () (set-cursor-color "yellow"))
-(defun w32-ime-off-hooks () (set-cursor-color "thistle"))
-
 ;; IMEのカスタマイズ
 (setq default-input-method "W32-IME") ;;標準IMEの設定
 
@@ -33,8 +29,8 @@
 (w32-ime-initialize)
 
 ;; IME ON/OFF時のカーソルカラー
-(add-hook 'w32-ime-on-hook 'w32-ime-on-hooks)
-(add-hook 'w32-ime-off-hook 'w32-ime-off-hooks)
+(add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
+(add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
 
 ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
 (wrap-function-to-control-ime 'universal-argument t nil)
