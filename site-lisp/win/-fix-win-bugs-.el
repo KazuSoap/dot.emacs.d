@@ -8,10 +8,10 @@
 (defmacro set-function-args-encode (fun-name)
   `(progn
      (defun ,(intern (format "ad-%s" fun-name)) (args)
-       (mapcar (lambda (arg)
-                 (if (multibyte-string-p arg)
-                     (encode-coding-string arg 'cp932)
-                   arg))
+       (mapcar ,(lambda (arg)
+                  (if (multibyte-string-p arg)
+                      (encode-coding-string arg 'cp932)
+                    arg))
                args))
      (advice-add ',fun-name :filter-args ',(intern (format "ad-%s" fun-name)))))
 
