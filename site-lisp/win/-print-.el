@@ -11,9 +11,7 @@
 (when (eq system-type 'windows-nt)
   (defvar print-region-function)
   (setq print-region-function
-        (lambda (start end _program
-                       &optional _delete _destination _display
-                       &rest _args)
+        (lambda (start end _program &optional _delete _destination _display &rest _args)
           (let* ((procname (make-temp-name "w32-print-"))
                  (winfile (expand-file-name procname temporary-file-directory)))
             (let ((coding-system-for-write 'cp932-dos))
