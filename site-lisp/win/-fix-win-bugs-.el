@@ -120,11 +120,13 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
-;; msys2 で irony を動作させる設定
-;; https://github.com/Sarcasm/irony-mode/wiki/Setting-up-irony-mode-on-Windows-using-Msys2-and-Mingw-Packages
-;; bash on Ubuntu on Windows の irony-server と共存するための設定
-(defun ad-irony--locate-server-executable (&rest args)
-  (concat (car args) ".exe"))
-(advice-add 'irony--locate-server-executable :filter-return 'ad-irony--locate-server-executable)
+(with-eval-after-load 'irony
+  ;; bash on Ubuntu on Windows の irony-server と共存するための設定
+  (defvar irony-server-install-prefix)
+  (setq irony-server-install-prefix (concat irony-server-install-prefix "win-nt/"))
 
-(setq w32-pipe-read-delay 0)
+  ;; Windows performance tweaks
+  (setq w32-pipe-read-delay 0)
+
+  (defvar irony-server-w32-pipe-buffer-size)
+  (setq irony-server-w32-pipe-buffer-size (* 64 1024)))
