@@ -1,7 +1,7 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; custom-set-variables
+;; common-misc
 ;;------------------------------------------------------------------------------
 
 ;; color-theme
@@ -54,6 +54,15 @@
 ;; ③ 他の項目が指定されていない場合のデフォルト値
 (prefer-coding-system 'utf-8-unix)
 
+;;------------------------------------------------------------------------------
+;; custom-set-*
+;;------------------------------------------------------------------------------
+;; custom-save-all された直後に custom-file をバイトコンパイル
+(defun ad-custom-save-all ()
+  (byte-compile-file custom-file))
+(advice-add 'custom-save-all :after 'ad-custom-save-all)
+
+;; 以下 emacs 自動追記
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
