@@ -9,25 +9,15 @@
 ;; package system
 ;;------------------------------------------------------------------------------
 (package-initialize)
-(defvar package-archives)
 (add-to-list 'package-archives '("melpa" . "https://melpa.milkbox.net/packages/") t)
 
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
-(defvar add-dir-list)
-(setq add-dir-list '("site-lisp/common" "extra_modules"))
-
-(cond ((eq system-type 'windows-nt)
-       (add-to-list 'add-dir-list "site-lisp/win"))
-      ((eq system-type 'gnu/linux)
-       (add-to-list 'add-dir-list "site-lisp/linux")))
-
-(dolist (dir add-dir-list)
-  (let((default-directory (expand-file-name(concat user-emacs-directory dir))))
-    (add-to-list 'load-path default-directory)
-    (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-        (normal-top-level-add-subdirs-to-load-path))))
+(let ((default-directory (expand-file-name (concat user-emacs-directory "site-lisp"))))
+  (add-to-list 'load-path default-directory)
+  (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+      (normal-top-level-add-subdirs-to-load-path)))
 
 ;;------------------------------------------------------------------------------
 ;; local functions & macro
@@ -53,14 +43,14 @@
   (interactive)
   (let ((dx (if (= (nth 0 (window-edges)) 0) 1 -1))
         (dy (if (= (nth 1 (window-edges)) 0) 1 -1))
-        action c)
-    (message "%s" action)
+        action
+        c)
     (catch 'end-flag
       (while t
         (setq action (read-key-sequence-vector (format "size[%dx%d]" (window-width) (window-height))))
         (setq c (aref action 0))
-        (cond ((= c ?l) (enlarge-window-horizontally dx))
-              ((= c ?h) (shrink-window-horizontally dx))
+        (cond ((= c ?l) (enlarge-window dx t))
+              ((= c ?h) (shrink-window dx t))
               ((= c ?j) (enlarge-window dy))
               ((= c ?k) (shrink-window dy))
               (t (let ((command (key-binding action)))
@@ -93,7 +83,7 @@
 (load "-fringe_modeline_buffer-")
 (load "-general-key-bind-")
 (load "-shell-")
-(load "-custom-set-variables-")
+(load (file-name-sans-extension (setq custom-file (locate-library "-common-misc-.el"))))
 ;; (with-eval-after-load 'kkc
 ;;   (load "-kkc-cmd-")
 ;;   (load "-kkc-popup-"))
