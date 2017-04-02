@@ -6,27 +6,27 @@
 ;; from : package system
 ;;------------------------------------------------------------------------------
 
-(require 'migemo)
-(defvar migemo-command)
-(defvar migemo-dictionary)
 (cond ((eq system-type 'windows-nt)
-       (setq migemo-command "d:/Program Files/cmigemo/cmigemo")
-       (setq migemo-dictionary (expand-file-name "d:/Program Files/cmigemo/dict/utf-8/migemo-dict")))
+       (require 'cmigemo))
       ((eq system-type 'gnu/linux)
+       (require 'migemo)
+
+       (defvar migemo-command)
        (setq migemo-command "cmigemo")
-       (setq migemo-dictionary (expand-file-name "/usr/share/cmigemo/utf-8/migemo-dict"))))
 
-(defvar migemo-options)
-(setq migemo-options '("-q" "--emacs" "-i" "\g"))
+       (defvar migemo-dictionary)
+       (setq migemo-dictionary (expand-file-name "/usr/share/cmigemo/utf-8/migemo-dict"))
 
-(defvar migemo-user-dictionary)
-(setq migemo-user-dictionary nil)
+       (defvar migemo-options)
+       (setq migemo-options '("-q" "--emacs" "-i" "\g"))
 
-(defvar migemo-regex-dictionary)
-(setq migemo-regex-dictionary nil)
+       (defvar migemo-user-dictionary)
+       (setq migemo-user-dictionary nil)
 
-(defvar migemo-coding-system)
-(setq migemo-coding-system 'utf-8-unix)
+       (defvar migemo-regex-dictionary)
+       (setq migemo-regex-dictionary nil)
 
-(load-library "migemo")
-(migemo-init)
+       (defvar migemo-coding-system)
+       (setq migemo-coding-system 'utf-8-unix)
+
+       (migemo-init)))
