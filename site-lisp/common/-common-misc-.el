@@ -31,7 +31,7 @@
   (defvar cua-enable-cua-keys)
   (setq cua-enable-cua-keys nil))
 
-;; 分割したウィンドウ間を Shift + 矢印キー で移動
+;; 分割したウィンドウ間を Alt + 矢印キー で移動
 (windmove-default-keybindings 'meta)
 (defvar windmove-wrap-around)
 (setq windmove-wrap-around t)
@@ -68,6 +68,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(helm-source-names-using-follow (quote ("Buffers")))
  '(package-selected-packages
    (quote
     (yasnippet twittering-mode smart-compile shell-pop nlinum migemo magit helm ggtags flycheck-irony exec-path-from-shell esup elscreen company-irony-c-headers company-irony))))
