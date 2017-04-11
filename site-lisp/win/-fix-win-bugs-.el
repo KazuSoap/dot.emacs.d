@@ -81,9 +81,15 @@
 ;; NTEmacs の仮想端末偽装
 ;; https://github.com/d5884/fakecygpty
 ;;------------------------------------------------------------------------------
-(with-eval-after-load "-shell-"
+(defun ad-exec-path-from-shell-copy-envs (&rest args)
   (require 'fakecygpty)
   (fakecygpty-activate))
+
+(let ((shell-level (getenv "SHLVL")))
+  (unless (or (not shell-level) (string= "0" shell-level))
+    (ad-exec-path-from-shell-copy-envs)))
+
+(advice-add 'exec-path-from-shell-copy-envs :after 'ad-exec-path-from-shell-copy-envs)
 
 ;;------------------------------------------------------------------------------
 ;; ggtags

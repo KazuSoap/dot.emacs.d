@@ -8,9 +8,26 @@
 
 (setq shell-command-switch "-c")
 
-(let ((shell-level (getenv "SHLVL")))
-  (when (or (not shell-level) (string= "0" shell-level))
-    (exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG"))))
+(defvar exec-path-updated
+  (let ((shell-level (getenv "SHLVL")))
+    (if (or (not shell-level) (string= "0" shell-level)) nil t)))
+
+(defmacro set-exec-path-before-mkproc (fun-name)
+  `(progn
+     (defun ,(intern (format "ad-%s" fun-name)) (&rest args)
+       (when (not exec-path-updated)
+         (setq exec-path-updated t)
+         (exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG")))
+       args)
+     (advice-add ',fun-name :before ',(intern (format "ad-%s" fun-name)))))
+
+(unless exec-path-updated
+  (set-exec-path-before-mkproc shell)
+  (set-exec-path-before-mkproc executable-find)
+  (set-exec-path-before-mkproc call-process)
+  (set-exec-path-before-mkproc call-process-region)
+  (set-exec-path-before-mkproc start-process)
+  (set-exec-path-before-mkproc make-process))
 
 ;;; password のミニバッファ入力
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
