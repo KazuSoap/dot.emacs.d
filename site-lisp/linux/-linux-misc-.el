@@ -6,9 +6,15 @@
 ;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
-;; anthy のロード
-(load "leim-list")
-(require 'anthy)
+
+;; emacs-mozc
+(require 'mozc)
+(setq default-input-method "japanese-mozc")
+
+(require 'mozc-popup)
+(setq mozc-candidate-style 'popup)
+
+(global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method)
 
 ;;------------------------------------------------------------------------------
 ;; set-faces
