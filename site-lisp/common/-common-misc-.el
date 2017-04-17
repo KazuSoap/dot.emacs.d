@@ -71,7 +71,7 @@
  '(helm-source-names-using-follow (quote ("Buffers")))
  '(package-selected-packages
    (quote
-    (yasnippet twittering-mode smart-compile shell-pop nlinum migemo magit helm ggtags flycheck-irony exec-path-from-shell esup elscreen company-irony-c-headers company-irony))))
+    (mozc-popup mozc-im mozc yasnippet twittering-mode smart-compile shell-pop nlinum migemo magit helm ggtags flycheck-irony exec-path-from-shell esup elscreen company-irony-c-headers company-irony))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
