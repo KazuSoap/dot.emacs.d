@@ -11,8 +11,5 @@
 (global-set-key (kbd "<f5>") 'revert-buffer-no-confirm) ; reload buffer
 (global-set-key (kbd "C-c C-r") 'my-window-resizer)
 
-;; shell-pop
-(global-set-key [f8] 'shell-pop)
-
 ;; smart-compile
 (global-set-key (kbd "C-x c") 'smart-compile)
