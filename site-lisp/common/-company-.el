@@ -6,6 +6,26 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 
+;; 不要な backend を削除
+(custom-set-variables
+ '(company-backends
+   '( company-bbdb
+      company-nxml
+      company-css
+      ;; company-eclim
+      company-semantic
+      ;; company-clang
+      ;; company-xcode
+      ;; company-cmake
+      company-capf
+      company-files
+      ( company-dabbrev-code
+        ;; company-gtags
+        company-etags
+        company-keywords )
+      company-oddmuse
+      company-dabbrev)))
+
 (with-eval-after-load 'company
   ;; 基本設定
   (defvar company-idle-delay)  ;; 遅延
