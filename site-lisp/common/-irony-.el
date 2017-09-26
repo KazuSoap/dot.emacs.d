@@ -15,7 +15,7 @@
   `(,(replace-regexp-in-string
       (format "^\\(%s\\)" (shell-quote-argument irony-cmake-executable))
       (cond ((eq system-type 'windows-nt)
-             "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll")
+             "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/clang.dll")
             ((eq system-type 'gnu/linux)
              "\\1 -DLIBCLANG_LIBRARY=/usr/lib/llvm-3.8/lib/libclang.so"))
       (car args))))

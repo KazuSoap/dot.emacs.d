@@ -64,7 +64,7 @@
 ;;------------------------------------------------------------------------------
 (let ((shell-level (getenv "SHLVL")))
   (when (or (not shell-level) (string= "0" shell-level))
-    (setq shell-file-name "d:/msys64/usr/bin/bash")
+    (setq shell-file-name "c:/msys64/usr/bin/bash")
     (defvar explicit-shell-file-name)
     (setq explicit-shell-file-name shell-file-name)
     (setenv "SHELL" shell-file-name)

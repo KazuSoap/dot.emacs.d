@@ -10,7 +10,7 @@
   "cygpath for emacs lisp"
   (if path
       (with-temp-buffer
-        (call-process "d:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
+        (call-process "c:/msys64/usr/bin/cygpath" nil '(t nil) nil option path)
         (unless (bobp)
           (goto-char (point-min))
           (buffer-substring-no-properties (point) (line-end-position))))))
