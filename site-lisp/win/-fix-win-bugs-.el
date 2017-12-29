@@ -34,10 +34,12 @@
                                      (cdr coding-system))))))
 (advice-add 'comint-output-filter :before 'set-shell-buffer-process-coding-system)
 
-;; emacs-24.4 or later において、4096 byte を超えるデータを一度に pipe 経由で
-;; サブプロセスに送り込むと、レスポンスが帰ってこなくなる。
-;; -> 4096 byte ごとにデータを区切って pipe に送るようにする。
+;; emacs-24.x において、4096 byte を超えるデータを一度に pipe 経由でサブプロセスに送り込むと、
+;; レスポンスが帰ってこなくなるため、4096 byte ごとにデータを区切って pipe に送るようにする。
 ;; 参考：2ch NTEmacsスレッド４ 699 以降
+;; -> emacs-23.x以前, emacs-25.x以降は不要な設定
+(defconst w32-pipe-limit 4096)
+
 (defun ad-process-send-string (orig-fun &rest args)
   (if (not (eq (process-type (car args)) 'real))
       (apply orig-fun args)
@@ -46,8 +48,7 @@
            (send-string (encode-coding-string (nth 1 args)
                                               (cdr (process-coding-system (get-process process)))))
            (send-string-length (length send-string)))
-      (let ((w32-pipe-limit 4096)
-            (inhibit-eol-conversion t)
+      (let ((inhibit-eol-conversion t)
             (from 0)
             to)
         (while (< from send-string-length)
@@ -55,7 +56,7 @@
           (setf (nth 1 args) (substring send-string from to))
           (apply orig-fun args)
           (setq from to))))))
-(advice-add 'process-send-string :around 'ad-process-send-string)
+;; (advice-add 'process-send-string :around 'ad-process-send-string)
 
 ;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
@@ -127,12 +128,13 @@
 ;;------------------------------------------------------------------------------
 
 (with-eval-after-load 'irony
-  ;; bash on Ubuntu on Windows の irony-server と共存するための設定
+  ;; Windows Subsystem for Linux(WSL) の irony-server と共存するための設定
   (defvar irony-server-install-prefix)
   (setq irony-server-install-prefix (concat irony-server-install-prefix "win-nt/"))
 
   ;; Windows performance tweaks
   (setq w32-pipe-read-delay 0)
 
+  ;; Set the buffer size to 64K on Windows (from the original 4K)
   (defvar irony-server-w32-pipe-buffer-size)
   (setq irony-server-w32-pipe-buffer-size (* 64 1024)))

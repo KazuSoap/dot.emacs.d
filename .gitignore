@@ -3,6 +3,7 @@
 site-lisp/extra_modules
 !registry/
 !auto-insert/
+!test/
 *.*
 !*.el
 !byte-compile.sh
