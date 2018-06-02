@@ -27,7 +27,7 @@
 
 ;; -- common --;;
 (load (file-name-sans-extension (setq custom-file (locate-library "-common-misc-.el"))) t t)
-(load "-major-mode-" t t)
 (load "-local-function&macro-" t t)
+(load "-major-mode-" t t)
 (load "-packages-" t t)
 (load "-shell-" t t)
