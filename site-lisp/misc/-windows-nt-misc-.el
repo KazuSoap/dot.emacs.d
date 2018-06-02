@@ -160,8 +160,8 @@
 
   (fset 'ad-exec-path-from-shell-setenv
         (lambda (args)
-          (when (and (string= (car args) "PATH") (fboundp 'cygpath))
-            (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
+          (and (string= (car args) "PATH") (fboundp 'cygpath)
+               (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
           args))
   (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv))
 
