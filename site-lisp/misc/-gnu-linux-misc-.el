@@ -51,3 +51,13 @@
 ;; misc
 ;;------------------------------------------------------------------------------
 (setq select-enable-clipboard t)
+
+;;------------------------------------------------------------------------------
+;; irony
+;; A C/C++ minor mode powered by libclang
+;; from package
+;;------------------------------------------------------------------------------
+
+(with-eval-after-load 'irony
+  ;; irony-server-install に失敗する問題の修正用
+  (defvar ex-irony--install-server-read-cmd "\\1 -DLIBCLANG_LIBRARY=/usr/lib/llvm-3.8/lib/libclang.so"))

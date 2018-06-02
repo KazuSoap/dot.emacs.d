@@ -6,34 +6,25 @@
 ;; emacs default
 ;;------------------------------------------------------------------------------
 
-(setq shell-command-switch "-c")
+(when (string= "0" (getenv "SHLVL"))
+  (cond ((and (load "-shell_env-" t t)
+              (time-less-p (nth 5 (file-attributes "~/.bash_profile"))
+                           (nth 5 (file-attributes (locate-library "-shell_env-")))))
+         (setq-default explicit-shell-file-name (setq shell-file-name (getenv "SHELL"))))
+        (t ;; else
+         (let ((env_val_lst '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT"))
+               (shell_env nil))
+           ;; shell と環境変数を同期
+           (exec-path-from-shell-copy-envs env_val_lst)
 
-;; exec-path-from-shell 遅延ロード設定
-(defvar exec-path-updated
-  (let ((shell-level (getenv "SHLVL")))
-    (if (or (not shell-level) (string= "0" shell-level)) nil t)))
+           ;; 同期した環境変数をファイルに保存
+           (dolist (val env_val_lst)
+             (setq shell_env (concat shell_env (format "(setenv \"%s\" \"%s\")\n" val (getenv val)))))
 
-(defmacro set-exec-path-before-mkproc (fun-name)
-  `(progn
-     (defun ,(intern (format "ad-mkproc-%s" fun-name)) (&rest args)
-       (when (not exec-path-updated)
-         ;; (message "%s" ,(format "%s" fun-name))
-         (setq exec-path-updated t)
-         (exec-path-from-shell-copy-envs '("PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG")))
-       args)
-     (advice-add ',fun-name :before ',(intern (format "ad-mkproc-%s" fun-name)))))
-
-(unless exec-path-updated
-  (set-exec-path-before-mkproc shell)
-  (set-exec-path-before-mkproc executable-find)
-  (set-exec-path-before-mkproc call-process)
-  (set-exec-path-before-mkproc call-process-region)
-  (set-exec-path-before-mkproc start-process)
-  (set-exec-path-before-mkproc make-process))
-
-;; (defun my-executable-find (&rest args)
-;;     (message "%s" args))
-;; (advice-add 'executable-find :before 'my-executable-find)
+           (with-temp-buffer
+             (insert shell_env "(setq exec-path '" (prin1-to-string exec-path) ")\n")
+             (write-file (eval-when-compile (expand-file-name (concat user-emacs-directory "site-lisp/-shell_env-.el"))))
+             (emacs-lisp-byte-compile))))))
 
 ;;; password のミニバッファ入力
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
@@ -45,17 +36,14 @@
 ;;------------------------------------------------------------------------------
 
 (with-eval-after-load 'tramp
-  (defvar tramp-default-method)
-  (setq tramp-default-method "scp")
-  (defvar tramp-encoding-shell)
-  (setq tramp-encoding-shell "bash")
+  (setq-default tramp-default-method "scp")
+  (setq-default tramp-encoding-shell "bash")
 
   ;; リモートサーバで shell を開いた時に日本語が文字化けしないよう、LC_ALL の設定を無効にする
   ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
-  (defvar tramp-remote-process-environment)
-  (let ((process-environment tramp-remote-process-environment))
+  (let ((process-environment (default-value 'tramp-remote-process-environment)))
     (setenv "LC_ALL" nil)
-    (setq tramp-remote-process-environment process-environment)))
+    (setq-default tramp-remote-process-environment process-environment)))
 
 ;;------------------------------------------------------------------------------
 ;; shell-pop
@@ -64,4 +52,4 @@
 ;;------------------------------------------------------------------------------
 
 ;; key-bind
-(global-set-key [f8] 'shell-pop)
+;; (global-set-key [f8] 'shell-pop)
