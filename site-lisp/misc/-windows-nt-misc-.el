@@ -13,14 +13,12 @@
   (defmacro apply-fixed-mountpoint-internal (nth_arg)
        `(defsubst ,(intern (format "apply-fixed-mountpoint-internal_%s" nth_arg)) (args)
                (and (string-match "^/" (nth ,nth_arg args))
-                    (cond ((string-match "^\\(/bin\\)\\(/\\|$\\)" (nth ,nth_arg args))
-                           (setf (nth ,nth_arg args)
-                                 (replace-match ,(concat msys-root "/usr\\1\\2") nil nil (nth ,nth_arg args))))
-                          ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
-                           (setf (nth ,nth_arg args)
-                                 (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
-                          ((string-match "^\\(/home\\)\\(/\\|$\\)" (nth ,nth_arg args))
+                    (cond ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
+                           (setf (nth ,nth_arg args) (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
+                          ((string-match "^/home\\(/\\|$\\)" (nth ,nth_arg args))
                            (setf (nth ,nth_arg args) ,(file-name-directory (getenv "HOME"))))
+                          ((string-match "^/bin\\(/\\|$\\)" (nth ,nth_arg args))
+                           (setf (nth ,nth_arg args) (concat ,(concat msys-root "/usr") (nth ,nth_arg args))))
                           (t ;; else
                            (setf (nth ,nth_arg args) (concat ,msys-root (nth ,nth_arg args))))))
                args))
@@ -29,10 +27,10 @@
 (fset 'apply-fixed-mountpoint_0
       (lambda (args) (apply-fixed-mountpoint-internal_0 args)))
 
-(advice-add 'substitute-in-file-name :filter-args 'apply-fixed-mountpoint_0 '((depth . 0)))
-(advice-add 'expand-file-name :filter-args 'apply-fixed-mountpoint_0 '((depth . 0)))
-(advice-add 'locate-file-internal :filter-args 'apply-fixed-mountpoint_0 '((depth . 0)))
-(advice-add 'helm-ff-set-pattern :filter-args 'apply-fixed-mountpoint_0 '((depth . 0)))
+(advice-add 'substitute-in-file-name :filter-args 'apply-fixed-mountpoint_0)
+(advice-add 'expand-file-name :filter-args 'apply-fixed-mountpoint_0)
+(advice-add 'locate-file-internal :filter-args 'apply-fixed-mountpoint_0)
+(advice-add 'helm-ff-set-pattern :filter-args 'apply-fixed-mountpoint_0)
 
 ;;------------------------------------------------------------------------------
 ;; cygpath
