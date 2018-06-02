@@ -72,3 +72,32 @@
 ;; uniquify
 (setq-default uniquify-buffer-name-style 'post-forward-angle-brackets) ;; 表示形式指定
 (setq-default uniquify-ignore-buffers-re "*[^*]+*") ;; 無視するバッファ名
+
+;;------------------------------------------------------------------------------
+;; custom-set-*
+;;------------------------------------------------------------------------------
+;; custom-save-all された直後に custom-file をバイトコンパイル
+(declare-function custom-file "cus-edit")
+(fset 'ad-custom-save-all (lambda() (byte-compile-file (custom-file) t)))
+(advice-add 'custom-save-all :after 'ad-custom-save-all)
+
+;; emacs 自動追記
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-backends
+   (quote
+    (company-bbdb company-nxml company-css company-semantic company-capf company-files
+                  (company-dabbrev-code company-etags company-keywords)
+                  company-oddmuse company-dabbrev)))
+ '(package-selected-packages
+   (quote
+    (migemo flycheck-plantuml plantuml-mode company flycheck irony yasnippet twittering-mode smart-compile nlinum magit helm ggtags flycheck-irony exec-path-from-shell esup elscreen company-irony-c-headers company-irony))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
