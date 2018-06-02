@@ -11,7 +11,7 @@ site-lisp/extra_modules
 !remove_emacs_settings.reg
 !.Xresources
 !template.*
-shell_env.el
+-shell_env-.el
 recentf
 tramp
 *rc
