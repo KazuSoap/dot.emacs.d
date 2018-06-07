@@ -222,14 +222,6 @@
 ;; (advice-add 'irony-eldoc--strip-underscores :override 'ad-irony-eldoc--strip-underscores)
 
 ;;------------------------------------------------------------------------------
-;; magit
-;; git cliant on emacs
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'magit-git
-  ;; disable magit-auto-revert-mode
-  (with-no-warnings (setq-default magit-revert-buffers nil)))
-
-;;------------------------------------------------------------------------------
 ;; migemo
 ;; ローマ字入力で日本語文字列を検索
 ;;------------------------------------------------------------------------------
