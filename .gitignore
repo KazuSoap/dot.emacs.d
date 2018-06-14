@@ -12,6 +12,7 @@ site-lisp/extra_modules
 !.Xresources
 !template.*
 -shell_env-.el
+-custom-settings-.el
 !sendesc.js
 recentf
 tramp
