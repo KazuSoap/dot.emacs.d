@@ -72,12 +72,13 @@
 (wrap-function-to-control-ime #'map-y-or-n-p nil nil)
 
 ;; fix w32 ime bug
-(menu-bar-open)
-(fset 'send-esc
-      (lambda ()
-        (start-process "my-proc" nil "cscript.exe"
-                       (eval-when-compile (expand-file-name "sendesc.js" user-emacs-directory)))))
-(add-hook 'emacs-startup-hook 'send-esc)
+(when window-system
+  (menu-bar-open)
+  (fset 'send-esc
+        (lambda ()
+          (start-process "my-proc" nil "cscript.exe"
+                         (eval-when-compile (expand-file-name "sendesc.js" user-emacs-directory)))))
+  (add-hook 'emacs-startup-hook 'send-esc))
 
 ;;------------------------------------------------------------------------------
 ;; 印刷設定

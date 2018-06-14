@@ -18,6 +18,7 @@
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (load "-proxy-" t t)
+(setq custom-file (locate-library "-custom-settings-.el"))
 
 ;;------------------------------------------------------------------------------
 ;; load files
