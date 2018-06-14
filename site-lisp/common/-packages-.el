@@ -192,7 +192,7 @@
   (fset 'ad-irony--install-server-read-command
         (lambda (args)
           "modify irony--install-server-read-command"
-          (setenv "CC" "clang") (setenv "CXX" "clang++")
+          ;; (setenv "CC" "clang") (setenv "CXX" "clang++")
           `(,(replace-regexp-in-string
               (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
               (default-value 'ex-irony--install-server-read-cmd)
