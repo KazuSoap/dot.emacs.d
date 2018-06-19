@@ -11,6 +11,7 @@ site-lisp/extra_modules
 !remove_emacs_settings.reg
 !.Xresources
 !template.*
+-proxy-.el
 -shell_env-.el
 -custom-settings-.el
 !sendesc.js
