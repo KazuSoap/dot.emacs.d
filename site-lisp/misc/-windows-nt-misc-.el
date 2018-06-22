@@ -10,22 +10,20 @@
        (nth 3 (split-string
                (shell-command-to-string "reg query \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" -v InstallLocation -s | findstr \"msys64\"") " +\\|\n")))))
 
-  (defmacro apply-fixed-mountpoint-internal (nth_arg)
-       `(defsubst ,(intern (format "apply-fixed-mountpoint-internal_%s" nth_arg)) (args)
-               (and (string-match "^/" (nth ,nth_arg args))
-                    (cond ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
-                           (setf (nth ,nth_arg args) (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
-                          ((string-match "^/home\\(/\\|$\\)" (nth ,nth_arg args))
-                           (setf (nth ,nth_arg args) ,(file-name-directory (getenv "HOME"))))
-                          ((string-match "^/bin\\(/\\|$\\)" (nth ,nth_arg args))
-                           (setf (nth ,nth_arg args) (concat ,(concat msys-root "/usr") (nth ,nth_arg args))))
-                          (t ;; else
-                           (setf (nth ,nth_arg args) (concat ,msys-root (nth ,nth_arg args))))))
-               args))
-  (apply-fixed-mountpoint-internal 0)) ;; apply-fixed-mountpoint-internal_0
+  (defmacro apply-fixed-mountpoint (nth_arg)
+    `(lambda (args)
+       (and (string-match "^/" (nth ,nth_arg args))
+            (cond ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
+                   (setf (nth ,nth_arg args) (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
+                  ((string-match "^/home\\(/\\|$\\)" (nth ,nth_arg args))
+                   (setf (nth ,nth_arg args) ,(file-name-directory (getenv "HOME"))))
+                  ((string-match "^/bin\\(/\\|$\\)" (nth ,nth_arg args))
+                   (setf (nth ,nth_arg args) (concat ,(concat msys-root "/usr") (nth ,nth_arg args))))
+                  (t ;; else
+                   (setf (nth ,nth_arg args) (concat ,msys-root (nth ,nth_arg args))))))
+       args)))
 
-(fset 'apply-fixed-mountpoint_0
-      (lambda (args) (apply-fixed-mountpoint-internal_0 args)))
+(fset 'apply-fixed-mountpoint_0 (apply-fixed-mountpoint 0))
 
 (advice-add 'substitute-in-file-name :filter-args 'apply-fixed-mountpoint_0)
 (advice-add 'expand-file-name :filter-args 'apply-fixed-mountpoint_0)
@@ -112,6 +110,7 @@
                       (encode-coding-string arg 'cp932)
                     arg))
                 args)))
+
 (advice-add 'call-process-region :filter-args 'set-function-args-encode)
 (advice-add 'call-process :filter-args 'set-function-args-encode)
 (advice-add 'start-process :filter-args 'set-function-args-encode)
@@ -131,6 +130,7 @@
                                            (coding-system-change-text-conversion
                                             (car coding-system) 'undecided)
                                            (cdr coding-system)))))))
+
 (advice-add 'comint-output-filter :before 'set-shell-buffer-process-coding-system)
 (advice-add 'term-emulate-terminal :before 'set-shell-buffer-process-coding-system)
 
