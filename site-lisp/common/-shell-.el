@@ -5,11 +5,13 @@
 ;; shell を有効化
 ;; emacs default
 ;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defconst my-shell_env-file (concat user-emacs-directory "site-lisp/-shell_env-.el")))
 
 (when (string= "0" (getenv "SHLVL"))
   (cond ((and (load "-shell_env-" t t)
               (time-less-p (nth 5 (file-attributes "~/.bash_profile"))
-                           (nth 5 (file-attributes (locate-library "-shell_env-")))))
+                           (nth 5 (file-attributes (eval-when-compile my-shell_env-file)))))
          (setq-default explicit-shell-file-name (setq shell-file-name (getenv "SHELL"))))
         (t ;; else
          (let ((env_val_lst '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT"))
@@ -23,7 +25,7 @@
 
            (with-temp-buffer
              (insert shell_env "(setq exec-path '" (prin1-to-string exec-path) ")\n")
-             (write-file (eval-when-compile (expand-file-name (concat user-emacs-directory "site-lisp/-shell_env-.el"))))
+             (write-file (eval-when-compile my-shell_env-file))
              (emacs-lisp-byte-compile))))))
 
 ;;; password のミニバッファ入力
@@ -34,7 +36,6 @@
 ;; emacsからリモートファイルを操作
 ;; emacs default
 ;;------------------------------------------------------------------------------
-
 (with-eval-after-load 'tramp
   (setq-default tramp-default-method "scp")
   (setq-default tramp-encoding-shell "bash")
