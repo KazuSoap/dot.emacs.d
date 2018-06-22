@@ -23,7 +23,6 @@
 
 ;;------------------------------------------------------------------------------
 ;; eldoc
-;;
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'eldoc
   (setq-default eldoc-idle-delay 0.5)) ;; eldoc 遅延
@@ -85,22 +84,23 @@
   ;; 保存時に行末の空白を削除する
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
+  ;; 可視化する不可視文字のリスト
   (setq-default whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
 
   ;; 表示の変更
   (setq-default whitespace-display-mappings
         '(;; space → " "
-          (space-mark ?\xA0 [?\u00A4] [?_])
-          (space-mark ?\x8A0 [?\x8A4] [?_])
-          (space-mark ?\x920 [?\x924] [?_])
-          (space-mark ?\xE20 [?\xE24] [?_])
-          (space-mark ?\xF20 [?\xF24] [?_])
+          (space-mark   ?\xA0   [?\u00A4]     [?_])
+          (space-mark   ?\x8A0  [?\x8A4]      [?_])
+          (space-mark   ?\x920  [?\x924]      [?_])
+          (space-mark   ?\xE20  [?\xE24]      [?_])
+          (space-mark   ?\xF20  [?\xF24]      [?_])
           ;; full-width-space → "□"
-          (space-mark ?\u3000 [?\u25a1] [?_ ?_])
+          (space-mark   ?\u3000 [?\u25a1]     [?_ ?_])
           ;; tab → "»" with underline
-          (tab-mark     ?\t    [?\xBB ?\t]   [?\\ ?\t])
+          (tab-mark     ?\t     [?\xBB ?\t]   [?\\ ?\t])
           ;; newline → "｣"
-          (newline-mark ?\n    [?\uFF63 ?\n] [?$ ?\n])))
+          (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
 
   ;; 以下の正規表現にマッチするものを"space"と認識
   (setq-default whitespace-space-regexp "\\(\u3000+\\)"))
@@ -237,7 +237,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; nlinum-mode
-;;
+;; 行番号の表示( linum-mode の高速版)
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'nlinum
   (defvar nlinum-format)
@@ -253,7 +253,6 @@
 
 ;;------------------------------------------------------------------------------
 ;; plantuml-mode
-;;
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'plantuml-mode
   (setq-default plantuml-jar-path "c:/msys64/usr/local/share/plantuml/plantuml.jar")
@@ -272,7 +271,6 @@
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
-;;
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'smart-compile
   (defvar smart-compile-alist)
