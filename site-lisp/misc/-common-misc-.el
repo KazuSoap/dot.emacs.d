@@ -3,11 +3,9 @@
 ;;------------------------------------------------------------------------------
 ;; global minor-mode
 ;;------------------------------------------------------------------------------
-(menu-bar-mode) ;; 端末の場合 <F10> で menu 操作可能
-(line-number-mode) ;; モードラインに行番号表示
-(column-number-mode) ;; モードラインに列番号表示
-(size-indication-mode -1) ;; モードラインにファイルサイズ表示
-;; (blink-cursor-mode -1) ;; cursor点滅表示
+(column-number-mode) ;; モードラインに列番号表示 (default off)
+;; (line-number-mode -1) ;; モードラインに行番号表示 (default on)
+;; (size-indication-mode -1) ;; モードラインにファイルサイズ表示 (default off)
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
@@ -77,6 +75,6 @@
 ;; custom-set-*
 ;;------------------------------------------------------------------------------
 ;; custom-save-all された直後に custom-file をバイトコンパイル
-(declare-function custom-file "cus-edit")
-(fset 'ad-custom-save-all (lambda() (byte-compile-file (custom-file) t)))
-(advice-add 'custom-save-all :after 'ad-custom-save-all)
+;; (declare-function custom-file "cus-edit")
+;; (fset 'ad-custom-save-all (lambda() (byte-compile-file (custom-file) t)))
+;; (advice-add 'custom-save-all :after 'ad-custom-save-all)

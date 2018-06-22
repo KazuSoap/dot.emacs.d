@@ -3,36 +3,58 @@ Windows Registry Editor Version 5.00
 [-HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
 
 [HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
-//-- font --//
-"Emacs.Font"="VL Gothic-9"
 
-//-- windowの幅と高さ --//
-"Emacs.Geometry"="100x30"
-
-//-- 透過度 --//
-"Emacs.Alpha"="85"
-
-//-- 行間 --//
-"Emacs.lineSpacing"="0"
-
-//-- tool-bar --//
+//==============================================================================
+// global minor-mode
+//==============================================================================
+// tool-bar-mode (default on)
 "Emacs.toolbar"="off"
 
-//-- 左右フリンジ --//
+// menu-bar-mode (default on)
+// 端末の場合 <F10> で menu 操作可能
+// "Emacs.menuBar"="off"
+
+// cursor点滅表示 (default on)
+// "Emacs.cursorBlink"="off"
+
+//==============================================================================
+// common-misc
+//==============================================================================
+// font
+"Emacs.Font"="VL Gothic-9"
+
+// windowの幅と高さ
+"Emacs.Geometry"="100x30"
+
+// 透過度
+"Emacs.Alpha"="85"
+
+// 行間
+"Emacs.lineSpacing"="0"
+
+// 左右フリンジ
 "Emacs.leftfringe"="0"
 "Emacs.rightfringe"="0"
 
-//-- mode-line --//
+//==============================================================================
+// custom faces
+//==============================================================================
+//------------------------------------------------------------------------------
+// mode-line
+//------------------------------------------------------------------------------
 "Emacs.mode-line.attributeBackground"="DarkRed"
 "Emacs.mode-line.attributeForeground"="white"
 
-//-- linum --//
+//------------------------------------------------------------------------------
+// linum
+//------------------------------------------------------------------------------
 "Emacs.linum.attributeBackground"="black"
 "Emacs.linum.attributeForeground"="gray"
 "Emacs.linum.attributeUnderline"="off"
-//"Emacs.linum.attributeHeight"="0.8"
 
-//-- whitespace --//
+//------------------------------------------------------------------------------
+// whitespace
+//------------------------------------------------------------------------------
 // space
 "Emacs.whitespace-space.attributeBackground"="black"
 "Emacs.whitespace-space.attributeForeground"="GreenYellow"
@@ -48,7 +70,9 @@ Windows Registry Editor Version 5.00
 // trailing
 "Emacs.whitespace-trailing.attributeBackground"="DeepPink"
 
-//-- elscreen --//
+//------------------------------------------------------------------------------
+// elscreen
+//------------------------------------------------------------------------------
 // tab-background (header-line)
 "Emacs.elscreen-tab-background-face.attributeBackground"="black"
 
