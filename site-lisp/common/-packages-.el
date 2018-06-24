@@ -166,9 +166,9 @@
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'helm
   ;; helm-migemo を有効化
-  (require 'cmigemo)
-  (declare-function helm-migemo-mode "helm-multi-match")
-  (helm-migemo-mode)
+  ;; (or (featurep 'migemo) (require 'cmigemo))
+  ;; (declare-function helm-migemo-mode "helm-multi-match")
+  ;; (helm-migemo-mode)
 
   ;; http://fukuyama.co/nonexpansion
   ;; 自動補完を無効にする

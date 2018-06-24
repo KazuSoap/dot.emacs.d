@@ -16,7 +16,7 @@
             (cond ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
                    (setf (nth ,nth_arg args) (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
                   ((string-match "^/home\\(/\\|$\\)" (nth ,nth_arg args))
-                   (setf (nth ,nth_arg args) ,(file-name-directory (getenv "HOME"))))
+                   (setf (nth ,nth_arg args) (replace-match ,(file-name-directory (getenv "HOME")) nil nil (nth ,nth_arg args))))
                   ((string-match "^/bin\\(/\\|$\\)" (nth ,nth_arg args))
                    (setf (nth ,nth_arg args) (concat ,(concat msys-root "/usr") (nth ,nth_arg args))))
                   (t ;; else
