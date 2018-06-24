@@ -53,9 +53,9 @@ Windows Registry Editor Version 5.00
 //------------------------------------------------------------------------------
 // linum
 //------------------------------------------------------------------------------
-"Emacs.linum.attributeBackground"="black"
-"Emacs.linum.attributeForeground"="gray"
-"Emacs.linum.attributeUnderline"="off"
+//"Emacs.linum.attributeBackground"="black"
+//"Emacs.linum.attributeForeground"="gray"
+//"Emacs.linum.attributeUnderline"="off"
 
 //------------------------------------------------------------------------------
 // whitespace

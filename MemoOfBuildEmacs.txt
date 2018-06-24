@@ -1,0 +1,92 @@
+emacs26.1(release) の build
+
+参考
+https://www.reddit.com/r/bashonubuntuonwindows/comments/4y7ytp/notes_on_successfully_compiling_emacs_with_gui/
+
+ソースのダウンロード
+※ すべて clone すると時間がかかるので、emacs-26.1 タグのみ clone
+git clone --depth=1 -b emacs-26.1 git@github.com:emacs-mirror/emacs.git emacs-26.1
+
+autoconf, automake が必要
+sudo apt-get install autoconf automake
+
+x とのクリップボード共有のバグ修正
+https://m.reddit.com/r/bashonubuntuonwindows/comments/4tpn5r/running_emacs_master_branch_in_recent_wsl_and/
+を参考
+(setq x-select-enable-clipboard t)
+
+----------------------------------------------------
+以下は VcXsrv の最新版(1.19.2.0)で解決済み(gtk3でOK)
+build するときは gtk2 で build
+※ デフォの gtk3 で build すると、win10上の x-server で実行した際、拡大や表示がおかしくなる
+$ sudo apt-get install libgtk2.0-dev
+CFLAGS='-O2 -march=native -mtune=native' \
+./configure --with-x-toolkit=gtk2 --with-modules --prefix=/usr/local/mybuild/emacs-25.x
+----------------------------------------------------
+
+そのほかに必要なパッケージは適宜インストールする。
+
+$ ./autogen.sh
+
+(linux)
+CFLAGS='-O2 -march=native' ./configure --program-transform-name='s/^ctags$/ctags.emacs/' --with-x-toolkit=gtk3 --with-modules
+
+(win)
+CFLAGS='-O2 -march=native' ./configure --program-transform-name='s/^ctags$/ctags.emacs/' --without-dbus --with-modules
+
+make の前に
+sudo sh -c "echo 0 > /proc/sys/kernel/randomize_va_space"
+やらないと以下のエラー
+
+**************************************************
+Warning: Your system has a gap between BSS and the
+heap (16896991 bytes).  This usually means that exec-shield
+or something similar is in effect.  The dump may
+fail because of this.  See the section about
+exec-shield in etc/PROBLEMS for more information.
+**************************************************
+make[1]: *** [bootstrap-emacs] Segmentation fault (コアダンプしました)
+make[1]: ディレクトリ `/home/Kazu-Soap/emacs_build/emacs-25.x/src' から出ます
+make: *** [src] エラー 2
+
+また make の際、-j オプションを付けると
+./temacs --batch --load loadup bootstrap
+でハングしてしまう
+
+sudo make bootstrap && sudo make install-strip
+
+make後
+再起動もしくは
+sudo sh -c "echo 2 > /proc/sys/kernel/randomize_va_space"
+を忘れずに
+
+(winのみ)
+emacs.exe はリンクで生成されるがそれを削除して
+emacs-2x.x.exe をコピーしてリネームする
+
+-----------------------------------------------------------------------
+
+X resources
+https://wiki.archlinuxjp.org/index.php/X_resources
+.Xresources ファイルを再読み込みかつ、古い resources を破棄
+xrdb ~/.Xresources
+
+.Xresources ファイルを再読み込みかつ、古い resources を維持
+xrdb -merge ~/.Xresources
+
+xorg-xserver のインストール
+sudo apt-get install xserver-xorg
+
+ハードウェア アクセラレーションではなく必ず間接レンダリングを使う
+export LIBGL_ALWAYS_INDIRECT=1
+
+emacs 等幅設定
+Ricty のインストール -> ~/.fonts フォルダに格納
+cd ~/.fonts
+mkfontscale ~/.fonts
+mkfontdir ~/.fonts
+fc-cache -vf
+xset fp+ ~/.fonts
+
+コマンドでVLゴシックをインストール
+sudo apt-get install ttf-vlgothic
