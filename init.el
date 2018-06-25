@@ -17,8 +17,10 @@
 ;;------------------------------------------------------------------------------
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(load "-proxy-" t t)
-(setq custom-file (eval-when-compile (locate-library "-custom-settings-.el")))
+;; (load "-proxy-" t t)
+(setq custom-file
+      (eval-when-compile
+        (expand-file-name (concat user-emacs-directory "site-lisp/-custom-settings-.el"))))
 
 ;;------------------------------------------------------------------------------
 ;; load files
@@ -27,7 +29,7 @@
 (load (eval-when-compile (replace-regexp-in-string "/" "-" (format "-%s-misc-" system-type))) t t)
 
 ;; -- common --;;
-(load "-common-misc-.el" t t)
+(load "-common-misc-" t t)
 (load "-local-function&macro-" t t)
 (load "-major-mode-" t t)
 (load "-packages-" t t)

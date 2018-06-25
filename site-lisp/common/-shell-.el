@@ -2,8 +2,6 @@
 
 ;;------------------------------------------------------------------------------
 ;; shell
-;; shell を有効化
-;; emacs default
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   (defconst my-shell_env-file (concat user-emacs-directory "site-lisp/-shell_env-.el")))
@@ -16,10 +14,10 @@
         (t ;; else
          (let ((env_val_lst '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT"))
                (shell_env nil))
-           ;; shell と環境変数を同期
+           ;; sync emacs environment value with shell's one
            (exec-path-from-shell-copy-envs env_val_lst)
 
-           ;; 同期した環境変数をファイルに保存
+           ;; save sync environment value
            (dolist (val env_val_lst)
              (setq shell_env (concat shell_env (format "(setenv \"%s\" \"%s\")\n" val (getenv val)))))
 
@@ -28,12 +26,12 @@
              (write-file (eval-when-compile my-shell_env-file))
              (emacs-lisp-byte-compile))))))
 
-;;; password のミニバッファ入力
+;;; put password in minibuffer
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 
 ;;------------------------------------------------------------------------------
 ;; TRAMP(TransparentRemoteAccessMultipleProtocol)
-;; emacsからリモートファイルを操作
+;; edit remoto file from local emacs
 ;; emacs default
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'tramp
