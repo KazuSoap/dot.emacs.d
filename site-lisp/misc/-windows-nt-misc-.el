@@ -181,6 +181,11 @@
 ;;                   args)))
 ;;   (advice-add 'magit-process-file :filter-args 'ad-magit-process-file))
 
+;; (with-eval-after-load 'magit-utils
+;;   (start-process "my-bash-process" "my-bash" "bash"))
+;; (with-eval-after-load 'magit
+;;   (kill-process (get-process "my-bash-process")))
+
 ;;------------------------------------------------------------------------------
 ;; irony
 ;; A C/C++ minor mode powered by libclang
