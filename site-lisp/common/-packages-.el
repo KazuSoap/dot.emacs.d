@@ -239,17 +239,17 @@
 ;; nlinum-mode
 ;; 行番号の表示( linum-mode の高速版)
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'nlinum
-  (defvar nlinum-format)
+;; (with-eval-after-load 'nlinum
+;;   (defvar nlinum-format)
 
-  (fset 'dynamic-default-nlinum-width
-        (lambda ()
-          (set (make-local-variable 'nlinum-format)
-               (concat "%" (number-to-string
-                            ;; estimate max digit number of buffer lines.
-                            (max 2 (1+ (floor (log (max 1 (count-lines 1 (point-max))) 10)))))
-                       "d\u007c"))))
-  (add-hook 'nlinum-mode-on-hook 'dynamic-default-nlinum-width))
+;;   (fset 'dynamic-default-nlinum-width
+;;         (lambda ()
+;;           (set (make-local-variable 'nlinum-format)
+;;                (concat "%" (number-to-string
+;;                             ;; estimate max digit number of buffer lines.
+;;                             (max 2 (1+ (floor (log (max 1 (count-lines 1 (point-max))) 10)))))
+;;                        "d\u007c"))))
+;;   (add-hook 'nlinum-mode-on-hook 'dynamic-default-nlinum-width))
 
 ;;------------------------------------------------------------------------------
 ;; plantuml-mode

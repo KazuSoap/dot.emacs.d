@@ -23,7 +23,8 @@
 (eval-when-compile
   (defsubst my-common-mode-setup ()
     (cua-mode) ;; cua
-    (nlinum-mode) ;; nlinum
+    (display-line-numbers-mode)
+    ;; (nlinum-mode) ;; nlinum
     (whitespace-mode))) ;; whitespace
 
 ;; プログラミング言語共通

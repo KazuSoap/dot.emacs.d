@@ -7,7 +7,7 @@ Windows Registry Editor Version 5.00
 //==============================================================================
 // Environment Variable
 //==============================================================================
-"HOME"="C:/Users/USERNAME"
+"HOME"="d:/Users/USERNAME"
 
 //==============================================================================
 // global minor-mode
@@ -49,6 +49,12 @@ Windows Registry Editor Version 5.00
 //------------------------------------------------------------------------------
 "Emacs.mode-line.attributeBackground"="DarkRed"
 "Emacs.mode-line.attributeForeground"="white"
+
+//------------------------------------------------------------------------------
+// display-line-numbers
+//------------------------------------------------------------------------------
+"Emacs.line-number.attributeBackground"="gray10"
+"Emacs.line-number-current-line.attributeBackground"="gray40"
 
 //------------------------------------------------------------------------------
 // linum
