@@ -4,27 +4,31 @@
 ;; shell
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defconst my-shell_env-file (concat user-emacs-directory "site-lisp/-shell_env-.el")))
+  (defconst my-env-var-list '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT"))
+
+  (defmacro setenv_cached-env-var (env-var-lst)
+    (let ((lst `(,@(eval env-var-lst)))
+          (val nil)
+          (ret '(progn)))
+      (while lst
+        (if (string-match "SHELL" (car lst))
+            (setq val (list 'setq-default 'explicit-shell-file-name (list 'setq 'shell-file-name (list 'setenv (car lst) (getenv (car lst))))))
+          (setq val (list 'setenv (car lst) (getenv (car lst)))))
+        (push val ret)
+        (setq lst (cdr lst)))
+      (reverse ret))))
 
 (when (string= "0" (getenv "SHLVL"))
-  (cond ((and (load "-shell_env-" t t)
-              (time-less-p (nth 5 (file-attributes "~/.bash_profile"))
-                           (nth 5 (file-attributes (eval-when-compile my-shell_env-file)))))
-         (setq-default explicit-shell-file-name (setq shell-file-name (getenv "SHELL"))))
+  (cond ((time-less-p (eval-when-compile (nth 5 (file-attributes (file-truename "~/.bash_profile"))))
+                      (nth 5 (file-attributes (eval-when-compile (file-truename "~/.bash_profile")))))
+         ;; sync emacs environment variable with shell's one
+         (exec-path-from-shell-copy-envs (eval-when-compile my-env-var-list))
+         (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-shell-.el"))))
+         )
         (t ;; else
-         (let ((env_val_lst '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT"))
-               (shell_env nil))
-           ;; sync emacs environment value with shell's one
-           (exec-path-from-shell-copy-envs env_val_lst)
-
-           ;; save sync environment value
-           (dolist (val env_val_lst)
-             (setq shell_env (concat shell_env (format "(setenv \"%s\" \"%s\")\n" val (getenv val)))))
-
-           (with-temp-buffer
-             (insert shell_env "(setq exec-path '" (prin1-to-string exec-path) ")\n")
-             (write-file (eval-when-compile my-shell_env-file))
-             (emacs-lisp-byte-compile))))))
+         ;; setenv cached environment variables
+         (setenv_cached-env-var (eval-when-compile my-env-var-list))
+         (setq exec-path (eval-when-compile exec-path)))))
 
 ;;; put password in minibuffer
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
