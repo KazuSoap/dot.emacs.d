@@ -8,6 +8,10 @@
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
+;; (eval-when-compile
+;;   (defconst my-site-lisp-LastModifiedTime
+;;     (nth 5 (file-attributes (concat user-emacs-directory "site-lisp")))))
+
 (let ((default-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "site-lisp")))))
   (add-to-list 'load-path default-directory)
       (normal-top-level-add-subdirs-to-load-path))
@@ -20,7 +24,7 @@
 ;; (load "-proxy-" t t)
 (setq custom-file
       (eval-when-compile
-        (expand-file-name (concat user-emacs-directory "site-lisp/-custom-settings-.el"))))
+        (expand-file-name (concat user-emacs-directory "my-custom-file.el"))))
 
 ;;------------------------------------------------------------------------------
 ;; load files

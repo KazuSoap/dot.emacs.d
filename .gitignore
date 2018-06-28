@@ -12,8 +12,7 @@ site-lisp/extra_modules
 !.Xresources
 !template.*
 -proxy-.el
--shell_env-.el
--custom-settings-.el
+my-custom-file.el
 !sendesc.js
 recentf
 tramp
