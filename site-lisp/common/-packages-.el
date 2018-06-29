@@ -103,7 +103,13 @@
           (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
 
   ;; 以下の正規表現にマッチするものを"space"と認識
-  (setq-default whitespace-space-regexp "\\(\u3000+\\)"))
+  (setq-default whitespace-space-regexp "\\(\u3000+\\)")
+
+  ;; face
+  (set-face-attribute 'whitespace-space nil :foreground "GreenYellow" :background "black")
+  (set-face-attribute 'whitespace-tab nil :foreground "LightSkyBlue" :background "black" :underline t)
+  (set-face-attribute 'whitespace-newline nil :foreground "DeepSkyBlue")
+  (set-face-attribute 'whitespace-trailing nil :background "DeepPink"))
 
 ;;------------------------------------------------------------------------------
 ;; vc-mode
@@ -138,7 +144,16 @@
   (setq-default elscreen-display-tab t) ;; tabの表示および幅の設定
   (setq-default elscreen-display-screen-number nil) ;; modelineへの番号表示
   (setq-default elscreen-tab-display-kill-screen nil) ;; タブの先頭に[X]を表示しない
-  (setq-default elscreen-tab-display-control nil)) ;; header-lineの先頭に[<->]を表示しない
+  (setq-default elscreen-tab-display-control nil) ;; header-lineの先頭に[<->]を表示しない
+
+  ;; face
+  ;; tab-background (header-line)
+  (set-face-attribute 'elscreen-tab-background-face nil :background "black" :underline nil)
+  ;; tab-current-screen (current-screen)
+  (set-face-attribute 'elscreen-tab-current-screen-face nil :foreground "yellow" :background "black" :underline nil)
+  ;; tab-other-screen (other-screen)
+  (set-face-attribute 'elscreen-tab-other-screen-face nil :foreground "Gray72" :background "black" :underline nil)
+  )
 
 ;;------------------------------------------------------------------------------
 ;; elscreen-separate-buffer-list
