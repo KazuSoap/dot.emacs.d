@@ -1,9 +1,10 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; garbage collection
+;; misc
 ;;------------------------------------------------------------------------------
-(setq gc-cons-threshold (* 128 1024 1024))
+;; startup-message off
+(setq-default inhibit-startup-screen t)
 
 ;;------------------------------------------------------------------------------
 ;; load path
@@ -29,11 +30,10 @@
 ;;------------------------------------------------------------------------------
 ;; load files
 ;;------------------------------------------------------------------------------
-;; -- win or linux -- ;;
+;; -- win or linux misc -- ;;
 (load (eval-when-compile (replace-regexp-in-string "/" "-" (format "-%s-misc-" system-type))) t t)
 
 ;; -- common --;;
-(load "-common-misc-" t t)
 (load "-local-function&macro-" t t)
 (load "-major-mode-" t t)
 (load "-packages-" t t)

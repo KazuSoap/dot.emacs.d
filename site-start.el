@@ -1,6 +1,16 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
+;; garbage collection
+;;------------------------------------------------------------------------------
+(setq gc-cons-threshold (* 128 1024 1024))
+
+;;------------------------------------------------------------------------------
+;; HOME
+;;------------------------------------------------------------------------------
+(setenv "HOME" "d:/Users/USERNAME")
+
+;;------------------------------------------------------------------------------
 ;; global minor-mode
 ;;------------------------------------------------------------------------------
 (column-number-mode) ;; モードラインに列番号表示 (default off)
@@ -31,6 +41,11 @@
 
 ;; color-them
 (load-theme 'wheatgrass t)
+(set-face-attribute 'mode-line nil :foreground "gray85" :background "dark slate gray") ;; mode line in active
+(set-face-attribute 'fringe nil :background "black")
+(with-eval-after-load 'display-line-numbers
+  (set-face-attribute 'line-number nil :background "gray10")
+  (set-face-attribute 'line-number-current-line nil :background "gray40"))
 
 ;; "yes or no"を"y or n"に
 (fset 'yes-or-no-p #'y-or-n-p)
@@ -45,9 +60,6 @@
 
 ;; ファイルのフルパスをタイトルバーに表示
 (setq-default frame-title-format (format "%%f - Emacs"))
-
-;; startup-message off
-(setq-default inhibit-startup-screen t)
 
 ;; beep音 off
 (setq-default ring-bell-function #'ignore)
