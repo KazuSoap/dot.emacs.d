@@ -41,7 +41,7 @@
 
 ;; color-them
 (load-theme 'wheatgrass t)
-(set-face-attribute 'mode-line nil :foreground "gray85" :background "dark slate gray") ;; mode line in active
+(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459") ;; mode line in active
 (set-face-attribute 'fringe nil :background "black")
 (with-eval-after-load 'display-line-numbers
   (set-face-attribute 'line-number nil :background "gray10")
