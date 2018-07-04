@@ -120,19 +120,25 @@
 ;; この設定により、shellバッファで utf-8 の出力をする cygwin コマンドと、cp932 の出力をする
 ;; Windowsコマンドの漢字の文字化けが回避される。また、漢字を含むプロンプトが文字化けする場合には、
 ;; .bashrc の PS1 の設定の後に「export PS1="$(sleep 0.1)$PS1"」を追加すれば、回避できる模様。
-(fset 'set-shell-buffer-process-coding-system
-      (lambda (&rest args)
-        (let ((process (car args)))
-          (if (and process (string-match "^shell\\|^terminal\\|^\\*ansi-term" (process-name process)))
-              ;; process
-              (let ((coding-system (process-coding-system process)))
-                (set-process-coding-system process
-                                           (coding-system-change-text-conversion
-                                            (car coding-system) 'undecided)
-                                           (cdr coding-system)))))))
+(eval-when-compile
+  (defmacro set-process-coding-system-undecided (&optional is_term)
+    (let ((shell-cond
+           (if is_term 'process
+             '(and process (string-match "^shell" (process-name process))))))
+      `(lambda (&rest args)
+         (let ((process (car args)))
+           (if ,shell-cond
+               (let ((coding-system (process-coding-system process)))
+                 (set-process-coding-system process
+                                            (coding-system-change-text-conversion
+                                             (car coding-system) 'undecided)
+                                            (cdr coding-system)))))))))
 
-(advice-add 'comint-output-filter :before 'set-shell-buffer-process-coding-system)
-(advice-add 'term-emulate-terminal :before 'set-shell-buffer-process-coding-system)
+(fset 'set-shell-process-coding-system (set-process-coding-system-undecided))
+(fset 'set-term-process-coding-system (set-process-coding-system-undecided t))
+
+(advice-add 'comint-output-filter :before 'set-shell-process-coding-system)
+(advice-add 'term-emulate-terminal :before 'set-term-process-coding-system)
 
 ;;------------------------------------------------------------------------------
 ;; shell
