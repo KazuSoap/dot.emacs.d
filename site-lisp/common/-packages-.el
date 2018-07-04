@@ -1,8 +1,41 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;==============================================================================
-;; emacs built in
+;; emacs built in package
 ;;==============================================================================
+;;------------------------------------------------------------------------------
+;; auto-insert
+;; ファイルの種類に応じたテンプレートの挿入
+;;------------------------------------------------------------------------------
+
+(with-eval-after-load 'autoinsert
+  ;; テンプレートのディレクトリ
+  (setq-default auto-insert-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "auto-insert"))))
+
+  ;; テンプレート中で展開してほしいテンプレート変数を定義
+  (setq-default template-replacements-alists
+                `(("%file%"             . ,(lambda () (file-name-nondirectory (buffer-file-name))))
+                  ("%file-without-ext%" . ,(lambda () (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))
+                  ("%include-guard%"    . ,(lambda () (format "INCLUDE_%s_H" (upcase (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))))))
+
+  (fset 'my-template
+        (lambda ()
+          (time-stamp)
+          (dolist (c (default-value 'template-replacements-alists))
+            (goto-char (point-min))
+            (while (search-forward (car c) nil t)
+              (replace-match (funcall (cdr c)))))
+          (goto-char (point-max))
+          (message "done.")))
+
+  ;; 各ファイルによってテンプレートを切り替える
+  (defvar auto-insert-alist)
+  (add-to-list 'auto-insert-alist '("\\.cpp$"   . ["template.cpp" my-template]))
+  (add-to-list 'auto-insert-alist '("\\.h$"     . ["template.h" my-template]))
+  (add-to-list 'auto-insert-alist '("Makefile$" . ["template.make" my-template])))
+
+(add-hook 'find-file-not-found-hooks #'auto-insert)
+
 ;;------------------------------------------------------------------------------
 ;; cua-mode
 ;; C-Ret で矩形選択
@@ -44,37 +77,14 @@
 ;; (setq-default gud-tooltip-echo-area nil)
 
 ;;------------------------------------------------------------------------------
-;; auto-insert
-;; ファイルの種類に応じたテンプレートの挿入
+;; uniquify
+;; 同一ファイル名を区別する
 ;;------------------------------------------------------------------------------
+;; 表示形式指定(default: 'post-forward-angle-brackets)
+;; (setq-default uniquify-buffer-name-style 'post-forward-angle-brackets)
 
-(with-eval-after-load 'autoinsert
-  ;; テンプレートのディレクトリ
-  (setq-default auto-insert-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "auto-insert"))))
-
-  ;; テンプレート中で展開してほしいテンプレート変数を定義
-  (setq-default template-replacements-alists
-                `(("%file%"             . ,(lambda () (file-name-nondirectory (buffer-file-name))))
-                  ("%file-without-ext%" . ,(lambda () (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))
-                  ("%include-guard%"    . ,(lambda () (format "INCLUDE_%s_H" (upcase (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))))))
-
-  (fset 'my-template
-        (lambda ()
-          (time-stamp)
-          (dolist (c (default-value 'template-replacements-alists))
-            (goto-char (point-min))
-            (while (search-forward (car c) nil t)
-              (replace-match (funcall (cdr c)))))
-          (goto-char (point-max))
-          (message "done.")))
-
-  ;; 各ファイルによってテンプレートを切り替える
-  (defvar auto-insert-alist)
-  (add-to-list 'auto-insert-alist '("\\.cpp$"   . ["template.cpp" my-template]))
-  (add-to-list 'auto-insert-alist '("\\.h$"     . ["template.h" my-template]))
-  (add-to-list 'auto-insert-alist '("Makefile$" . ["template.make" my-template])))
-
-(add-hook 'find-file-not-found-hooks #'auto-insert)
+;; 無視するバッファ名
+(setq-default uniquify-ignore-buffers-re "*[^*]+*")
 
 ;;------------------------------------------------------------------------------
 ;; whitespace-mode
@@ -110,6 +120,21 @@
   (set-face-attribute 'whitespace-tab nil :foreground "LightSkyBlue" :background "black" :underline t)
   (set-face-attribute 'whitespace-newline nil :foreground "DeepSkyBlue")
   (set-face-attribute 'whitespace-trailing nil :background "DeepPink"))
+
+;;------------------------------------------------------------------------------
+;; windmove
+;; Emacsの分割ウィンドウを modifier-key + 矢印キー で移動
+;;------------------------------------------------------------------------------
+(fset 'activate-windmove
+      (lambda ()
+        (unless (boundp 'windmove-wrap-around)
+          ;; modifier-key = Alt
+          (windmove-default-keybindings 'meta)
+          ;; ウィンドウの移動の際 wrap-around を有効化
+          (setq-default windmove-wrap-around t)
+          ;; 1回呼び出した後 hook から取り除く
+          (remove-hook 'window-configuration-change-hook 'activate-windmove))))
+(add-hook 'window-configuration-change-hook 'activate-windmove)
 
 ;;------------------------------------------------------------------------------
 ;; vc-mode

@@ -1,24 +1,22 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; garbage collection
-;;------------------------------------------------------------------------------
-(setq gc-cons-threshold (* 128 1024 1024))
-
-;;------------------------------------------------------------------------------
 ;; HOME
 ;;------------------------------------------------------------------------------
 (setenv "HOME" "d:/Users/USERNAME")
 
 ;;------------------------------------------------------------------------------
-;; global minor-mode
+;; color-theme
 ;;------------------------------------------------------------------------------
-(column-number-mode) ;; モードラインに列番号表示 (default off)
-;; (line-number-mode -1) ;; モードラインに行番号表示 (default on)
-;; (size-indication-mode -1) ;; モードラインにファイルサイズ表示 (default off)
+(load-theme 'wheatgrass t)
+(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459") ;; mode line in active
+(set-face-attribute 'fringe nil :background "black")
+(with-eval-after-load 'display-line-numbers
+  (set-face-attribute 'line-number nil :background "gray10")
+  (set-face-attribute 'line-number-current-line nil :background "gray40"))
 
 ;;------------------------------------------------------------------------------
-;; common-misc
+;; coding-system
 ;;------------------------------------------------------------------------------
 ;; デフォルトの文字コードを設定
 ;; 指定される文字コードは以下の項目
@@ -39,13 +37,18 @@
                            (t input-coding))))
                 . utf-8-unix))
 
-;; color-them
-(load-theme 'wheatgrass t)
-(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459") ;; mode line in active
-(set-face-attribute 'fringe nil :background "black")
-(with-eval-after-load 'display-line-numbers
-  (set-face-attribute 'line-number nil :background "gray10")
-  (set-face-attribute 'line-number-current-line nil :background "gray40"))
+;;------------------------------------------------------------------------------
+;; global minor-mode
+;;------------------------------------------------------------------------------
+(column-number-mode) ;; モードラインに列番号表示 (default off)
+;; (line-number-mode -1) ;; モードラインに行番号表示 (default on)
+;; (size-indication-mode -1) ;; モードラインにファイルサイズ表示 (default off)
+
+;;------------------------------------------------------------------------------
+;; common-misc
+;;------------------------------------------------------------------------------
+;; garbage collection
+(setq-default gc-cons-threshold (* 128 1024 1024))
 
 ;; "yes or no"を"y or n"に
 (fset 'yes-or-no-p #'y-or-n-p)
@@ -53,10 +56,6 @@
 ;; C-hでBS, shift+C-hでHelp
 (keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to DEL
 (keyboard-translate ?\C-? ?\C-h)  ; translate DEL to `C-h'
-
-;; 分割したウィンドウ間を Alt + 矢印キー で移動
-(windmove-default-keybindings 'meta)
-(setq-default windmove-wrap-around t) ;; window 間移動を環状にする
 
 ;; ファイルのフルパスをタイトルバーに表示
 (setq-default frame-title-format (format "%%f - Emacs"))
@@ -78,15 +77,3 @@
 ;; mouse scroll
 (setq-default mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
-
-;; uniquify
-(setq-default uniquify-buffer-name-style 'post-forward-angle-brackets) ;; 表示形式指定
-(setq-default uniquify-ignore-buffers-re "*[^*]+*") ;; 無視するバッファ名
-
-;;------------------------------------------------------------------------------
-;; custom-set-*
-;;------------------------------------------------------------------------------
-;; custom-save-all された直後に custom-file をバイトコンパイル
-;; (declare-function custom-file "cus-edit")
-;; (fset 'ad-custom-save-all (lambda() (byte-compile-file (custom-file) t)))
-;; (advice-add 'custom-save-all :after 'ad-custom-save-all)
