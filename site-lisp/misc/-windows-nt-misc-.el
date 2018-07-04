@@ -123,7 +123,7 @@
 (fset 'set-shell-buffer-process-coding-system
       (lambda (&rest args)
         (let ((process (car args)))
-          (if (and process (string-match "^shell\\|^terminal" (process-name process)))
+          (if (and process (string-match "^shell\\|^terminal\\|^\\*ansi-term" (process-name process)))
               ;; process
               (let ((coding-system (process-coding-system process)))
                 (set-process-coding-system process
@@ -171,16 +171,6 @@
 ;; git クライアント
 ;; from package
 ;;------------------------------------------------------------------------------
-;; (with-eval-after-load 'magit
-;;   (fset 'ad-magit-process-file
-;;         (lambda (args)
-;;           (mapcar (lambda (x)
-;;                     (if (and (stringp x) (string-match-p "\\^{.*}" x))
-;;                         (shell-quote-argument x)
-;;                       x))
-;;                   args)))
-;;   (advice-add 'magit-process-file :filter-args 'ad-magit-process-file))
-
 ;; (with-eval-after-load 'magit-utils
 ;;   (start-process "my-bash-process" "my-bash" "bash"))
 ;; (with-eval-after-load 'magit
