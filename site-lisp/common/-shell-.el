@@ -23,8 +23,7 @@
                       (nth 5 (file-attributes (eval-when-compile (file-truename "~/.bash_profile")))))
          ;; sync emacs environment variable with shell's one
          (exec-path-from-shell-copy-envs (eval-when-compile my-env-var-list))
-         (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-shell-.el"))))
-         )
+         (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-shell-.el")))))
         (t ;; else
          ;; setenv cached environment variables
          (setenv_cached-env-var (eval-when-compile my-env-var-list))
