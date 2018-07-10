@@ -4,6 +4,7 @@
 ;; misc
 ;;------------------------------------------------------------------------------
 ;; startup-message off
+;; site-start で設定不可 (ref: normal-top-level in startup.el)
 (setq-default inhibit-startup-screen t)
 
 ;;------------------------------------------------------------------------------

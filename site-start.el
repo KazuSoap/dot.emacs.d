@@ -1,16 +1,24 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
+;; garbage collection
+;;------------------------------------------------------------------------------
+(setq-default gc-cons-threshold (* 128 1024 1024))
+
+;;------------------------------------------------------------------------------
 ;; HOME
 ;;------------------------------------------------------------------------------
 (setenv "HOME" "d:/Users/USERNAME")
 
 ;;------------------------------------------------------------------------------
-;; color-theme
+;; face
 ;;------------------------------------------------------------------------------
+;; color-theme
 (load-theme 'wheatgrass t)
-(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459") ;; mode line in active
+(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
 (set-face-attribute 'fringe nil :background "black")
+
+;; line-number
 (with-eval-after-load 'display-line-numbers
   (set-face-attribute 'line-number nil :background "gray10")
   (set-face-attribute 'line-number-current-line nil :background "gray40"))
@@ -42,14 +50,11 @@
 ;;------------------------------------------------------------------------------
 (column-number-mode) ;; モードラインに列番号表示 (default off)
 ;; (line-number-mode -1) ;; モードラインに行番号表示 (default on)
-;; (size-indication-mode -1) ;; モードラインにファイルサイズ表示 (default off)
+;; (size-indication-mode 1) ;; モードラインにファイルサイズ表示 (default off)
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
 ;;------------------------------------------------------------------------------
-;; garbage collection
-(setq-default gc-cons-threshold (* 128 1024 1024))
-
 ;; "yes or no"を"y or n"に
 (fset 'yes-or-no-p #'y-or-n-p)
 
