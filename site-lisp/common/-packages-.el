@@ -45,6 +45,14 @@
   (setq-default cua-enable-cua-keys nil))
 
 ;;------------------------------------------------------------------------------
+;; display-line-numbers-mode
+;; 行番号の表示
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'display-line-numbers
+  (set-face-attribute 'line-number nil :background "gray10")
+  (set-face-attribute 'line-number-current-line nil :background "gray40"))
+
+;;------------------------------------------------------------------------------
 ;; display-time
 ;; 時刻の表示
 ;;------------------------------------------------------------------------------
@@ -128,12 +136,10 @@
 (fset 'activate-windmove
       (lambda ()
         (unless (boundp 'windmove-wrap-around)
-          ;; modifier-key = Alt
-          (windmove-default-keybindings 'meta)
-          ;; ウィンドウの移動の際 wrap-around を有効化
-          (setq-default windmove-wrap-around t)
-          ;; 1回呼び出した後 hook から取り除く
-          (remove-hook 'window-configuration-change-hook 'activate-windmove))))
+          (windmove-default-keybindings 'meta) ;; modifier-key = Alt
+          (setq-default windmove-wrap-around t) ;; wrap-around を有効化
+          (remove-hook 'window-configuration-change-hook 'activate-windmove) ;; 呼出し後 hook から削除
+          (fmakunbound 'activate-windmove)))) ;; 呼出し後シンボルの関数ポインタを "void" にする
 (add-hook 'window-configuration-change-hook 'activate-windmove)
 
 ;;------------------------------------------------------------------------------

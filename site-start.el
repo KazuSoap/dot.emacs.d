@@ -18,11 +18,6 @@
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
 (set-face-attribute 'fringe nil :background "black")
 
-;; line-number
-(with-eval-after-load 'display-line-numbers
-  (set-face-attribute 'line-number nil :background "gray10")
-  (set-face-attribute 'line-number-current-line nil :background "gray40"))
-
 ;;------------------------------------------------------------------------------
 ;; coding-system
 ;;------------------------------------------------------------------------------
