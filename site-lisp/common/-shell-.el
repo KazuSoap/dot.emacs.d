@@ -7,16 +7,12 @@
   (defconst my-env-var-list '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT"))
 
   (defmacro setenv_cached-env-var (env-var-lst)
-    (let ((lst `(,@(eval env-var-lst)))
-          (val nil)
-          (ret '(progn)))
-      (while lst
-        (if (string-match "SHELL" (car lst))
-            (setq val (list 'setq-default 'explicit-shell-file-name (list 'setq 'shell-file-name (list 'setenv (car lst) (getenv (car lst))))))
-          (setq val (list 'setenv (car lst) (getenv (car lst)))))
-        (push val ret)
-        (setq lst (cdr lst)))
-      (reverse ret))))
+    (cons 'progn
+          (mapcar (lambda (x)
+                    (if (string-match "SHELL" x)
+                        `(setq-default shell-file-name (setenv ,x ,(getenv x)))
+                      `(setenv ,x ,(getenv x))))
+                  (eval env-var-lst)))))
 
 (when (string= "0" (getenv "SHLVL"))
   (cond ((time-less-p (eval-when-compile (nth 5 (file-attributes (file-truename "~/.bash_profile"))))
