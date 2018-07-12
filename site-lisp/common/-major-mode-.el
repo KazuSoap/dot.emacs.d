@@ -74,6 +74,11 @@
         (setq irony-additional-clang-options '("-std=c++14"))))
 (add-hook 'c++-mode-hook 'my-c++-mode-setup)
 
+;; emacs-lisp-mode
+(fset 'my-emacs-lisp-mode-setup
+      (lambda () (setq lexical-binding t)))
+(add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-setup)
+
 ;; elisp-mode
 (fset 'my-elisp-mode-setup
       (lambda ()
