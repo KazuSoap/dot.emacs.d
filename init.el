@@ -22,8 +22,7 @@
 ;; package system
 ;;------------------------------------------------------------------------------
 (package-initialize)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-;; (load "-proxy-" t t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq custom-file
       (eval-when-compile
         (expand-file-name (concat user-emacs-directory "my-custom-file.el"))))
