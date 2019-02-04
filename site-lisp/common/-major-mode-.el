@@ -22,7 +22,7 @@
 ;; 共通
 (eval-when-compile
   (defsubst my-common-mode-setup ()
-    (cua-mode) ;; cua
+    ;; (cua-mode) ;; cua
     (display-line-numbers-mode)
     ;; (nlinum-mode) ;; nlinum
     (whitespace-mode))) ;; whitespace

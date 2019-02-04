@@ -41,8 +41,9 @@
 ;; C-Ret で矩形選択
 ;;------------------------------------------------------------------------------
 ;; 詳しいキーバインド操作：http://dev.ariel-networks.com/articles/emacs/part5/
-(with-eval-after-load 'cua-base
-  (setq-default cua-enable-cua-keys nil))
+;; (with-eval-after-load 'cua-base
+;;   (setq-default cua-enable-cua-keys nil))
+(global-set-key (kbd "C-<return>") 'cua-rectangle-mark-mode)
 
 ;;------------------------------------------------------------------------------
 ;; display-line-numbers-mode
