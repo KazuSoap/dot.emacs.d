@@ -1,69 +1,41 @@
-!!-- font -- !!
-Emacs.Fontset-0:-*-ricty-medium-r-normal--12-*-*-*-m-*-fontset-Ricty,\
-        ascii:-*-*-*-*-*-*-*-*-*-*-*-*-iso8859-1,\
-        latin-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-jisx0201.1976-0,\
-	katakana-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-jisx0201.1976-0,\
-	japanese-jisx0208:-*-*-*-*-*-*-*-*-*-*-*-*-jisx0208.1990-0
-
-Emacs.Fontset-1:-*-vl gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,\
-        ascii:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1,\
-        latin-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1,\
-	katakana-jisx0201:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1,\
-	japanese-jisx0208:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1
-
-! Emacs.Font: fontset-Ricty
-Emacs.Font: fontset-VL_Gothic
-
-!!-- windowの幅と高さ --!!
-Emacs.Geometry: 100x30
-
-!!-- 透過度 --!!
-Emacs.Alpha: 85
-
-!!-- 行間 --!!
-Emacs.LineSpacing: 0
-
-!!-- tool-bar --!!
+!!==============================================================================
+!! global minor-mode
+!!==============================================================================
+!! tool-bar  (default on)
 Emacs.toolBar: off
 
-!!-- 左右フリンジ --!!
+!! menu-bar-mode (default on)
+!! 端末の場合 <F10> で menu 操作可能
+!! Emacs.menuBar: off
+
+!! cursor点滅表示 (default on)
+!! Emacs.cursorBlink: off
+
+!!==============================================================================
+!! common-misc
+!!==============================================================================
+!! font
+!! Ricty Diminished Discord
+Emacs.Fontset-0:-*-Ricty Diminished Discord-bold-r-normal--14-*-*-*-m-*-fontset-Ricty,\
+        unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+Emacs.Font: fontset-Ricty
+
+!! VL Gothic
+! Emacs.Fontset-1:-*-vl gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,\
+!         unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+! Emacs.Font: fontset-VL_Gothic
+
+!! windowの幅と高さ
+Emacs.Geometry: 100x28
+
+!! 透過度
+! Emacs.Alpha: 85
+
+!! 行間 (default nil)
+Emacs.LineSpacing: 0
+
+!! 左右フリンジ
 Emacs.LeftFringe: 0
 Emacs.RightFringe: 0
-
-!!-- mode-line --!!
-Emacs.mode-line.attributeBackground: DarkRed
-Emacs.mode-line.attributeForeground: white
-
-!!-- linum --!!
-Emacs.linum.attributeBackground: black
-Emacs.linum.attributeForeground: gray
-Emacs.linum.attributeUnderline: off
-!! Emacs.linum.attributeHeight: 0.8
-
-!!-- whitespace --!!
-!! space
-Emacs.whitespace-space.attributeBackground: black
-Emacs.whitespace-space.attributeForeground: GreenYellow
-
-!! tab
-Emacs.whitespace-tab.attributeBackground: black
-Emacs.whitespace-tab.attributeForeground: LightSkyBlue
-Emacs.whitespace-tab.attributeUnderline: on
-
-!! newline
-Emacs.whitespace-newline.attributeForeground: DeepSkyBlue
-
-!! trailing
-Emacs.whitespace-trailing.attributeBackground: DeepPink
-
-!!-- elscreen --!!
-!! tab-background (header-line)
-Emacs.elscreen-tab-background-face.attributeBackground: black
-
-!! tab-current-screen (current-screen)
-Emacs.elscreen-tab-current-screen-face.attributeBackground: black
-Emacs.elscreen-tab-current-screen-face.attributeForeground: yellow
-
-!! tab-other-screen (other-screen)
-Emacs.elscreen-tab-other-screen-face.attributeBackground: black
-Emacs.elscreen-tab-other-screen-face.attributeForeground: Gray72

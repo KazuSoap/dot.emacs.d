@@ -7,9 +7,7 @@ Windows Registry Editor Version 5.00
 //==============================================================================
 // Environment Variable
 //==============================================================================
-// "C:/msys64/mingw64/share/emacs/site-lisp/site-start.el" で指定したほうが高速
-// "C:/msys64/mingw64/share/emacs/site-lisp/site-start.elc" にリンクを張る
-// "HOME"="d:/Users/USERNAME"
+"HOME"="d:/Users/USERNAME"
 
 //==============================================================================
 // global minor-mode
@@ -28,7 +26,15 @@ Windows Registry Editor Version 5.00
 // common-misc
 //==============================================================================
 // font
-"Emacs.Font"="VL Gothic-9"
+// Ricty Diminished Discord
+"Emacs.Fontset-0"="-*-Ricty Diminished Discord-bold-r-normal--14-*-*-*-m-*-fontset-Ricty,unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
+
+"Emacs.Font"="fontset-Ricty"
+
+// VL Gothic
+// "Emacs.Fontset-1"="-*-VL Gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
+
+// "Emacs.Font"="fontset-VL_Gothic"
 
 // windowの幅と高さ
 "Emacs.Geometry"="100x30"
@@ -36,8 +42,8 @@ Windows Registry Editor Version 5.00
 // 透過度
 "Emacs.Alpha"="85"
 
-// 行間
-//"Emacs.lineSpacing"="0" (default nil)
+// 行間 (default nil)
+"Emacs.lineSpacing"="1"
 
 // 左右フリンジ
 "Emacs.leftfringe"="off"
