@@ -24,7 +24,7 @@ Emacs.Fontset-0:-*-Ricty Diminished Discord-bold-r-normal--14-*-*-*-m-*-fontset-
 Emacs.Font: fontset-Ricty
 
 !! VL Gothic
-! Emacs.Fontset-1:-*-vl gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,\
+! Emacs.Fontset-0:-*-VL Gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,\
 !         unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 ! Emacs.Font: fontset-VL_Gothic
