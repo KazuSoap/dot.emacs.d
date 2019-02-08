@@ -4,7 +4,7 @@
 ;; shell
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defconst my-env-var-list 
+  (defconst my-env-var-list
     '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "JAVA_HOME" "GRAPHVIZ_DOT" "http_proxy" "https_proxy"))
 
   (defmacro setenv_cached-env-var (env-var-lst)
