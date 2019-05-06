@@ -104,3 +104,10 @@
         (my-common-mode-setup)
         (flycheck-mode)))
 (add-hook 'sh-mode-hook 'my-sh-mode-setup)
+
+;; javascript mode
+(fset 'my-js-mode-setup
+      (lambda ()
+        (my-common-programing-mode-setup)
+        (my-common-mode-setup)))
+(add-hook 'js-mode-hook 'my-js-mode-setup)
