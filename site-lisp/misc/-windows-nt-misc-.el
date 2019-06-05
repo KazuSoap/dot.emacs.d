@@ -199,4 +199,4 @@
   (setq-default irony-server-w32-pipe-buffer-size (* 64 1024))
 
   ;; irony-server-install に失敗する問題の修正用
-  (defvar ex-irony--install-server-read-cmd "\\1 -G'MSYS Makefiles' -DLIBCLANG_LIBRARY=/mingw64/bin/libclang.dll"))
+  (defvar ex-irony--install-server-read-cmd "\\1 -G'MSYS Makefiles'"))
