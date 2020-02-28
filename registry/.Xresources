@@ -1,3 +1,5 @@
+!! xrdb .Xresources
+
 Emacs.useXIM: false
 
 !!==============================================================================
@@ -17,23 +19,20 @@ Emacs.toolBar: off
 !! common-misc
 !!==============================================================================
 !! font
+!! XLFD
+!! https://wiki.archlinux.jp/index.php/X_Logical_Font_Description
+!! https://qiita.com/j8takagi/items/01aecdd28f87cdd3cd2c
+!! -maker-family-weight-slant-widthtype-style-px-height-resX-resY-spacing-width-registry-encoding
+
 !! Ricty Diminished Discord
-Emacs.Fontset-0:-*-Ricty Diminished Discord-bold-r-normal--14-*-*-*-m-*-fontset-Ricty,\
-        unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-Emacs.Font: fontset-Ricty
-
-!! VL Gothic
-! Emacs.Fontset-0:-*-VL Gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,\
-!         unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-! Emacs.Font: fontset-VL_Gothic
+Emacs.Fontset-0:-PfEd-Ricty Diminished Discord-bold-normal-normal--14-*-*-*-m-0-fontset-myricty
+Emacs.Font: fontset-myricty
 
 !! windowの幅と高さ
 Emacs.Geometry: 100x28
 
 !! 透過度
-! Emacs.Alpha: 85
+Emacs.Alpha: 85
 
 !! 行間 (default nil)
 Emacs.LineSpacing: 0

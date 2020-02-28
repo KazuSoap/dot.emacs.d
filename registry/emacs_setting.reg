@@ -27,14 +27,8 @@ Windows Registry Editor Version 5.00
 //==============================================================================
 // font
 // Ricty Diminished Discord
-"Emacs.Fontset-0"="-*-Ricty Diminished Discord-bold-r-normal--14-*-*-*-m-*-fontset-Ricty,unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
-
-"Emacs.Font"="fontset-Ricty"
-
-// VL Gothic
-// "Emacs.Fontset-1"="-*-VL Gothic-medium-r-normal--12-*-*-*-m-*-fontset-VL_Gothic,unicode:-*-*-*-*-*-*-*-*-*-*-*-*-*-*"
-
-// "Emacs.Font"="fontset-VL_Gothic"
+"Emacs.Fontset-0"="-outline-Ricty Diminished Discord-bold-normal-normal-mono-14-*-*-*-c-0-fontset-myricty"
+"Emacs.Font"="fontset-myricty"
 
 // windowÇÃïùÇ∆çÇÇ≥
 "Emacs.Geometry"="100x30"
