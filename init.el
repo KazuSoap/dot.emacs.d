@@ -38,3 +38,12 @@
 (load "-major-mode-" t t)
 (load "-packages-" t t)
 (load "-shell-" t t)
+
+;; (message "%s"
+;;          (with-temp-buffer
+;;            (insert-file-contents-literally (locate-library "-windows-nt-misc-.el"))
+;;            (insert-file-contents-literally (concat user-emacs-directory "init.el"))
+;;            (while (re-search-forward "^\s*\\(;;\\|(load\\).*\n\\|^\n" nil t)
+;;              (replace-match ""))
+;;            ;; (write-file filename)
+;;            (buffer-substring-no-properties (point-min) (point-max))))

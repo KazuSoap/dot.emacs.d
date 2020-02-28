@@ -26,27 +26,27 @@
 ;;; my-window-resizer ----------------------------------------------------------
 ;; window size を調整
 ;; http://d.hatena.ne.jp/khiker/20100119/window_resize
-;; (fset 'my-window-resizer
-;;       (lambda ()
-;;         "Control window size and position."
-;;         (interactive)
-;;         (let ((dx (if (= (nth 0 (window-edges)) 0) 1 -1))
-;;               (dy (if (= (nth 1 (window-edges)) 0) 1 -1))
-;;               action
-;;               c)
-;;           (catch 'end-flag
-;;             (while t
-;;               (setq action (read-key-sequence-vector (format "size[%dx%d]" (window-width) (window-height))))
-;;               (setq c (aref action 0))
-;;               (cond ((= c ?l) (enlarge-window dx t))
-;;                     ((= c ?h) (shrink-window dx t))
-;;                     ((= c ?j) (enlarge-window dy))
-;;                     ((= c ?k) (shrink-window dy))
-;;                     (t (let ((command (key-binding action)))
-;;                          (when command (call-interactively command)))
-;;                        (message "Quit")
-;;                        (throw 'end-flag t))))))))
-;; (global-set-key (kbd "C-c C-r") 'my-window-resizer)
+(fset 'my-window-resizer
+      (lambda ()
+        "Control window size and position."
+        (interactive)
+        (let ((dx (if (= (nth 0 (window-edges)) 0) 1 -1))
+              (dy (if (= (nth 1 (window-edges)) 0) 1 -1))
+              action
+              c)
+          (catch 'end-flag
+            (while t
+              (setq action (read-key-sequence-vector (format "size[%dx%d]" (window-width) (window-height))))
+              (setq c (aref action 0))
+              (cond ((= c ?l) (enlarge-window dx t))
+                    ((= c ?h) (shrink-window dx t))
+                    ((= c ?j) (enlarge-window dy))
+                    ((= c ?k) (shrink-window dy))
+                    (t (let ((command (key-binding action)))
+                         (when command (call-interactively command)))
+                       (message "Quit")
+                       (throw 'end-flag t))))))))
+(global-set-key (kbd "C-c C-r") 'my-window-resizer)
 
 ;;; my-mark-eob ----------------------------------------------------------------
 ;; バッファの最後に "[EOB]" を表示
@@ -73,16 +73,16 @@
 ;;------------------------------------------------------------------------------
 ;;; my-debug-message -----------------------------------------------------------
 ;; 特定の関数を実行された際、引数と出力、backtrace を出力
-;; (eval-when-compile
-;;   (defmacro my-debug-message (fun-name)
-;;     `(progn
-;;        (fset (quote ,(intern (format "add-%s" fun-name)))
-;;              (lambda (f &rest args)
-;;                (backtrace)
-;;                ;; (message "(%s)before:%s" ,(format "%s" fun-name) (prin1-to-string args))
-;;                (message "(%s)before:%s" ,(format "%s" fun-name) args)
+(eval-when-compile
+  (defmacro my-debug-message (fun-name)
+    `(progn
+       (fset (quote ,(intern (format "add-%s" fun-name)))
+             (lambda (f &rest args)
+               (backtrace)
+               ;; (message "(%s)before:%s" ,(format "%s" fun-name) (prin1-to-string args))
+               (message "(%s)before:%s" ,(format "%s" fun-name) args)
 
-;;                (let ((ret (apply f args)))
-;;                    (message "(%s)after:%s" ,(format "%s" fun-name) ret)
-;;                  ret)))
-;;        (advice-add ',fun-name :around ',(intern (format "add-%s" fun-name)) '((depth . 100))))))
+               (let ((ret (apply f args)))
+                   (message "(%s)after:%s" ,(format "%s" fun-name) ret)
+                 ret)))
+       (advice-add ',fun-name :around ',(intern (format "add-%s" fun-name)) '((depth . 100))))))

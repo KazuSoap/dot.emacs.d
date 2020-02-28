@@ -13,6 +13,7 @@ site-lisp/extra_modules
 !template.*
 -proxy-.el
 my-custom-file.el
+srecode-map.el
 !sendesc.js
 recentf
 tramp
