@@ -33,7 +33,8 @@
     (setq tab-width 4) ;; tab 幅
     (setq truncate-lines t) ;; 画面外文字の切り詰め
     (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
-    (show-paren-mode))) ;; 括弧のハイライト
+    (show-paren-mode) ;; 括弧のハイライト
+    (company-mode))) ;; 補完
 
 ;; text-mode
 (fset 'my-text-mode-setup
@@ -52,13 +53,14 @@
 (eval-when-compile
   (defsubst my-c/c++-mode-setup ()
     ;; (eldoc-mode)
-    (company-mode)
     (flycheck-mode)
     (flycheck-irony-setup)
     (ggtags-mode)
     (irony-mode)
-    (add-to-list (make-local-variable 'company-backends) '(company-irony-c-headers company-irony))
-    (vs-set-c-style)))
+    (google-set-c-style)
+    (google-make-newline-indent)
+    ;; (vs-set-c-style)
+    (add-to-list (make-local-variable 'company-backends) '(company-irony-c-headers company-irony))))
 
 (fset 'my-c-mode-setup
       (lambda ()
@@ -84,18 +86,17 @@
       (lambda ()
         (my-common-programing-mode-setup)
         (my-common-mode-setup)
-        (company-mode)
         (flycheck-mode)))
 (add-hook 'elisp-mode-hook 'my-elisp-mode-setup)
 
-;; plantuml-mode
-(fset 'my-plantuml-mode-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)
-        (flycheck-mode)
-        (flycheck-plantuml-setup)))
-(add-hook 'plantuml-mode-hook 'my-plantuml-mode-setup)
+;; ;; plantuml-mode
+;; (fset 'my-plantuml-mode-setup
+;;       (lambda ()
+;;         (my-common-programing-mode-setup)
+;;         (my-common-mode-setup)
+;;         (flycheck-mode)
+;;         (flycheck-plantuml-setup)))
+;; (add-hook 'plantuml-mode-hook 'my-plantuml-mode-setup)
 
 ;; sh-mode
 (fset 'my-sh-mode-setup
@@ -111,3 +112,13 @@
         (my-common-programing-mode-setup)
         (my-common-mode-setup)))
 (add-hook 'js-mode-hook 'my-js-mode-setup)
+
+;; python-mode
+(fset 'my-python-mode-setup
+      (lambda ()
+        (my-common-programing-mode-setup)
+        (my-common-mode-setup)
+        (ggtags-mode)
+        (highlight-indent-guides-mode)
+        (setq-default python-indent-offset 2)))
+(add-hook 'python-mode-hook 'my-python-mode-setup)

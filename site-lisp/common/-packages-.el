@@ -64,6 +64,11 @@
 ;; (display-time)
 
 ;;------------------------------------------------------------------------------
+;; ediff
+;;------------------------------------------------------------------------------
+(setq-default ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;;------------------------------------------------------------------------------
 ;; eldoc
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'eldoc
@@ -162,11 +167,23 @@
 ;; 補完システム
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'company
-  ;; 基本設定
   (setq-default company-idle-delay nil) ;; 遅延
   (setq-default company-minimum-prefix-length 3) ;; 補完開始文字長
   (setq-default company-selection-wrap-around t) ;; 最下時に↓で最初に戻る
-  (define-key (default-value 'company-mode-map) (kbd "C-<tab>") 'company-complete)) ;; 補完は手動
+  (define-key (default-value 'company-mode-map) (kbd "C-<tab>") 'company-complete))
+
+;;------------------------------------------------------------------------------
+;; company-box
+;; A company front-end with icons.
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'company
+  (add-hook 'company-mode-hook 'company-box-mode)
+  (setq-default company-box-enable-icon nil)
+  ;;(setq-default company-box-icons-alist 'company-box-icons-all-the-icons)
+  ;;(setq-default company-box-doc-enable nil)
+  (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
+  (set-face-attribute 'company-tooltip nil :background "midnight blue")
+  )
 
 ;;------------------------------------------------------------------------------
 ;; elscreen
@@ -230,6 +247,18 @@
 (global-set-key (kbd "C-x C-b") #'helm-buffers-list)
 
 ;;------------------------------------------------------------------------------
+;; highlight-indent-guides
+;; A minor mode highlights indentation levels via font-lock.
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'highlight-indent-guides
+  ;; (setq-default highlight-indent-guides-method 'character)
+  ;; (setq-default highlight-indent-guides-auto-character-face-perc 100)
+  ;; (setq-default highlight-indent-guides-character ?\|)
+  ;; (setq-default highlight-indent-guides-method 'column)
+  (setq-default highlight-indent-guides-auto-odd-face-perc 40)
+  (setq-default highlight-indent-guides-auto-even-face-perc 25))
+
+;;------------------------------------------------------------------------------
 ;; irony
 ;; A C/C++ minor mode powered by libclang
 ;;------------------------------------------------------------------------------
@@ -267,6 +296,13 @@
 ;;               (replace-regexp-in-string (car r) (cdr r) new-string)))
 ;;       new-string)))
 ;; (advice-add 'irony-eldoc--strip-underscores :override 'ad-irony-eldoc--strip-underscores)
+
+;;------------------------------------------------------------------------------
+;; magit
+;; git クライアント
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'magit
+  (setq-default git-commit-summary-max-length 999))
 
 ;;------------------------------------------------------------------------------
 ;; migemo
