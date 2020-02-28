@@ -47,27 +47,27 @@
 ;; IME
 ;;------------------------------------------------------------------------------
 ;; IMEのカスタマイズ
-(setq-default default-input-method "W32-IME") ;;標準IMEの設定
+;; (setq-default default-input-method "W32-IME") ;;標準IMEの設定
 
 ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
-(setq-default w32-ime-mode-line-state-indicator "[Aa]")
-(setq-default w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
+;; (setq-default w32-ime-mode-line-state-indicator "[Aa]")
+;; (setq-default w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
 
 ;; IME の初期化
-(w32-ime-initialize)
+;; (w32-ime-initialize)
 
 ;; IME ON/OFF時のカーソルカラー
-(add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
-(add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
+;; (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
+;; (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
 
 ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
-(wrap-function-to-control-ime #'universal-argument t nil)
-(wrap-function-to-control-ime #'read-string nil nil)
-(wrap-function-to-control-ime #'read-char nil nil)
-(wrap-function-to-control-ime #'read-from-minibuffer nil nil)
-(wrap-function-to-control-ime #'y-or-n-p nil nil)
-(wrap-function-to-control-ime #'yes-or-no-p nil nil)
-(wrap-function-to-control-ime #'map-y-or-n-p nil nil)
+;; (wrap-function-to-control-ime #'universal-argument t nil)
+;; (wrap-function-to-control-ime #'read-string nil nil)
+;; (wrap-function-to-control-ime #'read-char nil nil)
+;; (wrap-function-to-control-ime #'read-from-minibuffer nil nil)
+;; (wrap-function-to-control-ime #'y-or-n-p nil nil)
+;; (wrap-function-to-control-ime #'yes-or-no-p nil nil)
+;; (wrap-function-to-control-ime #'map-y-or-n-p nil nil)
 
 ;; fix w32 ime bug
 ;; (when window-system
