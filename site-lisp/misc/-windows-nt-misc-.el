@@ -46,6 +46,22 @@
 ;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
+(global-set-key (kbd "<non-convert>")
+                (lambda ()
+                  (interactive)
+                  (global-unset-key (kbd "<non-convert>"))
+                  (when (and (locate-library "w32-imeadv")
+                             (locate-library "w32-imm32-on-start-enabler-impl")
+                             (load "lisp-w32-imeadv" nil t)
+                             (require 'w32-imm32-on-start-enabler))
+                    (w32-imm32-on-start-enabler-inject)
+                    (setq-default w32-imeadv-ime-status-line-indicate-close "[Aa]")
+                    (setq-default w32-imeadv-status-line "[Aa]")
+                    (setq-default w32-imeadv-ime-openstatus-indicate-cursor-color-enable t)
+                    (setq-default w32-imeadv-ime-openstatus-indicate-cursor-color "yellow")
+                    (setq-default w32-imeadv-ime-closestatus-indicate-cursor-color "thistle")
+                    (force-mode-line-update t))))
+
 ;; IMEのカスタマイズ
 ;; (setq-default default-input-method "W32-IME") ;;標準IMEの設定
 
@@ -178,9 +194,9 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 ;; (with-eval-after-load 'magit-utils
-;;   (start-process "my-bash-process" "my-bash" "bash"))
-;; (with-eval-after-load 'magit
-;;   (kill-process (get-process "my-bash-process")))
+;;   (unless (get-process "my-bash-process")
+;;     (start-process "my-bash-process" "my-bash" "bash")
+;;     (set-process-query-on-exit-flag (get-process "my-bash-process") nil)))
 
 ;;------------------------------------------------------------------------------
 ;; irony
