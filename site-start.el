@@ -1,6 +1,41 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
+;; windows-misc
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defmacro generate-msys-root ()
+    (when (eq system-type 'windows-nt)
+      `(fset 'get-msys-root
+             (lambda ()
+               "Get the installation location of \"msys2\""
+               ,(let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
+                       (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
+                  (ignore-errors
+                    (expand-file-name
+                     (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))))))
+;; (eval-when-compile
+;;   (defmacro generate-msys-root ()
+;;     (when (eq system-type 'windows-nt)
+;;       `(defun get-msys-root ()
+;;          "Get the installation location of \"msys2\""
+;;          ,(let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
+;;                  (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
+;;             (ignore-errors
+;;               (expand-file-name
+;;                (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))))))
+(eval-and-compile
+  (generate-msys-root))
+
+(eval-when-compile
+  (defmacro setenv_home ()
+    (when (eq system-type 'windows-nt)
+      ;; Set the environment variable "HOME"
+      `(setenv "HOME" ,(concat (get-msys-root) "/home/" (getenv "USERNAME"))))))
+(eval-and-compile
+  (setenv_home))
+
+;;------------------------------------------------------------------------------
 ;; garbage collection
 ;;------------------------------------------------------------------------------
 (setq-default gc-cons-threshold (* 128 1024 1024))

@@ -3,32 +3,26 @@
 ;;------------------------------------------------------------------------------
 ;; fix mount point for msys2
 ;;------------------------------------------------------------------------------
-(eval-when-compile
-  (defconst msys-root
-    (ignore-errors
-      (expand-file-name
-       (nth 3 (split-string
-               (shell-command-to-string "reg query \"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\" -v InstallLocation -s | findstr \"msys64\"") " +\\|\n")))))
+;;   ;; (defmacro apply-fixed-mountpoint (nth_arg)
+;;   ;;   `(lambda (args)
+;;   ;;      (and (string-match "^/" (nth ,nth_arg args))
+;;   ;;           (cond ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
+;;   ;;                  (setf (nth ,nth_arg args) (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
+;;   ;;                 ((string-match "^/home\\(/\\|$\\)" (nth ,nth_arg args))
+;;   ;;                  (setf (nth ,nth_arg args) (replace-match ,(file-name-directory (getenv "HOME")) nil nil (nth ,nth_arg args))))
+;;   ;;                 ((string-match "^/bin\\(/\\|$\\)" (nth ,nth_arg args))
+;;   ;;                  (setf (nth ,nth_arg args) (concat ,(concat msys-root "/usr") (nth ,nth_arg args))))
+;;   ;;                 (t ;; else
+;;   ;;                  (setf (nth ,nth_arg args) (concat ,msys-root (nth ,nth_arg args))))))
+;;   ;;      args))
+;;   )
 
-  (defmacro apply-fixed-mountpoint (nth_arg)
-    `(lambda (args)
-       (and (string-match "^/" (nth ,nth_arg args))
-            (cond ((string-match "^/\\([A-Za-z]\\)\\(/\\|$\\)" (nth ,nth_arg args))
-                   (setf (nth ,nth_arg args) (replace-match "\\1:\\2" nil nil (nth ,nth_arg args))))
-                  ((string-match "^/home\\(/\\|$\\)" (nth ,nth_arg args))
-                   (setf (nth ,nth_arg args) (replace-match ,(file-name-directory (getenv "HOME")) nil nil (nth ,nth_arg args))))
-                  ((string-match "^/bin\\(/\\|$\\)" (nth ,nth_arg args))
-                   (setf (nth ,nth_arg args) (concat ,(concat msys-root "/usr") (nth ,nth_arg args))))
-                  (t ;; else
-                   (setf (nth ,nth_arg args) (concat ,msys-root (nth ,nth_arg args))))))
-       args)))
+;; ;; (fset 'apply-fixed-mountpoint_0 (apply-fixed-mountpoint 0))
 
-(fset 'apply-fixed-mountpoint_0 (apply-fixed-mountpoint 0))
-
-(advice-add 'substitute-in-file-name :filter-args 'apply-fixed-mountpoint_0)
-(advice-add 'expand-file-name :filter-args 'apply-fixed-mountpoint_0)
-(advice-add 'locate-file-internal :filter-args 'apply-fixed-mountpoint_0)
-(advice-add 'helm-ff-set-pattern :filter-args 'apply-fixed-mountpoint_0)
+;; ;; (advice-add 'substitute-in-file-name :filter-args 'apply-fixed-mountpoint_0)
+;; ;; (advice-add 'expand-file-name :filter-args 'apply-fixed-mountpoint_0)
+;; ;; (advice-add 'locate-file-internal :filter-args 'apply-fixed-mountpoint_0)
+;; ;; (advice-add 'helm-ff-set-pattern :filter-args 'apply-fixed-mountpoint_0)
 
 ;;------------------------------------------------------------------------------
 ;; cygpath
@@ -38,7 +32,8 @@
         "cygpath for emacs lisp"
         (if path
             (with-temp-buffer
-              (call-process (eval-when-compile (expand-file-name "/bin/cygpath")) nil '(t nil) nil option path)
+              ;; (call-process (eval-when-compile (concat (get-msys-root) "/usr/bin/cygpath")) nil '(t nil) nil option path)
+              (call-process (concat (get-msys-root) "/usr/bin/cygpath") nil '(t nil) nil option path)
               (unless (bobp)
                 (goto-char (point-min))
                 (buffer-substring-no-properties (point) (line-end-position)))))))
@@ -46,6 +41,7 @@
 ;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
+(declare-function w32-imm32-on-start-enabler-inject "w32-imm32-on-start-enabler")
 (global-set-key (kbd "<non-convert>")
                 (lambda ()
                   (interactive)
@@ -61,38 +57,6 @@
                     (setq-default w32-imeadv-ime-openstatus-indicate-cursor-color "yellow")
                     (setq-default w32-imeadv-ime-closestatus-indicate-cursor-color "thistle")
                     (force-mode-line-update t))))
-
-;; IMEのカスタマイズ
-;; (setq-default default-input-method "W32-IME") ;;標準IMEの設定
-
-;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
-;; (setq-default w32-ime-mode-line-state-indicator "[Aa]")
-;; (setq-default w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
-
-;; IME の初期化
-;; (w32-ime-initialize)
-
-;; IME ON/OFF時のカーソルカラー
-;; (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
-;; (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
-
-;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
-;; (wrap-function-to-control-ime #'universal-argument t nil)
-;; (wrap-function-to-control-ime #'read-string nil nil)
-;; (wrap-function-to-control-ime #'read-char nil nil)
-;; (wrap-function-to-control-ime #'read-from-minibuffer nil nil)
-;; (wrap-function-to-control-ime #'y-or-n-p nil nil)
-;; (wrap-function-to-control-ime #'yes-or-no-p nil nil)
-;; (wrap-function-to-control-ime #'map-y-or-n-p nil nil)
-
-;; fix w32 ime bug
-;; (when window-system
-;;   (menu-bar-open)
-;;   (fset 'send-esc
-;;         (lambda ()
-;;           (start-process "my-proc" nil "cscript.exe"
-;;                          (eval-when-compile (expand-file-name "sendesc.js" user-emacs-directory)))))
-;;   (add-hook 'emacs-startup-hook 'send-esc))
 
 ;;------------------------------------------------------------------------------
 ;; 印刷設定
@@ -173,12 +137,21 @@
 (add-hook 'after-init-hook #'fakecygpty-activate) ;; fakecygpty の有効化
 
 ;;------------------------------------------------------------------------------
+;; cygwin-mount
+;; Teach EMACS about cygwin styles and mount points.
+;; https://www.emacswiki.org/emacs/cygwin-mount.el
+;;------------------------------------------------------------------------------
+(require 'cygwin-mount)
+(add-hook 'after-init-hook #'cygwin-mount-activate)
+
+
+;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
 ;; shell から PATH の設定を引き継ぐ
 ;; from package
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'exec-path-from-shell
-  (setenv "SHELL" (eval-when-compile (expand-file-name "/bin/bash")))
+  (setenv "SHELL" (eval-when-compile (concat (get-msys-root) "/usr/bin/bash")))
   (setq-default explicit-shell-file-name (setq shell-file-name (getenv "SHELL")))
 
   (fset 'ad-exec-path-from-shell-setenv
