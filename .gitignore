@@ -3,7 +3,7 @@
 site-lisp/extra_modules
 !registry/
 !auto-insert/
-!test/
+!00_backup/
 *.*
 !*.el
 !byte-compile.sh
