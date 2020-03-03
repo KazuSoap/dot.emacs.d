@@ -4,36 +4,33 @@
 ;; windows-misc
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defmacro generate-msys-root ()
-    (when (eq system-type 'windows-nt)
-      `(fset 'get-msys-root
-             (lambda ()
-               "Get the installation location of \"msys2\""
-               ,(let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
-                       (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
-                  (ignore-errors
-                    (expand-file-name
-                     (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))))))
-;; (eval-when-compile
-;;   (defmacro generate-msys-root ()
-;;     (when (eq system-type 'windows-nt)
-;;       `(defun get-msys-root ()
-;;          "Get the installation location of \"msys2\""
-;;          ,(let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
-;;                  (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
-;;             (ignore-errors
-;;               (expand-file-name
-;;                (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))))))
-(eval-and-compile
-  (generate-msys-root))
+  (defconst msys-root
+    (let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
+           (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
+      (ignore-errors
+        (expand-file-name
+         (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))
+    "Get the installation location of \"msys2\"")
 
-(eval-when-compile
-  (defmacro setenv_home ()
+  (defmacro windows-nt-core (username)
+    "Windows Specific Settings"
     (when (eq system-type 'windows-nt)
-      ;; Set the environment variable "HOME"
-      `(setenv "HOME" ,(concat (get-msys-root) "/home/" (getenv "USERNAME"))))))
-(eval-and-compile
-  (setenv_home))
+      ;; Set the environment variable "HOME" & "SHELL"
+      `(progn
+         (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
+         (setenv "HOME" (concat ,(concat msys-root "/home/") ,username))
+
+         (fset 'cygpath
+               (lambda (&optional option path)
+                 "cygpath for emacs lisp"
+                 (when path
+                   (with-temp-buffer
+                     (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
+                     (unless (bobp)
+                       (goto-char (point-min))
+                       (buffer-substring-no-properties (point) (line-end-position)))))))))))
+
+(eval-and-compile (windows-nt-core (getenv "USERNAME")))
 
 ;;------------------------------------------------------------------------------
 ;; garbage collection
