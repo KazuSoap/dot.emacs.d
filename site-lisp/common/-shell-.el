@@ -34,8 +34,9 @@
 ;; edit remoto file from local emacs
 ;; emacs default
 ;;------------------------------------------------------------------------------
+(declare-function tramp-change-syntax "tramp")
 (with-eval-after-load 'tramp
-  (setq-default tramp-default-method "scp")
+  (tramp-change-syntax 'simplified) ;; Emacs 26.1 or later
   (setq-default tramp-encoding-shell "bash")
 
   ;; リモートサーバで shell を開いた時に日本語が文字化けしないよう、LC_ALL の設定を無効にする
