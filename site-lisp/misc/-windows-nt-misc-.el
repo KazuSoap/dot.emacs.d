@@ -105,6 +105,8 @@
 ;;------------------------------------------------------------------------------
 (autoload 'cygwin-mount-activate "cygwin-mount" t nil)
 (add-hook 'after-init-hook #'cygwin-mount-activate)
+(with-eval-after-load 'cygwin-mount
+  (setq-default cygwin-mount-build-mount-table-asynch t))
 
 
 ;;------------------------------------------------------------------------------
