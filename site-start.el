@@ -15,8 +15,8 @@
   (defmacro windows-nt-core ()
     "Windows Specific Settings"
     (when (eq system-type 'windows-nt)
-      ;; Set the environment variable "HOME" & "SHELL"
       `(progn
+         ;; Set the environment variable "HOME" & "SHELL"
          (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
          (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
 
@@ -111,3 +111,6 @@
 ;; mouse scroll
 (setq-default mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
+
+;; put password in minibuffer
+(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)

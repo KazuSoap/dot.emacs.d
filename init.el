@@ -38,7 +38,6 @@
 (load "-local-function&macro-" t t)
 (load "-major-mode-" t t)
 (load "-packages-" t t)
-(load "-shell-" t t)
 
 ;; (message "%s"
 ;;          (with-temp-buffer

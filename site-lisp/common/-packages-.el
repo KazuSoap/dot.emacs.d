@@ -91,6 +91,21 @@
 ;; (setq-default gud-tooltip-echo-area nil)
 
 ;;------------------------------------------------------------------------------
+;; TRAMP(TransparentRemoteAccessMultipleProtocol)
+;; edit remoto file from local emacs
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'tramp
+  (declare-function tramp-change-syntax "tramp")
+  (tramp-change-syntax 'simplified) ;; Emacs 26.1 or later
+  (setq-default tramp-encoding-shell "bash")
+
+  ;; リモートサーバで shell を開いた時に日本語が文字化けしないよう、LC_ALL の設定を無効にする
+  ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
+  (let ((process-environment (default-value 'tramp-remote-process-environment)))
+    (setenv "LC_ALL" nil)
+    (setq-default tramp-remote-process-environment process-environment)))
+
+;;------------------------------------------------------------------------------
 ;; uniquify
 ;; 同一ファイル名を区別する
 ;;------------------------------------------------------------------------------
@@ -203,6 +218,33 @@
   ;; tab-other-screen (other-screen)
   (set-face-attribute 'elscreen-tab-other-screen-face nil :foreground "Gray72" :background "black" :underline nil)
   )
+
+;;------------------------------------------------------------------------------
+;; exec-path-from-shell
+;; シェルと環境変数を同期
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defconst my-env-var-list
+    '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "http_proxy" "https_proxy"))
+
+  (defmacro setenv_cached-env-var (env-var-lst)
+    (cons 'progn
+          (mapcar (lambda (x)
+                    (if (string-match "SHELL" x)
+                        `(setq-default shell-file-name (setenv ,x ,(getenv x)))
+                      `(setenv ,x ,(getenv x))))
+                  (eval env-var-lst)))))
+
+(when (string= "0" (getenv "SHLVL"))
+  (cond ((time-less-p (eval-when-compile (nth 5 (file-attributes (file-truename "~/.bash_profile"))))
+                      (nth 5 (file-attributes (eval-when-compile (file-truename "~/.bash_profile")))))
+         ;; sync emacs environment variable with shell's one
+         (exec-path-from-shell-copy-envs (eval-when-compile my-env-var-list))
+         (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-shell-.el")))))
+        (t ;; else
+         ;; setenv cached environment variables
+         (setenv_cached-env-var (eval-when-compile my-env-var-list))
+         (setq exec-path (eval-when-compile exec-path)))))
 
 ;;------------------------------------------------------------------------------
 ;; elscreen-separate-buffer-list
@@ -319,38 +361,28 @@
 (advice-add 'isearch-mode :before (lambda (&rest args) (require 'cmigemo) args))
 
 ;;------------------------------------------------------------------------------
-;; nlinum-mode
-;; 行番号の表示( linum-mode の高速版)
-;;------------------------------------------------------------------------------
-;; (with-eval-after-load 'nlinum
-;;   (defvar nlinum-format)
-
-;;   (fset 'dynamic-default-nlinum-width
-;;         (lambda ()
-;;           (set (make-local-variable 'nlinum-format)
-;;                (concat "%" (number-to-string
-;;                             ;; estimate max digit number of buffer lines.
-;;                             (max 2 (1+ (floor (log (max 1 (count-lines 1 (point-max))) 10)))))
-;;                        "d\u007c"))))
-;;   (add-hook 'nlinum-mode-on-hook 'dynamic-default-nlinum-width))
-
-;;------------------------------------------------------------------------------
 ;; plantuml-mode
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'plantuml-mode
-  (setq-default plantuml-jar-path "c:/msys64/usr/local/share/plantuml/plantuml.jar")
+;; (with-eval-after-load 'plantuml-mode
+;;   (setq-default plantuml-jar-path "c:/msys64/usr/local/share/plantuml/plantuml.jar")
 
-  ;; javaにオプションを渡したい場合はここにかく
-  (setq-default plantuml-java-options "")
+;;   ;; javaにオプションを渡したい場合はここにかく
+;;   (setq-default plantuml-java-options "")
 
-  ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
-  ;; (setq-default plantuml-output-type "txt")
+;;   ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
+;;   ;; (setq-default plantuml-output-type "txt")
 
-  ;; 日本語を含むUMLを書く場合はUTF-8を指定
-  (setq-default plantuml-options "-charset UTF-8"))
+;;   ;; 日本語を含むUMLを書く場合はUTF-8を指定
+;;   (setq-default plantuml-options "-charset UTF-8"))
 
-;; 拡張子による major-mode の関連付け
-(add-to-list 'auto-mode-alist '("\\.puml$" . plantuml-mode))
+;; ;; 拡張子による major-mode の関連付け
+;; (add-to-list 'auto-mode-alist '("\\.puml$" . plantuml-mode))
+
+;;------------------------------------------------------------------------------
+;; shell-pop
+;; シェルバッファをポップアップ
+;;------------------------------------------------------------------------------
+;; (global-set-key [f8] 'shell-pop)
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
@@ -366,4 +398,4 @@
 ;; Visual Studio スタイルのインデント設定
 ;; http://yohshiy.blog.fc2.com/blog-entry-264.html
 ;;------------------------------------------------------------------------------
-(autoload 'vs-set-c-style "vs-set-c-style")
+;; (autoload 'vs-set-c-style "vs-set-c-style")
