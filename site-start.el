@@ -12,13 +12,13 @@
          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))
     "Get the installation location of \"msys2\"")
 
-  (defmacro windows-nt-core (username)
+  (defmacro windows-nt-core ()
     "Windows Specific Settings"
     (when (eq system-type 'windows-nt)
       ;; Set the environment variable "HOME" & "SHELL"
       `(progn
          (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
-         (setenv "HOME" (concat ,(concat msys-root "/home/") ,username))
+         (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
 
          (fset 'cygpath
                (lambda (&optional option path)
@@ -30,7 +30,7 @@
                        (goto-char (point-min))
                        (buffer-substring-no-properties (point) (line-end-position)))))))))))
 
-(eval-and-compile (windows-nt-core (getenv "USERNAME")))
+(eval-and-compile (windows-nt-core))
 
 ;;------------------------------------------------------------------------------
 ;; garbage collection

@@ -21,6 +21,7 @@
 ;;------------------------------------------------------------------------------
 ;; package system
 ;;------------------------------------------------------------------------------
+(setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq custom-file
