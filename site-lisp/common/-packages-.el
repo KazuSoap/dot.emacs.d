@@ -233,18 +233,29 @@
                     (if (string-match "SHELL" x)
                         `(setq-default shell-file-name (setenv ,x ,(getenv x)))
                       `(setenv ,x ,(getenv x))))
-                  (eval env-var-lst)))))
+                  (eval env-var-lst))))
+
+  (defmacro copy-envs-settings ()
+    (cond ((string-match ".el$" (or (locate-library "-packages-") ""))
+           ;; sync emacs environment variable with shell's one
+           (exec-path-from-shell-copy-envs my-env-var-list)
+           `(progn
+              ;; setenv cached environment variables
+              (setenv_cached-env-var my-env-var-list)
+              (setq exec-path ',exec-path)))
+          (t ;; else
+           `(cond ((time-less-p ',(nth 5 (file-attributes (file-truename "~/.bash_profile")))
+                                (nth 5 (file-attributes ,(file-truename "~/.bash_profile"))))
+                   ;; sync emacs environment variable with shell's one
+                   (exec-path-from-shell-copy-envs ',my-env-var-list)
+                   (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-packages-.el")))))
+                  (t ;; else
+                   ;; setenv cached environment variables
+                   (setenv_cached-env-var my-env-var-list)
+                   (setq exec-path ',exec-path)))))))
 
 (when (string= "0" (getenv "SHLVL"))
-  (cond ((time-less-p (eval-when-compile (nth 5 (file-attributes (file-truename "~/.bash_profile"))))
-                      (nth 5 (file-attributes (eval-when-compile (file-truename "~/.bash_profile")))))
-         ;; sync emacs environment variable with shell's one
-         (exec-path-from-shell-copy-envs (eval-when-compile my-env-var-list))
-         (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-shell-.el")))))
-        (t ;; else
-         ;; setenv cached environment variables
-         (setenv_cached-env-var (eval-when-compile my-env-var-list))
-         (setq exec-path (eval-when-compile exec-path)))))
+  (copy-envs-settings))
 
 ;;------------------------------------------------------------------------------
 ;; elscreen-separate-buffer-list
