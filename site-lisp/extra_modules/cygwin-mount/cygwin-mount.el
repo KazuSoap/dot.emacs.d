@@ -298,7 +298,8 @@ function is current buffer must be the buffer named
         (with-current-buffer buf
           (setq cygwin-mount-table--internal (cygwin-mount-parse-mount)))
         (kill-buffer buf)
-        (message "Build of mount table completed"))))
+        ;; (message "Build of mount table completed")
+        )))
 
 (defun cygwin-mount-build-table-internal ()
   "Determine cygwin mount points.
