@@ -14,19 +14,17 @@
 ;;   (defconst my-site-lisp-LastModifiedTime
 ;;     (nth 5 (file-attributes (concat user-emacs-directory "site-lisp")))))
 
-(let ((default-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "site-lisp")))))
+(let ((default-directory (eval-when-compile (concat user-emacs-directory "site-lisp"))))
   (add-to-list 'load-path default-directory)
       (normal-top-level-add-subdirs-to-load-path))
 
 ;;------------------------------------------------------------------------------
 ;; package system
 ;;------------------------------------------------------------------------------
-(setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 (package-initialize)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setq custom-file
-      (eval-when-compile
-        (expand-file-name (concat user-emacs-directory "my-custom-file.el"))))
+(setq-default custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
+(setq-default package-menu-async nil)
 
 ;;------------------------------------------------------------------------------
 ;; load files
