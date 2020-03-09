@@ -105,8 +105,16 @@
 ;;------------------------------------------------------------------------------
 (autoload 'cygwin-mount-activate "cygwin-mount" t nil)
 (add-hook 'after-init-hook #'cygwin-mount-activate)
-(with-eval-after-load 'cygwin-mount
-  (setq-default cygwin-mount-build-mount-table-asynch t))
+
+;; (eval-when-compile
+;;   ;;(declare-function )
+;;   (fset 'my-cygwin-mount-build-table-internal
+;;         (lambda  ()
+;;           (setq cygwin-mount-table--internal ""))))
+
+;; ;; (with-eval-after-load 'cygwin-mount
+;; ;;   (fset 'cygwin-mount-build-table-internal-orig 'cygwin-mount-build-table-internal)
+;; ;;   (defalias 'cygwin-mount-build-table-internal 'my-cygwin-mount-build-table-internal))
 
 
 ;;------------------------------------------------------------------------------
