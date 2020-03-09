@@ -29,8 +29,7 @@
                      (unless (bobp)
                        (goto-char (point-min))
                        (buffer-substring-no-properties (point) (line-end-position)))))))))))
-
-(eval-and-compile (windows-nt-core))
+(windows-nt-core)
 
 ;;------------------------------------------------------------------------------
 ;; garbage collection

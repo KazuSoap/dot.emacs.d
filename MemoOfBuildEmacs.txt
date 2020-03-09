@@ -29,10 +29,10 @@ CFLAGS='-O2 -march=native -mtune=native' \
 $ ./autogen.sh
 
 (linux)
-CFLAGS='-O2 -march=native' ./configure --program-transform-name='s/^ctags$/ctags.emacs/' --with-x-toolkit=gtk3 --with-modules
+CFLAGS='-O2 -march=native' ./configure --program-transform-name='s/^ctags$/ctags.emacs/' --with-x-toolkit=gtk3 --with-modules --without-pop
 
 (win)
-CFLAGS='-O2 -march=native' ./configure --program-transform-name='s/^ctags$/ctags.emacs/' --without-dbus --with-modules
+CFLAGS='-O2 -march=native' ./configure --program-transform-name='s/^ctags$/ctags.emacs/' --without-dbus --with-modules --with-gnutls --without-pop
 
 make の前に
 sudo sh -c "echo 0 > /proc/sys/kernel/randomize_va_space"
@@ -53,7 +53,7 @@ make: *** [src] エラー 2
 ./temacs --batch --load loadup bootstrap
 でハングしてしまう
 
-sudo make bootstrap && sudo make install-strip
+make LIBS_SYSTEM=-lssp bootstrap && make install-strip
 
 make後
 再起動もしくは
