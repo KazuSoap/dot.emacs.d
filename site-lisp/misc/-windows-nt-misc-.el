@@ -97,11 +97,9 @@
 
 (eval-when-compile
   (require 'cygwin-mount)
-  (ignore-errors (cygwin-mount-activate))
 
   (defmacro my-cygwin-mount-config ()
     (when (string-match ".elc$" (or (locate-library "-windows-nt-misc-") ""))
-      (message "hogehoge2")
       (cygwin-mount-build-table-internal)
       `(setq-default cygwin-mount-table ',cygwin-mount-table--internal))))
 
