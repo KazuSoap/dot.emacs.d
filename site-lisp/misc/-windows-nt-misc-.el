@@ -95,15 +95,18 @@
 (autoload 'cygwin-mount-activate "cygwin-mount" t nil)
 (add-hook 'after-init-hook #'cygwin-mount-activate)
 
-;; (eval-when-compile
-;;   (require 'cygwin-mount)
-;;   (fset 'my-cygwin-mount-build-table-internal
-;;         (lambda  ()
-;;           (setq cygwin-mount-table--internal ""))))
+(eval-when-compile
+  (require 'cygwin-mount)
+  (ignore-errors (cygwin-mount-activate))
 
-;; ;; (with-eval-after-load 'cygwin-mount
-;; ;;   (fset 'cygwin-mount-build-table-internal-orig 'cygwin-mount-build-table-internal)
-;; ;;   (defalias 'cygwin-mount-build-table-internal 'my-cygwin-mount-build-table-internal))
+  (defmacro my-cygwin-mount-config ()
+    (when (string-match ".elc$" (or (locate-library "-windows-nt-misc-") ""))
+      (message "hogehoge2")
+      (cygwin-mount-build-table-internal)
+      `(setq-default cygwin-mount-table ',cygwin-mount-table--internal))))
+
+(with-eval-after-load 'cygwin-mount
+  (my-cygwin-mount-config))
 
 
 ;;------------------------------------------------------------------------------
