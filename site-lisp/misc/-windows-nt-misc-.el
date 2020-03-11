@@ -3,15 +3,12 @@
 ;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
-(declare-function w32-imm32-on-start-enabler-inject "w32-imm32-on-start-enabler")
+(autoload 'w32-imm32-on-start-enabler-inject "w32-imm32-on-start-enabler" t nil)
 (global-set-key (kbd "<non-convert>")
                 (lambda ()
                   (interactive)
                   (global-unset-key (kbd "<non-convert>"))
-                  (when (and (locate-library "w32-imeadv")
-                             (locate-library "w32-imm32-on-start-enabler-impl")
-                             (load "lisp-w32-imeadv" nil t)
-                             (require 'w32-imm32-on-start-enabler))
+                  (when (load "lisp-w32-imeadv" nil t)
                     (w32-imm32-on-start-enabler-inject)
                     (setq-default w32-imeadv-ime-status-line-indicate-close "[Aa]")
                     (setq-default w32-imeadv-status-line "[Aa]")
@@ -83,20 +80,12 @@
 (advice-add 'term-emulate-terminal :before 'set-term-process-coding-system)
 
 ;;------------------------------------------------------------------------------
-;; shell
-;; shell を有効化
-;; emacs default
-;;------------------------------------------------------------------------------
-(setenv "MSYSTEM" "MINGW64")
-(or (getenv "SHLVL") (setenv "SHLVL" "0"))
-
-;;------------------------------------------------------------------------------
 ;; fakecygpty
 ;; NTEmacs の仮想端末偽装
 ;; https://github.com/d5884/fakecygpty
 ;;------------------------------------------------------------------------------
 (autoload 'fakecygpty-activate "fakecygpty" t nil)
-(add-hook 'after-init-hook #'fakecygpty-activate) ;; fakecygpty の有効化
+(add-hook 'after-init-hook #'fakecygpty-activate)
 
 ;;------------------------------------------------------------------------------
 ;; cygwin-mount
@@ -107,7 +96,7 @@
 (add-hook 'after-init-hook #'cygwin-mount-activate)
 
 ;; (eval-when-compile
-;;   ;;(declare-function )
+;;   (require 'cygwin-mount)
 ;;   (fset 'my-cygwin-mount-build-table-internal
 ;;         (lambda  ()
 ;;           (setq cygwin-mount-table--internal ""))))
@@ -123,11 +112,10 @@
 ;; from package
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'exec-path-from-shell
-  (setq-default explicit-shell-file-name (setq shell-file-name (getenv "SHELL")))
-
+  (declare-function cygpath "site-start")
   (fset 'ad-exec-path-from-shell-setenv
         (lambda (args)
-          (and (string= (car args) "PATH") (fboundp 'cygpath)
+          (and (string= (car args) "PATH")
                (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
           args))
   (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv))

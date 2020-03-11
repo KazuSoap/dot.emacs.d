@@ -7,7 +7,7 @@
 ;; auto-insert
 ;; ファイルの種類に応じたテンプレートの挿入
 ;;------------------------------------------------------------------------------
-
+(eval-when-compile (require 'autoinsert))
 (with-eval-after-load 'autoinsert
   ;; テンプレートのディレクトリ
   (setq-default auto-insert-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "auto-insert"))))
@@ -29,7 +29,6 @@
           (message "done.")))
 
   ;; 各ファイルによってテンプレートを切り替える
-  (defvar auto-insert-alist)
   (add-to-list 'auto-insert-alist '("\\.cpp$"   . ["template.cpp" my-template]))
   (add-to-list 'auto-insert-alist '("\\.h$"     . ["template.h" my-template]))
   (add-to-list 'auto-insert-alist '("Makefile$" . ["template.make" my-template])))
@@ -224,35 +223,29 @@
 ;; シェルと環境変数を同期
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defconst my-env-var-list
-    '("SHELL" "PATH" "MANPATH" "PKG_CONFIG_PATH" "LANG" "http_proxy" "https_proxy"))
+  (require 'exec-path-from-shell)
+  (let ((add-env-vars '()))
+    (when (eq system-type 'windows-nt)
+      (setq add-env-vars (append add-env-vars '("LANG" "PKG_CONFIG_PATH" "http_proxy" "https_proxy"))))
+    (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t)) add-env-vars))
 
   (defmacro setenv_cached-env-var (env-var-lst)
-    (cons 'progn
-          (mapcar (lambda (x)
-                    (if (string-match "SHELL" x)
-                        `(setq-default shell-file-name (setenv ,x ,(getenv x)))
-                      `(setenv ,x ,(getenv x))))
-                  (eval env-var-lst))))
+    (cons 'progn (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst))))
 
   (defmacro copy-envs-settings ()
-    (cond ((string-match ".el$" (or (locate-library "-packages-") ""))
-           ;; sync emacs environment variable with shell's one
-           (exec-path-from-shell-copy-envs my-env-var-list)
-           `(progn
-              ;; setenv cached environment variables
-              (setenv_cached-env-var my-env-var-list)
-              (setq exec-path ',exec-path)))
-          (t ;; else
-           `(cond ((time-less-p ',(nth 5 (file-attributes (file-truename "~/.bash_profile")))
-                                (nth 5 (file-attributes ,(file-truename "~/.bash_profile"))))
-                   ;; sync emacs environment variable with shell's one
-                   (exec-path-from-shell-copy-envs ',my-env-var-list)
-                   (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-packages-.el")))))
-                  (t ;; else
-                   ;; setenv cached environment variables
-                   (setenv_cached-env-var my-env-var-list)
-                   (setq exec-path ',exec-path)))))))
+    (when (string-match ".el$" (or (locate-library "-packages-") ""))
+      ;; sync emacs environment variable with shell's one
+      (exec-path-from-shell-initialize))
+
+    `(cond ((time-less-p ',(nth 5 (file-attributes (file-truename "~/.bash_profile")))
+                         (nth 5 (file-attributes ,(file-truename "~/.bash_profile"))))
+            ;; sync emacs environment variable with shell's one
+            (exec-path-from-shell-copy-envs ',exec-path-from-shell-variables)
+            (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-packages-.el")))))
+           (t ;; else
+            ;; setenv cached environment variables
+            (setenv_cached-env-var exec-path-from-shell-variables)
+            (setq exec-path ',exec-path)))))
 
 (when (string= "0" (getenv "SHLVL"))
   (copy-envs-settings))
@@ -273,6 +266,7 @@
 
   (setq-default flycheck-display-errors-delay 0.3) ;; 遅延
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)) ;; remove useless warnings
+  (setq-default flycheck-emacs-lisp-load-path 'inherit) ;; use the `load-path' of the current Emacs session
 
   (declare-function flycheck-add-mode "flycheck")
   (flycheck-add-mode 'emacs-lisp 'elisp-mode))
@@ -369,7 +363,7 @@
         (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
         (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)))
 (advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding)
-(advice-add 'isearch-mode :before (lambda (&rest args) (require 'cmigemo) args))
+(add-hook 'isearch-mode-hook (lambda () (require 'cmigemo)))
 
 ;;------------------------------------------------------------------------------
 ;; plantuml-mode
@@ -384,7 +378,9 @@
 ;;   ;; (setq-default plantuml-output-type "txt")
 
 ;;   ;; 日本語を含むUMLを書く場合はUTF-8を指定
-;;   (setq-default plantuml-options "-charset UTF-8"))
+;;   (setq-default plantuml-options "-charset UTF-8")
+
+;;   (add-to-list 'smart-compile-alist '("\\.puml$" . "plantuml -charset UTF-8 -tsvg %f") t))
 
 ;; ;; 拡張子による major-mode の関連付け
 ;; (add-to-list 'auto-mode-alist '("\\.puml$" . plantuml-mode))
@@ -398,9 +394,8 @@
 ;;------------------------------------------------------------------------------
 ;; smert compile
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'smart-compile))
 (with-eval-after-load 'smart-compile
-  (defvar smart-compile-alist)
-  (add-to-list 'smart-compile-alist '("\\.puml$" . "plantuml -charset UTF-8 -tsvg %f") t)
   (add-to-list 'smart-compile-alist '(elisp-mode emacs-lisp-byte-compile)))
 (global-set-key (kbd "C-x c") #'smart-compile)
 

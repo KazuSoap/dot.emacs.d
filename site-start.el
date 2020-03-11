@@ -16,9 +16,12 @@
     "Windows Specific Settings"
     (when (eq system-type 'windows-nt)
       `(progn
-         ;; Set the environment variable "HOME" & "SHELL"
-         (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
+         ;; Set environment variable
          (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
+         (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
+         (setenv "MSYSTEM" "MINGW64")
+         (or (getenv "SHLVL") (setenv "SHLVL" "0"))
+         (setq-default shell-file-name ,(getenv "SHELL"))
 
          (fset 'cygpath
                (lambda (&optional option path)
