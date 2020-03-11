@@ -33,18 +33,3 @@
 ;; IME ON/OFF時のカーソルカラー
 (add-hook 'input-method-activate-hook (lambda () (set-cursor-color "yellow")))
 (add-hook 'input-method-deactivate-hook (lambda () (set-cursor-color "thistle")))
-
-;;------------------------------------------------------------------------------
-;; misc
-;;------------------------------------------------------------------------------
-(setq select-enable-clipboard t)
-
-;;------------------------------------------------------------------------------
-;; irony
-;; A C/C++ minor mode powered by libclang
-;; from package
-;;------------------------------------------------------------------------------
-
-(with-eval-after-load 'irony
-  ;; irony-server-install に失敗する問題の修正用
-  (defvar ex-irony--install-server-read-cmd "\\1"))
