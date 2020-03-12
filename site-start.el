@@ -113,6 +113,3 @@
 ;; mouse scroll
 (setq-default mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
-
-;; put password in minibuffer
-(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
