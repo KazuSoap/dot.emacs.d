@@ -148,4 +148,17 @@
   (setq-default irony-server-w32-pipe-buffer-size (* 64 1024))
 
   ;; irony-server-install に失敗する問題の修正用
-  (defvar ex-irony--install-server-read-cmd "\\1 -G'MSYS Makefiles'"))
+  (defvar ex-irony--install-server-read-cmd "\\1 -G'MSYS Makefiles'")
+
+  ;; irony-server-install に失敗する問題の修正
+  ;; コンパイラに clang を指定
+  (fset 'ad-irony--install-server-read-command
+        (lambda (args)
+          "modify irony--install-server-read-command"
+          ;; (setenv "CC" "clang") (setenv "CXX" "clang++")
+          `(,(replace-regexp-in-string
+              (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
+              (default-value 'ex-irony--install-server-read-cmd)
+              (car args)))))
+  (advice-add 'irony--install-server-read-command :filter-args 'ad-irony--install-server-read-command)
+  (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))

@@ -306,24 +306,6 @@
   (setq-default highlight-indent-guides-auto-even-face-perc 25))
 
 ;;------------------------------------------------------------------------------
-;; irony
-;; A C/C++ minor mode powered by libclang
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'irony
-  ;; irony-server-install に失敗する問題の修正
-  ;; コンパイラに clang を指定
-  (fset 'ad-irony--install-server-read-command
-        (lambda (args)
-          "modify irony--install-server-read-command"
-          ;; (setenv "CC" "clang") (setenv "CXX" "clang++")
-          `(,(replace-regexp-in-string
-              (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
-              (default-value 'ex-irony--install-server-read-cmd)
-              (car args)))))
-  (advice-add 'irony--install-server-read-command :filter-args 'ad-irony--install-server-read-command)
-  (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
-
-;;------------------------------------------------------------------------------
 ;; irony-eldoc
 ;; irony-mode support for eldoc-mode
 ;; from https://github.com/josteink/irony-eldoc
