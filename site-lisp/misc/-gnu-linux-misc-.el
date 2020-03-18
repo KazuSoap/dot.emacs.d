@@ -17,7 +17,7 @@
   (fset 'ad-mozc-intercept-keys
         (lambda (f event)
           (cond
-           ((member event (list 'muhenkan))
+           ((member event '(muhenkan))
             ;; (message "%s" event) ;debug
             (mozc-clean-up-changes-on-buffer)
             (mozc-fall-back-on-default-binding event))
@@ -28,6 +28,7 @@
 
 (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method)
 (global-set-key (kbd "<henkan>") (lambda () (interactive) (activate-input-method default-input-method)))
+(global-set-key (kbd "<hiragana-katakana>") (lambda () (interactive) (activate-input-method default-input-method)))
 (global-set-key (kbd "<muhenkan>") (lambda () (interactive) (deactivate-input-method)))
 
 ;; IME ON/OFF時のカーソルカラー
