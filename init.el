@@ -14,9 +14,9 @@
 ;;   (defconst my-site-lisp-LastModifiedTime
 ;;     (nth 5 (file-attributes (concat user-emacs-directory "site-lisp")))))
 
-(let ((default-directory (eval-when-compile (concat user-emacs-directory "site-lisp"))))
+(let ((default-directory (concat user-emacs-directory "site-lisp")))
   (add-to-list 'load-path default-directory)
-      (normal-top-level-add-subdirs-to-load-path))
+  (normal-top-level-add-subdirs-to-load-path))
 
 ;;------------------------------------------------------------------------------
 ;; package system
@@ -33,15 +33,14 @@
 (load (eval-when-compile (replace-regexp-in-string "/" "-" (format "-%s-misc-" system-type))) t t)
 
 ;; -- common --;;
-(load "-local-function&macro-" t t)
 (load "-major-mode-" t t)
 (load "-packages-" t t)
 
-;; (message "%s"
-;;          (with-temp-buffer
-;;            (insert-file-contents-literally (locate-library "-windows-nt-misc-.el"))
-;;            (insert-file-contents-literally (concat user-emacs-directory "init.el"))
-;;            (while (re-search-forward "^\s*\\(;;\\|(load\\).*\n\\|^\n" nil t)
-;;              (replace-match ""))
-;;            ;; (write-file filename)
-;;            (buffer-substring-no-properties (point-min) (point-max))))
+;; ;; (message "%s"
+;; ;;          (with-temp-buffer
+;; ;;            (insert-file-contents-literally (locate-library "-windows-nt-misc-.el"))
+;; ;;            (insert-file-contents-literally (concat user-emacs-directory "init.el"))
+;; ;;            (while (re-search-forward "^\s*\\(;;\\|(load\\).*\n\\|^\n" nil t)
+;; ;;              (replace-match ""))
+;; ;;            ;; (write-file filename)
+;; ;;            (buffer-substring-no-properties (point-min) (point-max))))
