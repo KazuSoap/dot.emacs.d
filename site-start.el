@@ -31,7 +31,20 @@
                      (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
                      (unless (bobp)
                        (goto-char (point-min))
-                       (buffer-substring-no-properties (point) (line-end-position)))))))))))
+                       (buffer-substring-no-properties (point) (line-end-position)))))))
+
+         (fset 'set-function-args-encode
+               (lambda (args)
+                 "Set the character code of the parameter passed to the subprocess to cp932"
+                 (mapcar (lambda (arg)
+                           (if (multibyte-string-p arg)
+                               (encode-coding-string arg 'cp932)
+                             arg))
+                         args)))
+
+         (advice-add 'call-process-region :filter-args 'set-function-args-encode)
+         (advice-add 'call-process :filter-args 'set-function-args-encode)
+         (advice-add 'start-process :filter-args 'set-function-args-encode)))))
 (windows-nt-core)
 
 ;;------------------------------------------------------------------------------
@@ -94,7 +107,7 @@
 (keyboard-translate ?\C-? ?\C-h)  ; translate BS to `C-h'
 
 ;; ファイルのフルパスをタイトルバーに表示
-(setq-default frame-title-format '((:eval (if (buffer-file-name) " %f" " %b")) " - Emacs"))
+(setq-default frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
 
 ;; beep音 off
 (setq-default ring-bell-function #'ignore)

@@ -20,9 +20,6 @@
 ;;------------------------------------------------------------------------------
 ;; 印刷設定
 ;;------------------------------------------------------------------------------
-;; 文字化け防止
-(setq-default ps-multibyte-buffer 'non-latin-printer)
-
 ;; lpr-bufferコマンド で notepad を開くようにする
 (setq-default print-region-function
               (lambda (start end _program &optional _delete _destination _display &rest _args)
@@ -37,47 +34,6 @@
                        (delete-file winfile)))))))
 ;; lpr-buffer を実行する
 (global-set-key (kbd "C-c C-p") #'lpr-buffer)
-
-;;------------------------------------------------------------------------------
-;; process I/O
-;;------------------------------------------------------------------------------
-;; サブプロセスに渡すパラメータの文字コードを cp932 にする
-(fset 'set-function-args-encode
-      (lambda (args)
-        (mapcar (lambda (arg)
-                  (if (multibyte-string-p arg)
-                      (encode-coding-string arg 'cp932)
-                    arg))
-                args)))
-
-(advice-add 'call-process-region :filter-args 'set-function-args-encode)
-(advice-add 'call-process :filter-args 'set-function-args-encode)
-(advice-add 'start-process :filter-args 'set-function-args-encode)
-
-;; shell バッファがカレントの際、動いている process の coding-system 設定を undecided に
-;; shellバッファで、コマンド実行結果出力前に set-shell-buffer-process-coding-system を実行する。
-;; この設定により、shellバッファで utf-8 の出力をする cygwin コマンドと、cp932 の出力をする
-;; Windowsコマンドの漢字の文字化けが回避される。また、漢字を含むプロンプトが文字化けする場合には、
-;; .bashrc の PS1 の設定の後に「export PS1="$(sleep 0.1)$PS1"」を追加すれば、回避できる模様。
-(eval-when-compile
-  (defmacro set-process-coding-system-undecided (&optional is_term)
-    (let ((shell-cond
-           (if is_term 'process
-             '(and process (string-match "^shell" (process-name process))))))
-      `(lambda (&rest args)
-         (let ((process (car args)))
-           (if ,shell-cond
-               (let ((coding-system (process-coding-system process)))
-                 (set-process-coding-system process
-                                            (coding-system-change-text-conversion
-                                             (car coding-system) 'undecided)
-                                            (cdr coding-system)))))))))
-
-(fset 'set-shell-process-coding-system (set-process-coding-system-undecided))
-(fset 'set-term-process-coding-system (set-process-coding-system-undecided t))
-
-(advice-add 'comint-output-filter :before 'set-shell-process-coding-system)
-(advice-add 'term-emulate-terminal :before 'set-term-process-coding-system)
 
 ;;------------------------------------------------------------------------------
 ;; fakecygpty

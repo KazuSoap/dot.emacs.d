@@ -10,11 +10,11 @@
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
-;; (eval-when-compile
-;;   (defconst my-site-lisp-LastModifiedTime
-;;     (nth 5 (file-attributes (concat user-emacs-directory "site-lisp")))))
+;; ;; (eval-when-compile
+;; ;;   (defconst my-site-lisp-LastModifiedTime
+;; ;;     (nth 5 (file-attributes (concat user-emacs-directory "site-lisp")))))
 
-(let ((default-directory (concat user-emacs-directory "site-lisp")))
+(let ((default-directory (eval-when-compile (concat user-emacs-directory "site-lisp"))))
   (add-to-list 'load-path default-directory)
   (normal-top-level-add-subdirs-to-load-path))
 
