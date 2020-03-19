@@ -21,19 +21,17 @@
 ;; 印刷設定
 ;;------------------------------------------------------------------------------
 ;; lpr-bufferコマンド で notepad を開くようにする
-(setq-default print-region-function
-              (lambda (start end _program &optional _delete _destination _display &rest _args)
-                (let* ((procname (make-temp-name "w32-print-"))
-                       (winfile (expand-file-name procname temporary-file-directory)))
-                  (let ((coding-system-for-write 'cp932-dos))
-                    (write-region start end winfile))
-                  (set-process-sentinel
-                   (start-process procname nil "notepad.exe" winfile)
-                   (lambda (_process _state)
-                     (when (file-exists-p winfile)
-                       (delete-file winfile)))))))
-;; lpr-buffer を実行する
-(global-set-key (kbd "C-c C-p") #'lpr-buffer)
+(with-eval-after-load 'lpr
+  (setq-default print-region-function
+                (lambda (start end _program &optional _delete _destination _display &rest _args)
+                  (let* ((procname (make-temp-name "w32-print-"))
+                         (winfile (expand-file-name procname temporary-file-directory)))
+                    (write-region start end winfile)
+                    (set-process-sentinel
+                     (start-process procname nil "notepad.exe" winfile)
+                     (lambda (_process _state)
+                       (when (file-exists-p winfile)
+                         (delete-file winfile))))))))
 
 ;;------------------------------------------------------------------------------
 ;; fakecygpty
@@ -57,7 +55,9 @@
   (defmacro my-cygwin-mount-config ()
     (when (string-match ".elc$" (or (locate-library "-windows-nt-misc-") ""))
       (cygwin-mount-build-table-internal)
-      `(setq-default cygwin-mount-table ',cygwin-mount-table--internal))))
+      `(progn
+         (setq-default cygwin-mount-table ',cygwin-mount-table--internal)
+         (advice-add 'cygwin-mount-get-cygdrive-prefix :override (lambda () ,(cygwin-mount-get-cygdrive-prefix)))))))
 
 (with-eval-after-load 'cygwin-mount
   (my-cygwin-mount-config))
@@ -103,9 +103,6 @@
   ;; Set the buffer size to 64K on Windows (from the original 4K)
   (setq-default irony-server-w32-pipe-buffer-size (* 64 1024))
 
-  ;; irony-server-install に失敗する問題の修正用
-  (defvar ex-irony--install-server-read-cmd "\\1 -G'MSYS Makefiles'")
-
   ;; irony-server-install に失敗する問題の修正
   ;; コンパイラに clang を指定
   (fset 'ad-irony--install-server-read-command
@@ -114,7 +111,7 @@
           ;; (setenv "CC" "clang") (setenv "CXX" "clang++")
           `(,(replace-regexp-in-string
               (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
-              (default-value 'ex-irony--install-server-read-cmd)
+              "\\1 -G'MSYS Makefiles'"
               (car args)))))
   (advice-add 'irony--install-server-read-command :filter-args 'ad-irony--install-server-read-command)
   (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
