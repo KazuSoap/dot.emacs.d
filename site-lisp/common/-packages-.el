@@ -237,15 +237,14 @@
       ;; sync emacs environment variable with shell's one
       (exec-path-from-shell-initialize))
 
-    `(cond ((time-less-p ',(nth 5 (file-attributes (file-truename "~/.bash_profile")))
-                         (nth 5 (file-attributes ,(file-truename "~/.bash_profile"))))
+    `(cond ((time-less-p ',(nth 5 (file-attributes "~/.bash_profile")) (nth 5 (file-attributes "~/.bash_profile")))
             ;; sync emacs environment variable with shell's one
             (exec-path-from-shell-copy-envs ',exec-path-from-shell-variables)
             (add-hook 'after-init-hook (lambda () (byte-compile-file (locate-library "-packages-.el")))))
            (t ;; else
             ;; setenv cached environment variables
             (setenv_cached-env-var exec-path-from-shell-variables)
-            (setq exec-path ',exec-path)))))
+            (setq exec-path (append (split-string (getenv "PATH") path-separator) ',(last exec-path)))))))
 
 (when (string= "0" (getenv "SHLVL"))
   (copy-envs-settings))
