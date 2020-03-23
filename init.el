@@ -15,7 +15,6 @@
 ;;     (nth 5 (file-attributes (concat user-emacs-directory "site-lisp")))))
 
 (let ((default-directory (eval-when-compile (concat user-emacs-directory "site-lisp"))))
-  (add-to-list 'load-path default-directory)
   (normal-top-level-add-subdirs-to-load-path))
 
 ;;------------------------------------------------------------------------------
