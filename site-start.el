@@ -127,6 +127,12 @@
 (setq-default mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq-default mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
 
+;; デフォルトのメジャーモード
+(setq-default major-mode #'text-mode)
+
+;; *scratch* バッファのメジャーモード
+;; (setq-default initial-major-mode 'fundamental-mode)
+
 ;;------------------------------------------------------------------------------
 ;; local functions
 ;;------------------------------------------------------------------------------

@@ -6,12 +6,6 @@
 ;; 派生モード elisp-mode
 (define-derived-mode elisp-mode emacs-lisp-mode "ELisp")
 
-;; デフォルトのメジャーモード
-(setq-default major-mode #'text-mode)
-
-;; *scratch* バッファのメジャーモード
-;; (setq-default initial-major-mode 'fundamental-mode)
-
 ;; 拡張子による major-mode の関連付け
 (add-to-list 'auto-mode-alist '("\\.el$" . elisp-mode))
 (add-to-list 'auto-mode-alist '("\\.elc$" . fundamental-mode))
@@ -24,7 +18,6 @@
   (defsubst my-common-mode-setup ()
     ;; (cua-mode) ;; cua
     (display-line-numbers-mode)
-    ;; (nlinum-mode) ;; nlinum
     (whitespace-mode))) ;; whitespace
 
 ;; プログラミング言語共通
@@ -59,7 +52,6 @@
     (irony-mode)
     (google-set-c-style)
     (google-make-newline-indent)
-    ;; (vs-set-c-style)
     (add-to-list (make-local-variable 'company-backends) '(company-irony-c-headers company-irony))))
 
 (fset 'my-c-mode-setup
