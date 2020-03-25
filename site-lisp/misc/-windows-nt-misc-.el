@@ -57,7 +57,9 @@
       (cygwin-mount-build-table-internal)
       `(progn
          (setq-default cygwin-mount-table ',cygwin-mount-table--internal)
-         (advice-add 'cygwin-mount-get-cygdrive-prefix :override (lambda () ,(cygwin-mount-get-cygdrive-prefix)))))))
+         ;; (advice-add 'cygwin-mount-get-cygdrive-prefix :override (lambda () ,(cygwin-mount-get-cygdrive-prefix)))
+         (fset 'cygwin-mount-get-cygdrive-prefix (lambda () ,(cygwin-mount-get-cygdrive-prefix)))
+         ))))
 
 (with-eval-after-load 'cygwin-mount
   (my-cygwin-mount-config))
@@ -95,10 +97,7 @@
 
 (with-eval-after-load 'irony
   ;; Windows Subsystem for Linux(WSL) の irony-server と共存するための設定
-  (setq-default irony-server-install-prefix (concat (default-value 'irony-server-install-prefix) "win-nt/"))
-
-  ;; Windows performance tweaks
-  (setq-default w32-pipe-read-delay 0)
+  ;; (setq-default irony-server-install-prefix (concat (default-value 'irony-server-install-prefix) "win-nt/"))
 
   ;; Set the buffer size to 64K on Windows (from the original 4K)
   (setq-default irony-server-w32-pipe-buffer-size (* 64 1024))
