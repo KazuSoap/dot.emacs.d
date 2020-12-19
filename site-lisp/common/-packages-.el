@@ -33,7 +33,7 @@
   (add-to-list 'auto-insert-alist '("\\.h$"     . ["template.h" my-template]))
   (add-to-list 'auto-insert-alist '("Makefile$" . ["template.make" my-template])))
 
-(add-hook 'find-file-not-found-hooks #'auto-insert)
+(add-hook 'find-file-not-found-functions #'auto-insert)
 
 ;;------------------------------------------------------------------------------
 ;; cua-mode
@@ -378,7 +378,7 @@
 (eval-when-compile (require 'smart-compile))
 (with-eval-after-load 'smart-compile
   (add-to-list 'smart-compile-alist '(elisp-mode emacs-lisp-byte-compile)))
-(global-set-key (kbd "C-x c") #'smart-compile)
+(global-set-key (kbd "C-c c") #'smart-compile)
 
 ;;------------------------------------------------------------------------------
 ;; vs-set-c-style
