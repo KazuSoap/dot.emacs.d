@@ -3,8 +3,12 @@
 ;;------------------------------------------------------------------------------
 ;; misc
 ;;------------------------------------------------------------------------------
+;; font
+(when (display-graphic-p)
+  (set-frame-font "fontset-myricty")
+  (set-fontset-font (frame-parameter nil 'font) 'unicode (font-spec :family "Ricty Diminished Discord") nil 'append))
+
 ;; startup-message off
-;; site-start で設定不可 (ref: normal-top-level in startup.el)
 (setq-default inhibit-startup-screen t)
 
 ;;------------------------------------------------------------------------------
@@ -16,7 +20,6 @@
 ;;------------------------------------------------------------------------------
 ;; package system
 ;;------------------------------------------------------------------------------
-(package-initialize)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq-default custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
 (setq-default package-menu-async nil)
