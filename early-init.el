@@ -24,6 +24,14 @@
          (setq-default shell-file-name ,(getenv "SHELL"))
          (setq-default w32-pipe-read-delay 0) ;; Windows performance tweaks
 
+         ;; coding-system
+         ;; デフォルトの文字コードを設定
+         ;; 指定される文字コードは以下の項目
+         ;; ① ファイルを新規作成した場合のデフォルト
+         ;; ② サブプロセスでの IO
+         ;; ③ 他の項目が指定されていない場合のデフォルト値
+         (prefer-coding-system 'utf-8-unix)
+
          (fset 'cygpath
                (lambda (&optional option path)
                  "cygpath for emacs lisp"
@@ -62,38 +70,26 @@
 (set-face-attribute 'fringe nil :background "black")
 
 ;;------------------------------------------------------------------------------
-;; coding-system
-;;------------------------------------------------------------------------------
-;; デフォルトの文字コードを設定
-;; 指定される文字コードは以下の項目
-;; ① ファイルを新規作成した場合のデフォルト
-;; ② サブプロセスでの IO
-;; ③ 他の項目が指定されていない場合のデフォルト値
-(prefer-coding-system 'utf-8-unix)
-
-;; サブプロセスが出力する文字コードを判定して、process-coding-system の設定値を決定
-;; (サブプロセスの "input-coding" を "undecided" にして実現)
-(setq-default default-process-coding-system
-              `(,(eval-when-compile
-                   (let* ((input-coding (car (default-value 'default-process-coding-system)))
-                          (input-eol-type (coding-system-eol-type input-coding)))
-                     (cond ((eq input-eol-type 0) 'undecided-unix)
-                           ((eq input-eol-type 1) 'undecided-dos)
-                           ((eq input-eol-type 2) 'undecided-mac)
-                           (t input-coding))))
-                . utf-8-unix))
-
-;;------------------------------------------------------------------------------
 ;; global minor-mode
 ;;------------------------------------------------------------------------------
-(column-number-mode 1) ;; モードラインに列番号表示
-;; (line-number-mode -1) ;; モードラインに行番号表示 (default)
-;; (size-indication-mode 1) ;; モードラインにファイルサイズ表示 (default)
-(delete-selection-mode 1) ;; リージョン上書き
+(tool-bar-mode -1) ; tool-bar-mode
+;; (menu-bar-mode -1) ; menu-bar-mode (default)
+(fringe-mode -1) ; fringe-mode
+(column-number-mode 1) ; モードラインに列番号表示
+;; (line-number-mode -1) ; モードラインに行番号表示 (default)
+;; (size-indication-mode -1) ; モードラインにファイルサイズ表示 (default)
+(delete-selection-mode 1) ; リージョン上書き
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
 ;;------------------------------------------------------------------------------
+;; frame parameters
+(setq default-frame-alist
+      '((width . 100)
+        (height . 30)
+        (alpha . 85)
+        ))
+
 ;; "yes or no"を"y or n"に
 (fset 'yes-or-no-p #'y-or-n-p)
 

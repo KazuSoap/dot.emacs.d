@@ -5,35 +5,9 @@ Windows Registry Editor Version 5.00
 [HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
 
 //==============================================================================
-// global minor-mode
-//==============================================================================
-// tool-bar-mode (default on)
-"Emacs.toolbar"="off"
-
-// menu-bar-mode (default on)
-// 端末の場合 <F10> で menu 操作可能
-// "Emacs.menuBar"="off"
-
-// cursor点滅表示 (default on)
-// "Emacs.cursorBlink"="off"
-
-//==============================================================================
 // common-misc
 //==============================================================================
 // font
 // Ricty Diminished Discord
-"Emacs.Fontset-0"="-outline-Ricty Diminished Discord-bold-normal-normal-mono-14-*-*-*-c-0-fontset-myricty"
+"Emacs.Fontset-0"="-outline-Ricty Diminished Discord-bold-normal-normal-mono-14-*-*-*-c-*-fontset-myricty"
 "Emacs.Font"="fontset-myricty"
-
-// windowの幅と高さ
-"Emacs.Geometry"="100x30"
-
-// 透過度
-"Emacs.Alpha"="85"
-
-// 行間 (default nil)
-"Emacs.lineSpacing"="1"
-
-// 左右フリンジ
-"Emacs.leftfringe"="off"
-"Emacs.rightfringe"="off"

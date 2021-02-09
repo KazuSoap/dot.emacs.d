@@ -8,8 +8,12 @@
   (set-frame-font "fontset-myricty")
   (set-fontset-font (frame-parameter nil 'font) 'unicode (font-spec :family "Ricty Diminished Discord") nil 'append))
 
+
 ;; startup-message off
 (setq-default inhibit-startup-screen t)
+
+;; cursor点滅表示 (default)
+;; (blink-cursor-mode -1)
 
 ;;------------------------------------------------------------------------------
 ;; load path
