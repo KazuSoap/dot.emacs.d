@@ -22,7 +22,6 @@
          (setenv "MSYSTEM" "MINGW64")
          (or (getenv "SHLVL") (setenv "SHLVL" "0"))
          (setq-default shell-file-name ,(getenv "SHELL"))
-         (setq-default w32-pipe-read-delay 0) ;; Windows performance tweaks
 
          ;; coding-system
          ;; デフォルトの文字コードを設定
