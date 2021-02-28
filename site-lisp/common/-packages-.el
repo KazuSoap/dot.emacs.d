@@ -90,6 +90,33 @@
 ;; (setq-default gud-tooltip-echo-area nil)
 
 ;;------------------------------------------------------------------------------
+;; tab-bar-mode
+;; frame-local tabs with named persistent window configurations
+;;------------------------------------------------------------------------------
+(fset 'my-tab-bar-mode-setup
+      (lambda ()
+        (tab-bar-history-mode +1)
+
+        (setq tab-bar-show 1)
+        (setq tab-bar-new-button-show nil)
+        (setq tab-bar-close-button-show nil)
+        (setq tab-bar-tab-hints t)
+        (setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)
+        (setq tab-bar-back-button "<")
+        (setq tab-bar-forward-button ">")
+
+        ;; face
+        ;; tab-bar (header-line)
+        ;; (set-face-attribute 'tab-bar nil :family "Ricty Diminished Discord" :foreground "Gray72" :background "black")
+        (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
+        ;; tab-bar-tab (selected)
+        (set-face-attribute 'tab-bar-tab nil :foreground "yellow" :background "black" :box nil)
+        ;; tab-bar-tab-inactive (non-selected)
+        (set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")
+        ))
+(add-hook 'tab-bar-mode-hook 'my-tab-bar-mode-setup)
+
+;;------------------------------------------------------------------------------
 ;; TRAMP(TransparentRemoteAccessMultipleProtocol)
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
@@ -203,20 +230,20 @@
 ;; elscreen
 ;; ウィンドウ構成管理
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'elscreen
-  (setq-default elscreen-display-tab t) ;; tabの表示および幅の設定
-  (setq-default elscreen-display-screen-number nil) ;; modelineへの番号表示
-  (setq-default elscreen-tab-display-kill-screen nil) ;; タブの先頭に[X]を表示しない
-  (setq-default elscreen-tab-display-control nil) ;; header-lineの先頭に[<->]を表示しない
+;; (with-eval-after-load 'elscreen
+;;   (setq-default elscreen-display-tab t) ;; tabの表示および幅の設定
+;;   (setq-default elscreen-display-screen-number nil) ;; modelineへの番号表示
+;;   (setq-default elscreen-tab-display-kill-screen nil) ;; タブの先頭に[X]を表示しない
+;;   (setq-default elscreen-tab-display-control nil) ;; header-lineの先頭に[<->]を表示しない
 
-  ;; face
-  ;; tab-background (header-line)
-  (set-face-attribute 'elscreen-tab-background-face nil :background "black" :underline nil)
-  ;; tab-current-screen (current-screen)
-  (set-face-attribute 'elscreen-tab-current-screen-face nil :foreground "yellow" :background "black" :underline nil)
-  ;; tab-other-screen (other-screen)
-  (set-face-attribute 'elscreen-tab-other-screen-face nil :foreground "Gray72" :background "black" :underline nil)
-  )
+;;   ;; face
+;;   ;; tab-background (header-line)
+;;   (set-face-attribute 'elscreen-tab-background-face nil :background "black" :underline nil)
+;;   ;; tab-current-screen (current-screen)
+;;   (set-face-attribute 'elscreen-tab-current-screen-face nil :foreground "yellow" :background "black" :underline nil)
+;;   ;; tab-other-screen (other-screen)
+;;   (set-face-attribute 'elscreen-tab-other-screen-face nil :foreground "Gray72" :background "black" :underline nil)
+;;   )
 
 ;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
@@ -346,11 +373,13 @@
 (advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding)
 (add-hook 'isearch-mode-hook (lambda () (require 'cmigemo)))
 
-;;------------------------------------------------------------------------------
+;; ------------------------------------------------------------------------------
 ;; plantuml-mode
-;;------------------------------------------------------------------------------
+;; ------------------------------------------------------------------------------
+;; (eval-when-compile (require 'plantuml-mode)
+;;                    (require 'smart-compile))
 ;; (with-eval-after-load 'plantuml-mode
-;;   (setq-default plantuml-jar-path "c:/msys64/usr/local/share/plantuml/plantuml.jar")
+;;   (setq-default plantuml-jar-path "c:/msys64/usr/local/bin/plantuml.jar")
 
 ;;   ;; javaにオプションを渡したい場合はここにかく
 ;;   (setq-default plantuml-java-options "")
@@ -358,13 +387,12 @@
 ;;   ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
 ;;   ;; (setq-default plantuml-output-type "txt")
 
-;;   ;; 日本語を含むUMLを書く場合はUTF-8を指定
-;;   (setq-default plantuml-options "-charset UTF-8")
+;;   (setq-default plantuml-default-exec-mode 'jar)
 
-;;   (add-to-list 'smart-compile-alist '("\\.puml$" . "plantuml -charset UTF-8 -tsvg %f") t))
-
-;; ;; 拡張子による major-mode の関連付け
-;; (add-to-list 'auto-mode-alist '("\\.puml$" . plantuml-mode))
+;;   (with-eval-after-load 'smart-compile
+;;     (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
+;;       (add-to-list 'smart-compile-alist `("\\.pum$" . ,sc-cmd) t)
+;;       )))
 
 ;;------------------------------------------------------------------------------
 ;; shell-pop
