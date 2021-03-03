@@ -27,16 +27,3 @@ Emacs.toolBar: off
 !! Ricty Diminished Discord
 Emacs.Fontset-0:-PfEd-Ricty Diminished Discord-bold-normal-normal--14-*-*-*-m-0-fontset-myricty
 Emacs.Font: fontset-myricty
-
-!! windowの幅と高さ
-Emacs.Geometry: 100x28
-
-!! 透過度
-Emacs.Alpha: 85
-
-!! 行間 (default nil)
-Emacs.LineSpacing: 0
-
-!! 左右フリンジ
-Emacs.LeftFringe: 0
-Emacs.RightFringe: 0
