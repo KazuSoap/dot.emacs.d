@@ -107,7 +107,6 @@
 
         ;; face
         ;; tab-bar (header-line)
-        ;; (set-face-attribute 'tab-bar nil :family "Ricty Diminished Discord" :foreground "Gray72" :background "black")
         (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
         ;; tab-bar-tab (selected)
         (set-face-attribute 'tab-bar-tab nil :foreground "yellow" :background "black" :box nil)

@@ -61,12 +61,20 @@
 (setq-default gc-cons-threshold (* 128 1024 1024))
 
 ;;------------------------------------------------------------------------------
-;; face
+;; face & frame parameters
 ;;------------------------------------------------------------------------------
 ;; color-theme
 (load-theme 'wheatgrass t)
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
 (set-face-attribute 'fringe nil :background "black")
+
+;; frame parameters
+(setq default-frame-alist
+      '((width . 100)
+        (height . 30)
+        (alpha . 85)
+        (font . "fontset-myricty")
+        ))
 
 ;;------------------------------------------------------------------------------
 ;; global minor-mode
@@ -82,13 +90,6 @@
 ;;------------------------------------------------------------------------------
 ;; common-misc
 ;;------------------------------------------------------------------------------
-;; frame parameters
-(setq default-frame-alist
-      '((width . 100)
-        (height . 30)
-        (alpha . 85)
-        ))
-
 ;; "yes or no"を"y or n"に
 (fset 'yes-or-no-p #'y-or-n-p)
 

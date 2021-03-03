@@ -5,8 +5,10 @@
 ;;------------------------------------------------------------------------------
 ;; font
 (when (display-graphic-p)
-  (set-frame-font "fontset-myricty")
-  (set-fontset-font (frame-parameter nil 'font) 'unicode (font-spec :family "Ricty Diminished Discord") nil 'append))
+  (set-fontset-font "fontset-myricty" 'unicode (font-spec :family "Ricty Diminished Discord" :weight 'bold) nil 'append)
+  ;; (set-fontset-font t 'unicode (font-spec :family "Ricty Diminished Discord" :weight 'bold) nil 'append)
+  ;; (set-frame-font "fontset-myricty")
+  )
 
 
 ;; startup-message off
