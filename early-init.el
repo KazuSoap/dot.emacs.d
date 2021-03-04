@@ -68,6 +68,12 @@
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
 (set-face-attribute 'fringe nil :background "black")
 
+;; fontset
+(create-fontset-from-fontset-spec
+ "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty,
+ascii:-*-*-*-*-*-*-14-*-*-*-*-*-iso10646-1,
+unicode:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1")
+
 ;; frame parameters
 (setq default-frame-alist
       '((width . 100)
