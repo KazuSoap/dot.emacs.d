@@ -12,6 +12,17 @@
          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))
     "Get the installation location of \"msys2\"")
 
+  (defmacro set-function-args-encode (arg-pos)
+    "Set the character code of the parameter passed to the subprocess to cp932"
+    `(lambda (args)
+       (setf (nthcdr ,arg-pos args)
+             (mapcar (lambda (arg)
+                       (if (multibyte-string-p arg)
+                           (encode-coding-string arg 'cp932)
+                         arg))
+                     (nthcdr ,arg-pos args)))
+       args))
+
   (defmacro windows-nt-core ()
     "Windows Specific Settings"
     (when (eq system-type 'windows-nt)
@@ -41,18 +52,9 @@
                        (goto-char (point-min))
                        (buffer-substring-no-properties (point) (line-end-position)))))))
 
-         (fset 'set-function-args-encode
-               (lambda (args)
-                 "Set the character code of the parameter passed to the subprocess to cp932"
-                 (mapcar (lambda (arg)
-                           (if (multibyte-string-p arg)
-                               (encode-coding-string arg 'cp932)
-                             arg))
-                         args)))
-
-         (advice-add 'call-process-region :filter-args 'set-function-args-encode)
-         (advice-add 'call-process :filter-args 'set-function-args-encode)
-         (advice-add 'start-process :filter-args 'set-function-args-encode)))))
+         (advice-add 'call-process-region :filter-args (set-function-args-encode 6))
+         (advice-add 'call-process :filter-args (set-function-args-encode 4))
+         (advice-add 'start-process :filter-args (set-function-args-encode 3))))))
 (windows-nt-core)
 
 ;;------------------------------------------------------------------------------
@@ -69,10 +71,20 @@
 (set-face-attribute 'fringe nil :background "black")
 
 ;; fontset
+;; XLFD
+;; https://wiki.archlinux.jp/index.php/X_Logical_Font_Description
+;; https://qiita.com/j8takagi/items/01aecdd28f87cdd3cd2c
+;; -maker-family-weight-slant-widthtype-style-px-height-resX-resY-spacing-width-registry-encoding
 (create-fontset-from-fontset-spec
- "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty,
-ascii:-*-*-*-*-*-*-14-*-*-*-*-*-iso10646-1,
-unicode:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1")
+ (eval-when-compile
+   (let ((fontset-base
+          (cond ((eq system-type 'windows-nt)
+                 "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty")
+                (t ; else
+                 "-PfEd-ricty diminished discord-bold-normal-normal-*-*-*-*-*-m-0-fontset-myricty")))
+         (ascii-font "ascii:-*-*-*-*-*-*-14-*-*-*-*-*-iso10646-1")
+         (unicode-font "unicode:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1"))
+     (mapconcat #'identity `(,fontset-base ,ascii-font ,unicode-font) ","))))
 
 ;; frame parameters
 (setq default-frame-alist
