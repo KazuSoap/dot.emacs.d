@@ -15,12 +15,14 @@
   (defmacro set-function-args-encode (arg-pos)
     "Set the character code of the parameter passed to the subprocess to cp932"
     `(lambda (args)
-       (setf (nthcdr ,arg-pos args)
-             (mapcar (lambda (arg)
-                       (if (multibyte-string-p arg)
-                           (encode-coding-string arg 'cp932)
-                         arg))
-                     (nthcdr ,arg-pos args)))
+       (when (> (length args) ,arg-pos)
+         ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
+         (setf (nthcdr ,arg-pos args)
+               (mapcar (lambda (arg)
+                         (if (multibyte-string-p arg)
+                             (encode-coding-string arg 'cp932)
+                           arg))
+                       (nthcdr ,arg-pos args))))
        args))
 
   (defmacro windows-nt-core ()
@@ -52,7 +54,7 @@
                        (goto-char (point-min))
                        (buffer-substring-no-properties (point) (line-end-position)))))))
 
-         (advice-add 'call-process-region :filter-args (set-function-args-encode 6))
+         (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
          (advice-add 'call-process :filter-args (set-function-args-encode 4))
          (advice-add 'start-process :filter-args (set-function-args-encode 3))))))
 (windows-nt-core)
@@ -69,6 +71,13 @@
 (load-theme 'wheatgrass t)
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
 (set-face-attribute 'fringe nil :background "black")
+
+;; (face-spec-set 'mode-line '((t :foreground "gray85" :background "#4a5459")))
+;; (face-spec-set 'fringe '((t :background "black")))
+
+;; (custom-set-faces
+;;  '(mode-line ((t :foreground "gray85" :background "#4a5459")))
+;;  '(fringe ((t :background "black"))))
 
 ;; fontset
 ;; XLFD
@@ -145,17 +154,6 @@
 ;;------------------------------------------------------------------------------
 ;; local functions
 ;;------------------------------------------------------------------------------
-;;; my-message-startup-time ----------------------------------------------------
-;; 起動時間を [ms] 単位で表示
-;; emacs-init-time() は 秒単位で小数点第一位まで
-;; http://memo.sugyan.com/entry/20120120/1327037494
-(fset 'my-message-startup-time
-      (lambda ()
-        "echo bootup time in message buffer"
-        (message "Emacs loaded in %d ms"
-                 (* 1000 (float-time (time-subtract after-init-time before-init-time))))))
-(add-hook 'after-init-hook 'my-message-startup-time)
-
 ;;; my-revert-buffer-no-confirm ------------------------------------------------
 ;; バッファを再読み込み
 ;; https://www.emacswiki.org/emacs/RevertBuffer
