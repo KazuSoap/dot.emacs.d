@@ -93,7 +93,6 @@
 (with-eval-after-load 'cygwin-mount
   (my-cygwin-mount-config))
 
-
 ;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
 ;; shell から PATH の設定を引き継ぐ

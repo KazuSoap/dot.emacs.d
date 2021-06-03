@@ -9,6 +9,13 @@
 ;; cursor点滅表示 (default)
 ;; (blink-cursor-mode -1)
 
+;; 起動時間を [ms] 単位で表示
+(add-hook 'after-init-hook
+          (lambda ()
+            (let* ((sec (string-to-number (emacs-init-time)))
+                   (ms (* 1000 sec)))
+              (message "Emacs loaded in %.3f ms" ms))))
+
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
