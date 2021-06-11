@@ -12,18 +12,21 @@
          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))
     "Get the installation location of \"msys2\"")
 
-  (defmacro set-function-args-encode (arg-pos)
-    "Set the character code of the parameter passed to the subprocess to cp932"
-    `(lambda (args)
-       (when (> (length args) ,arg-pos)
-         ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
-         (setf (nthcdr ,arg-pos args)
-               (mapcar (lambda (arg)
-                         (if (multibyte-string-p arg)
-                             (encode-coding-string arg 'cp932)
-                           arg))
-                       (nthcdr ,arg-pos args))))
-       args))
+  ;; emacs.exeのmanifestを書き換えてデフォルトのActive Code Pageを
+  ;; cp932からutf-8に変更することで以下のhackは不要になる
+  ;; https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663
+  ;; (defmacro set-function-args-encode (arg-pos)
+  ;;   "Set the character code of the parameter passed to the subprocess to cp932"
+  ;;   `(lambda (args)
+  ;;      (when (> (length args) ,arg-pos)
+  ;;        ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
+  ;;        (setf (nthcdr ,arg-pos args)
+  ;;              (mapcar (lambda (arg)
+  ;;                        (if (multibyte-string-p arg)
+  ;;                            (encode-coding-string arg 'cp932)
+  ;;                          arg))
+  ;;                      (nthcdr ,arg-pos args))))
+  ;;      args))
 
   (defmacro windows-nt-core ()
     "Windows Specific Settings"
@@ -54,9 +57,13 @@
                        (goto-char (point-min))
                        (buffer-substring-no-properties (point) (line-end-position)))))))
 
-         (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-         (advice-add 'call-process :filter-args (set-function-args-encode 4))
-         (advice-add 'start-process :filter-args (set-function-args-encode 3))))))
+         ;; emacs.exeのmanifestを書き換えてデフォルトのActive Code Pageを
+         ;; cp932からutf-8に変更することで以下のhackは不要になる
+         ;; https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663
+         ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
+         ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
+         ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
+         ))))
 (windows-nt-core)
 
 ;;------------------------------------------------------------------------------
@@ -165,6 +172,26 @@
           (error "The buffer has been modified"))))
 (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
 
+;;; my-mark-eob ----------------------------------------------------------------
+;; バッファの最後に "[EOB]" を表示
+;; http://www.emacswiki.org/cgi-bin/wiki?HighlightEndOfBuffer
+(fset 'my-mark-eob
+      (lambda ()
+        (let ((existing-overlays (overlays-in (point-max) (point-max)))
+              (eob-mark (make-overlay (point-max) (point-max) nil t t))
+              (eob-text "[EOB]"))
+          ;; Delete any previous EOB markers.  Necessary so that they don't
+          ;; accumulate on calls to revert-buffer.
+          (dolist (next-overlay existing-overlays)
+            (if (overlay-get next-overlay 'eob-overlay)
+                (delete-overlay next-overlay)))
+          ;; Add a new EOB marker.
+          (put-text-property 0 (length eob-text)
+                             'face '(foreground-color . "slate gray") eob-text)
+          (overlay-put eob-mark 'eob-overlay t)
+          (overlay-put eob-mark 'after-string eob-text))))
+(add-hook 'find-file-hook 'my-mark-eob)
+
 ;;; my-window-resizer ----------------------------------------------------------
 ;; window size を調整
 ;; http://d.hatena.ne.jp/khiker/20100119/window_resize
@@ -190,26 +217,6 @@
 ;;                        (throw 'end-flag t))))))))
 ;; (global-set-key (kbd "C-c C-r") 'my-window-resizer)
 
-;;; my-mark-eob ----------------------------------------------------------------
-;; バッファの最後に "[EOB]" を表示
-;; http://www.emacswiki.org/cgi-bin/wiki?HighlightEndOfBuffer
-(fset 'my-mark-eob
-      (lambda ()
-        (let ((existing-overlays (overlays-in (point-max) (point-max)))
-              (eob-mark (make-overlay (point-max) (point-max) nil t t))
-              (eob-text "[EOB]"))
-          ;; Delete any previous EOB markers.  Necessary so that they don't
-          ;; accumulate on calls to revert-buffer.
-          (dolist (next-overlay existing-overlays)
-            (if (overlay-get next-overlay 'eob-overlay)
-                (delete-overlay next-overlay)))
-          ;; Add a new EOB marker.
-          (put-text-property 0 (length eob-text)
-                             'face '(foreground-color . "slate gray") eob-text)
-          (overlay-put eob-mark 'eob-overlay t)
-          (overlay-put eob-mark 'after-string eob-text))))
-(add-hook 'find-file-hook 'my-mark-eob)
-
 ;;------------------------------------------------------------------------------
 ;; local macros
 ;;------------------------------------------------------------------------------
@@ -228,3 +235,202 @@
 ;;                    (message "(%s)after:%s" ,(format "%s" fun-name) ret)
 ;;                  ret)))
 ;;        (advice-add ',fun-name :around ',(intern (format "add-%s" fun-name)) '((depth . 100))))))
+
+;;==============================================================================
+;; emacs built in package
+;;==============================================================================
+;;------------------------------------------------------------------------------
+;; auto-insert
+;; ファイルの種類に応じたテンプレートの挿入
+;;------------------------------------------------------------------------------
+;; (eval-when-compile (require 'autoinsert))
+;; (with-eval-after-load 'autoinsert
+;;   ;; テンプレートのディレクトリ
+;;   (setq-default auto-insert-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "auto-insert"))))
+
+;;   ;; テンプレート中で展開してほしいテンプレート変数を定義
+;;   (setq-default template-replacements-alists
+;;                 `(("%file%"             . ,(lambda () (file-name-nondirectory (buffer-file-name))))
+;;                   ("%file-without-ext%" . ,(lambda () (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))
+;;                   ("%include-guard%"    . ,(lambda () (format "INCLUDE_%s_H" (upcase (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))))))
+
+;;   (fset 'my-template
+;;         (lambda ()
+;;           (time-stamp)
+;;           (dolist (c (default-value 'template-replacements-alists))
+;;             (goto-char (point-min))
+;;             (while (search-forward (car c) nil t)
+;;               (replace-match (funcall (cdr c)))))
+;;           (goto-char (point-max))
+;;           (message "done.")))
+
+;;   ;; 各ファイルによってテンプレートを切り替える
+;;   (add-to-list 'auto-insert-alist '("\\.cpp$"   . ["template.cpp" my-template]))
+;;   (add-to-list 'auto-insert-alist '("\\.h$"     . ["template.h" my-template]))
+;;   (add-to-list 'auto-insert-alist '("Makefile$" . ["template.make" my-template])))
+
+;; (add-hook 'find-file-not-found-functions #'auto-insert)
+
+;;------------------------------------------------------------------------------
+;; cua-mode
+;; C-Ret で矩形選択
+;;------------------------------------------------------------------------------
+;; 詳しいキーバインド操作：http://dev.ariel-networks.com/articles/emacs/part5/
+;; (with-eval-after-load 'cua-base
+;;   (setq-default cua-enable-cua-keys nil))
+(global-set-key (kbd "C-<return>") 'cua-rectangle-mark-mode)
+
+;;------------------------------------------------------------------------------
+;; display-line-numbers-mode
+;; 行番号の表示
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'display-line-numbers
+  (set-face-attribute 'line-number nil :background "gray10")
+  (set-face-attribute 'line-number-current-line nil :background "gray40"))
+
+;;------------------------------------------------------------------------------
+;; display-time
+;; 時刻の表示
+;;------------------------------------------------------------------------------
+;; (setq-default display-time-string-forms
+;;       '((format "%s/%s/%s(%s) %s:%s " year month day dayname 24-hours minutes)
+;;         load))
+;; (setq-default display-time-24hr-format t)
+;; (display-time)
+
+;;------------------------------------------------------------------------------
+;; ediff
+;;------------------------------------------------------------------------------
+(setq-default ediff-window-setup-function 'ediff-setup-windows-plain)
+
+;;------------------------------------------------------------------------------
+;; eldoc
+;;------------------------------------------------------------------------------
+;; (with-eval-after-load 'eldoc
+;;   (setq-default eldoc-idle-delay 0.5)) ;; eldoc 遅延
+
+;;------------------------------------------------------------------------------
+;; GDB
+;; デバッガ
+;;------------------------------------------------------------------------------
+;; ;;; 有用なバッファを開くモード
+;; (setq-default gdb-many-windows t)
+
+;; ;;; 変数の上にマウスカーソルを置くと値を表示
+;; (add-hook 'gdb-mode-hook 'gud-tooltip-mode)
+
+;; ;;; I/O バッファを表示
+;; (setq-default gdb-use-separate-io-buffer t)
+
+;; ;;; t にすると mini buffer に値が表示される
+;; (setq-default gud-tooltip-echo-area nil)
+
+;;------------------------------------------------------------------------------
+;; tab-bar-mode
+;; frame-local tabs with named persistent window configurations
+;;------------------------------------------------------------------------------
+(fset 'my-tab-bar-mode-setup
+      (lambda ()
+        (tab-bar-history-mode +1)
+
+        (setq tab-bar-show 1)
+        (setq tab-bar-new-button-show nil)
+        (setq tab-bar-close-button-show nil)
+        (setq tab-bar-tab-hints t)
+        (setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)
+        (setq tab-bar-back-button "<")
+        (setq tab-bar-forward-button ">")
+
+        ;; face
+        ;; tab-bar (header-line)
+        (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
+        ;; tab-bar-tab (selected)
+        (set-face-attribute 'tab-bar-tab nil :foreground "yellow" :background "black" :box nil)
+        ;; tab-bar-tab-inactive (non-selected)
+        (set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")
+        ))
+(add-hook 'tab-bar-mode-hook 'my-tab-bar-mode-setup)
+
+;;------------------------------------------------------------------------------
+;; TRAMP(TransparentRemoteAccessMultipleProtocol)
+;; edit remoto file from local emacs
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'tramp
+  (declare-function tramp-change-syntax "tramp")
+  (tramp-change-syntax 'simplified) ;; Emacs 26.1 or later
+  (setq-default tramp-encoding-shell "bash")
+
+  ;; リモートサーバで shell を開いた時に日本語が文字化けしないよう、LC_ALL の設定を無効にする
+  ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
+  (let ((process-environment (default-value 'tramp-remote-process-environment)))
+    (setenv "LC_ALL" nil)
+    (setq-default tramp-remote-process-environment process-environment)))
+
+;;------------------------------------------------------------------------------
+;; uniquify
+;; 同一ファイル名を区別する
+;;------------------------------------------------------------------------------
+;; 表示形式指定(default: 'post-forward-angle-brackets)
+;; (setq-default uniquify-buffer-name-style 'post-forward-angle-brackets)
+
+;; 無視するバッファ名
+(setq-default uniquify-ignore-buffers-re "*[^*]+*")
+
+;;------------------------------------------------------------------------------
+;; whitespace-mode
+;; 不可視文字の可視化
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'whitespace
+  ;; 保存時に行末の空白を削除する
+  (add-hook 'before-save-hook #'delete-trailing-whitespace)
+
+  ;; 可視化する不可視文字のリスト
+  (setq-default whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
+
+  ;; 表示の変更
+  (setq-default whitespace-display-mappings
+        '(;; space → " "
+          (space-mark   ?\xA0   [?\u00A4]     [?_])
+          (space-mark   ?\x8A0  [?\x8A4]      [?_])
+          (space-mark   ?\x920  [?\x924]      [?_])
+          (space-mark   ?\xE20  [?\xE24]      [?_])
+          (space-mark   ?\xF20  [?\xF24]      [?_])
+          ;; full-width-space → "□"
+          (space-mark   ?\u3000 [?\u25a1]     [?_ ?_])
+          ;; tab → "»" with underline
+          (tab-mark     ?\t     [?\xBB ?\t]   [?\\ ?\t])
+          ;; newline → "｣"
+          (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
+
+  ;; 以下の正規表現にマッチするものを"space"と認識
+  (setq-default whitespace-space-regexp "\\(\u3000+\\)")
+
+  ;; face
+  (set-face-attribute 'whitespace-space nil :foreground "GreenYellow" :background "black")
+  (set-face-attribute 'whitespace-tab nil :foreground "LightSkyBlue" :background "black" :underline t)
+  (set-face-attribute 'whitespace-newline nil :foreground "DeepSkyBlue")
+  (set-face-attribute 'whitespace-trailing nil :background "DeepPink"))
+
+;;------------------------------------------------------------------------------
+;; windmove
+;; Emacsの分割ウィンドウを modifier-key + 矢印キー で移動
+;;------------------------------------------------------------------------------
+(fset 'activate-windmove
+      (lambda ()
+        (unless (boundp 'windmove-wrap-around)
+          (windmove-default-keybindings 'meta) ;; modifier-key = Alt
+          (setq-default windmove-wrap-around t) ;; wrap-around を有効化
+          (remove-hook 'window-configuration-change-hook 'activate-windmove) ;; 呼出し後 hook から削除
+          (fmakunbound 'activate-windmove)))) ;; 呼出し後シンボルの関数ポインタを "void" にする
+(add-hook 'window-configuration-change-hook 'activate-windmove)
+
+;;------------------------------------------------------------------------------
+;; vc-mode
+;; バージョン管理
+;;------------------------------------------------------------------------------
+;; vcを起動しない
+(setq-default vc-handled-backends nil)
+
+;; vc 関係の hook 削除
+(remove-hook 'find-file-hook 'vc-find-file-hook)
+(remove-hook 'kill-buffer-hook 'vc-kill-buffer-hook)
