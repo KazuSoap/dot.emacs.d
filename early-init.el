@@ -37,7 +37,7 @@
          (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
          (setenv "MSYSTEM" "MINGW64")
          (or (getenv "SHLVL") (setenv "SHLVL" "0"))
-         (setq-default shell-file-name ,(getenv "SHELL"))
+         (setq shell-file-name ,(getenv "SHELL"))
 
          ;; coding-system
          ;; デフォルトの文字コードを設定
@@ -69,7 +69,7 @@
 ;;------------------------------------------------------------------------------
 ;; garbage collection
 ;;------------------------------------------------------------------------------
-(setq-default gc-cons-threshold (* 128 1024 1024))
+(setq gc-cons-threshold (* 128 1024 1024))
 
 ;;------------------------------------------------------------------------------
 ;; face & frame parameters
@@ -128,18 +128,8 @@
 (fset 'yes-or-no-p #'y-or-n-p)
 
 ;; C-hでBS, shift+C-hでHelp
-(keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to BS
-(keyboard-translate ?\C-? ?\C-h)  ; translate BS to `C-h'
-
-;; ファイルのフルパスをタイトルバーに表示
-(setq-default frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
-
-;; beep音 off
-(setq-default ring-bell-function #'ignore)
-
-;; don't make BackUp file
-(setq-default auto-save-default nil) ;; #*
-(setq-default make-backup-files nil) ;; *.~
+;; (keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to BS
+;; (keyboard-translate ?\C-? ?\C-h)  ; translate BS to `C-h'
 
 ;; インデントは tab でなく 半角スペース
 (setq-default indent-tabs-mode nil)
@@ -148,15 +138,28 @@
 (setq-default bidi-display-reordering nil) ;; 双方向テキスト可否
 ;; (setq-default bidi-paragraph-direction 'left-to-right) ;; テキスト方向を強制 (default)
 
-;; mouse scroll
-(setq-default mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-(setq-default mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
-
 ;; デフォルトのメジャーモード
 (setq-default major-mode #'text-mode)
 
 ;; *scratch* バッファのメジャーモード
-;; (setq-default initial-major-mode 'fundamental-mode)
+;; (setq initial-major-mode #'fundamental-mode)
+
+;; startup-message off
+(setq inhibit-startup-screen t)
+
+;; ファイルのフルパスをタイトルバーに表示
+(setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
+
+;; beep音 off
+(setq ring-bell-function #'ignore)
+
+;; don't make BackUp file
+(setq auto-save-default nil) ;; #*
+(setq make-backup-files nil) ;; *.~
+
+;; mouse scroll
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
 
 ;;------------------------------------------------------------------------------
 ;; local functions
@@ -301,7 +304,9 @@
 ;;------------------------------------------------------------------------------
 ;; ediff
 ;;------------------------------------------------------------------------------
-(setq-default ediff-window-setup-function 'ediff-setup-windows-plain)
+(eval-when-compile (require 'ediff))
+(with-eval-after-load 'ediff
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
 ;;------------------------------------------------------------------------------
 ;; eldoc
@@ -355,16 +360,17 @@
 ;; TRAMP(TransparentRemoteAccessMultipleProtocol)
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'tramp))
 (with-eval-after-load 'tramp
   (declare-function tramp-change-syntax "tramp")
   (tramp-change-syntax 'simplified) ;; Emacs 26.1 or later
-  (setq-default tramp-encoding-shell "bash")
+  (setq tramp-encoding-shell "bash")
 
   ;; リモートサーバで shell を開いた時に日本語が文字化けしないよう、LC_ALL の設定を無効にする
   ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
   (let ((process-environment (default-value 'tramp-remote-process-environment)))
     (setenv "LC_ALL" nil)
-    (setq-default tramp-remote-process-environment process-environment)))
+    (setq tramp-remote-process-environment process-environment)))
 
 ;;------------------------------------------------------------------------------
 ;; uniquify
@@ -374,21 +380,22 @@
 ;; (setq-default uniquify-buffer-name-style 'post-forward-angle-brackets)
 
 ;; 無視するバッファ名
-(setq-default uniquify-ignore-buffers-re "*[^*]+*")
+(setq uniquify-ignore-buffers-re "*[^*]+*")
 
 ;;------------------------------------------------------------------------------
 ;; whitespace-mode
 ;; 不可視文字の可視化
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'whitespace))
 (with-eval-after-load 'whitespace
   ;; 保存時に行末の空白を削除する
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
   ;; 可視化する不可視文字のリスト
-  (setq-default whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
+  (setq whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
 
   ;; 表示の変更
-  (setq-default whitespace-display-mappings
+  (setq whitespace-display-mappings
         '(;; space → " "
           (space-mark   ?\xA0   [?\u00A4]     [?_])
           (space-mark   ?\x8A0  [?\x8A4]      [?_])
@@ -403,7 +410,7 @@
           (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
 
   ;; 以下の正規表現にマッチするものを"space"と認識
-  (setq-default whitespace-space-regexp "\\(\u3000+\\)")
+  (setq whitespace-space-regexp "\\(\u3000+\\)")
 
   ;; face
   (set-face-attribute 'whitespace-space nil :foreground "GreenYellow" :background "black")
@@ -415,11 +422,12 @@
 ;; windmove
 ;; Emacsの分割ウィンドウを modifier-key + 矢印キー で移動
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'windmove))
 (fset 'activate-windmove
       (lambda ()
         (unless (boundp 'windmove-wrap-around)
           (windmove-default-keybindings 'meta) ;; modifier-key = Alt
-          (setq-default windmove-wrap-around t) ;; wrap-around を有効化
+          (setq windmove-wrap-around t) ;; wrap-around を有効化
           (remove-hook 'window-configuration-change-hook 'activate-windmove) ;; 呼出し後 hook から削除
           (fmakunbound 'activate-windmove)))) ;; 呼出し後シンボルの関数ポインタを "void" にする
 (add-hook 'window-configuration-change-hook 'activate-windmove)
@@ -429,7 +437,7 @@
 ;; バージョン管理
 ;;------------------------------------------------------------------------------
 ;; vcを起動しない
-(setq-default vc-handled-backends nil)
+(setq vc-handled-backends nil)
 
 ;; vc 関係の hook 削除
 (remove-hook 'find-file-hook 'vc-find-file-hook)

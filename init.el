@@ -3,9 +3,6 @@
 ;;------------------------------------------------------------------------------
 ;; misc
 ;;------------------------------------------------------------------------------
-;; startup-message off
-(setq-default inhibit-startup-screen t)
-
 ;; cursor点滅表示 (default)
 ;; (blink-cursor-mode -1)
 
@@ -26,8 +23,8 @@
 ;; package system
 ;;------------------------------------------------------------------------------
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setq-default custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
-(setq-default package-menu-async nil)
+(setq custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
+(setq package-menu-async nil)
 
 ;;------------------------------------------------------------------------------
 ;; load files
