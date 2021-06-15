@@ -67,9 +67,57 @@
 (windows-nt-core)
 
 ;;------------------------------------------------------------------------------
-;; garbage collection
+;; common-misc
 ;;------------------------------------------------------------------------------
+;; garbage collection
 (setq gc-cons-threshold (* 128 1024 1024))
+
+;; startup-message off
+(setq inhibit-startup-screen t)
+
+;; ファイルのフルパスをタイトルバーに表示
+(setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
+
+;; beep音 off
+(setq ring-bell-function #'ignore)
+
+;; don't make BackUp file
+(setq auto-save-default nil) ;; #*
+(setq make-backup-files nil) ;; *.~
+
+;; mouse scroll
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
+
+;; *scratch* バッファのメジャーモード
+;; (setq initial-major-mode #'fundamental-mode)
+
+;; デフォルトのメジャーモード
+(setq-default major-mode #'text-mode)
+
+;; インデントは tab でなく 半角スペース
+(setq-default indent-tabs-mode nil)
+
+;; 双方向テキスト
+(setq-default bidi-display-reordering nil) ;; 双方向テキスト可否
+;; (setq-default bidi-paragraph-direction 'left-to-right) ;; テキスト方向を強制 (default)
+
+;; "yes or no"を"y or n"に
+(fset 'yes-or-no-p #'y-or-n-p)
+
+;; C-hでBS, shift+C-hでHelp
+;; (keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to BS
+;; (keyboard-translate ?\C-? ?\C-h)  ; translate BS to `C-h'
+
+;; 起動時間を [ms] 単位で表示
+(add-hook 'after-init-hook
+          (lambda ()
+            (let* ((sec (string-to-number (emacs-init-time)))
+                   (ms (* 1000 sec)))
+              (message "Emacs loaded in %.3f ms" ms))))
+
+;; package
+(setq custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
 
 ;;------------------------------------------------------------------------------
 ;; face & frame parameters
@@ -122,44 +170,10 @@
 (delete-selection-mode 1) ; リージョン上書き
 
 ;;------------------------------------------------------------------------------
-;; common-misc
+;; load path
 ;;------------------------------------------------------------------------------
-;; "yes or no"を"y or n"に
-(fset 'yes-or-no-p #'y-or-n-p)
-
-;; C-hでBS, shift+C-hでHelp
-;; (keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to BS
-;; (keyboard-translate ?\C-? ?\C-h)  ; translate BS to `C-h'
-
-;; インデントは tab でなく 半角スペース
-(setq-default indent-tabs-mode nil)
-
-;; 双方向テキスト
-(setq-default bidi-display-reordering nil) ;; 双方向テキスト可否
-;; (setq-default bidi-paragraph-direction 'left-to-right) ;; テキスト方向を強制 (default)
-
-;; デフォルトのメジャーモード
-(setq-default major-mode #'text-mode)
-
-;; *scratch* バッファのメジャーモード
-;; (setq initial-major-mode #'fundamental-mode)
-
-;; startup-message off
-(setq inhibit-startup-screen t)
-
-;; ファイルのフルパスをタイトルバーに表示
-(setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
-
-;; beep音 off
-(setq ring-bell-function #'ignore)
-
-;; don't make BackUp file
-(setq auto-save-default nil) ;; #*
-(setq make-backup-files nil) ;; *.~
-
-;; mouse scroll
-(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
+(let ((default-directory (eval-when-compile (concat user-emacs-directory "site-lisp"))))
+  (normal-top-level-add-subdirs-to-load-path))
 
 ;;------------------------------------------------------------------------------
 ;; local functions
@@ -304,8 +318,8 @@
 ;;------------------------------------------------------------------------------
 ;; ediff
 ;;------------------------------------------------------------------------------
-(eval-when-compile (require 'ediff))
 (with-eval-after-load 'ediff
+  (eval-when-compile (require 'ediff))
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
 ;;------------------------------------------------------------------------------
@@ -360,8 +374,8 @@
 ;; TRAMP(TransparentRemoteAccessMultipleProtocol)
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
-(eval-when-compile (require 'tramp))
 (with-eval-after-load 'tramp
+  (eval-when-compile (require 'tramp))
   (declare-function tramp-change-syntax "tramp")
   (tramp-change-syntax 'simplified) ;; Emacs 26.1 or later
   (setq tramp-encoding-shell "bash")
@@ -386,8 +400,8 @@
 ;; whitespace-mode
 ;; 不可視文字の可視化
 ;;------------------------------------------------------------------------------
-(eval-when-compile (require 'whitespace))
 (with-eval-after-load 'whitespace
+  (eval-when-compile (require 'whitespace))
   ;; 保存時に行末の空白を削除する
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
