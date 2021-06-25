@@ -4,32 +4,18 @@
 ;; windows-misc
 ;;------------------------------------------------------------------------------
 (eval-when-compile
+  ;; Get the installation location of "msys2"
   (defconst msys-root
     (let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
            (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
       (ignore-errors
         (expand-file-name
-         (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))
-    "Get the installation location of \"msys2\"")
+         (replace-regexp-in-string
+          "+$" ""
+          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))))
 
-  ;; emacs.exeのmanifestを書き換えてデフォルトのActive Code Pageを
-  ;; cp932からutf-8に変更することで以下のhackは不要になる
-  ;; https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663
-  ;; (defmacro set-function-args-encode (arg-pos)
-  ;;   "Set the character code of the parameter passed to the subprocess to cp932"
-  ;;   `(lambda (args)
-  ;;      (when (> (length args) ,arg-pos)
-  ;;        ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
-  ;;        (setf (nthcdr ,arg-pos args)
-  ;;              (mapcar (lambda (arg)
-  ;;                        (if (multibyte-string-p arg)
-  ;;                            (encode-coding-string arg 'cp932)
-  ;;                          arg))
-  ;;                      (nthcdr ,arg-pos args))))
-  ;;      args))
-
+  ;; Windows Specific Settings
   (defmacro windows-nt-core ()
-    "Windows Specific Settings"
     (when (eq system-type 'windows-nt)
       `(progn
          ;; Set environment variable
@@ -39,12 +25,10 @@
          (or (getenv "SHLVL") (setenv "SHLVL" "0"))
          (setq shell-file-name ,(getenv "SHELL"))
 
-         ;; coding-system
-         ;; デフォルトの文字コードを設定
-         ;; 指定される文字コードは以下の項目
-         ;; ① ファイルを新規作成した場合のデフォルト
-         ;; ② サブプロセスでの IO
-         ;; ③ 他の項目が指定されていない場合のデフォルト値
+         ;; Set the default char-code in the following cases;
+         ;; (1) when creating a new file,
+         ;; (2) subprocess I/O,
+         ;; (3) if not set elsewhere.
          (prefer-coding-system 'utf-8-unix)
 
          (fset 'cygpath
@@ -55,15 +39,7 @@
                      (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
                      (unless (bobp)
                        (goto-char (point-min))
-                       (buffer-substring-no-properties (point) (line-end-position)))))))
-
-         ;; emacs.exeのmanifestを書き換えてデフォルトのActive Code Pageを
-         ;; cp932からutf-8に変更することで以下のhackは不要になる
-         ;; https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663
-         ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-         ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
-         ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
-         ))))
+                       (buffer-substring-no-properties (point) (line-end-position)))))))))))
 (windows-nt-core)
 
 ;;------------------------------------------------------------------------------
@@ -72,52 +48,51 @@
 ;; garbage collection
 (setq gc-cons-threshold (* 128 1024 1024))
 
-;; startup-message off
+;; hide startup-message
 (setq inhibit-startup-screen t)
 
-;; ファイルのフルパスをタイトルバーに表示
+;; show file path in title bar
 (setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
 
-;; beep音 off
+;; don't beep
 (setq ring-bell-function #'ignore)
 
-;; don't make BackUp file
-(setq auto-save-default nil) ;; #*
-(setq make-backup-files nil) ;; *.~
+;; don't make backup file
+(setq auto-save-default nil  ; #*
+      make-backup-files nil) ; *.~
 
 ;; mouse scroll
-(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
+(setq mouse-wheel-progressive-speed nil ; don't accelerate scrolling
+      mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
 
-;; *scratch* バッファのメジャーモード
+;; package
+(setq custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
+
+;; major mode of *scratch* buffer
 ;; (setq initial-major-mode #'fundamental-mode)
 
-;; デフォルトのメジャーモード
+;; default major-mode
 (setq-default major-mode #'text-mode)
 
-;; インデントは tab でなく 半角スペース
+;; indent with half-width spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 
-;; 双方向テキスト
-(setq-default bidi-display-reordering nil) ;; 双方向テキスト可否
-;; (setq-default bidi-paragraph-direction 'left-to-right) ;; テキスト方向を強制 (default)
+;; bidirectional text
+(setq-default bidi-display-reordering nil) ; Set whether to allow bidirectional text.
+;; (setq-default bidi-paragraph-direction 'left-to-right) ; Force text direction (default)
 
-;; "yes or no"を"y or n"に
+;; Set "yes" to "y" and "no" to "n"
 (fset 'yes-or-no-p #'y-or-n-p)
 
-;; C-hでBS, shift+C-hでHelp
-;; (keyboard-translate ?\C-h ?\C-?) ; translate `C-h' to BS
-;; (keyboard-translate ?\C-? ?\C-h)  ; translate BS to `C-h'
+;; translate "C-h" to "Back Space"
+(define-key key-translation-map [?\C-h] [?\C-?])
 
-;; 起動時間を [ms] 単位で表示
+;; show startup time in [ms]
 (add-hook 'after-init-hook
           (lambda ()
             (let* ((sec (string-to-number (emacs-init-time)))
                    (ms (* 1000 sec)))
               (message "Emacs loaded in %.3f ms" ms))))
-
-;; package
-(setq custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
 
 ;;------------------------------------------------------------------------------
 ;; face & frame parameters
@@ -126,13 +101,6 @@
 (load-theme 'wheatgrass t)
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
 (set-face-attribute 'fringe nil :background "black")
-
-;; (face-spec-set 'mode-line '((t :foreground "gray85" :background "#4a5459")))
-;; (face-spec-set 'fringe '((t :background "black")))
-
-;; (custom-set-faces
-;;  '(mode-line ((t :foreground "gray85" :background "#4a5459")))
-;;  '(fringe ((t :background "black"))))
 
 ;; fontset
 ;; XLFD
@@ -155,19 +123,18 @@
       '((width . 100)
         (height . 30)
         (alpha . 85)
-        (font . "fontset-myricty")
-        ))
+        (font . "fontset-myricty")))
 
 ;;------------------------------------------------------------------------------
 ;; global minor-mode
 ;;------------------------------------------------------------------------------
-(tool-bar-mode -1) ; tool-bar-mode
-;; (menu-bar-mode -1) ; menu-bar-mode (default)
-(fringe-mode -1) ; fringe-mode
-(column-number-mode 1) ; モードラインに列番号表示
-;; (line-number-mode -1) ; モードラインに行番号表示 (default)
-;; (size-indication-mode -1) ; モードラインにファイルサイズ表示 (default)
-(delete-selection-mode 1) ; リージョン上書き
+(tool-bar-mode -1) ; default on
+;; (menu-bar-mode -1) ; default on
+(fringe-mode -1) ; default on
+(column-number-mode 1) ; default off
+;; (line-number-mode -1) ; default on
+;; (size-indication-mode 1) ; default off
+(delete-selection-mode 1) ; default off
 
 ;;------------------------------------------------------------------------------
 ;; load path
@@ -179,7 +146,6 @@
 ;; local functions
 ;;------------------------------------------------------------------------------
 ;;; my-revert-buffer-no-confirm ------------------------------------------------
-;; バッファを再読み込み
 ;; https://www.emacswiki.org/emacs/RevertBuffer
 (fset 'my-revert-buffer-no-confirm
       (lambda (&optional force-reverting)
@@ -208,50 +174,6 @@
           (overlay-put eob-mark 'eob-overlay t)
           (overlay-put eob-mark 'after-string eob-text))))
 (add-hook 'find-file-hook 'my-mark-eob)
-
-;;; my-window-resizer ----------------------------------------------------------
-;; window size を調整
-;; http://d.hatena.ne.jp/khiker/20100119/window_resize
-;; (fset 'my-window-resizer
-;;       (lambda ()
-;;         "Control window size and position."
-;;         (interactive)
-;;         (let ((dx (if (= (nth 0 (window-edges)) 0) 1 -1))
-;;               (dy (if (= (nth 1 (window-edges)) 0) 1 -1))
-;;               action
-;;               c)
-;;           (catch 'end-flag
-;;             (while t
-;;               (setq action (read-key-sequence-vector (format "size[%dx%d]" (window-width) (window-height))))
-;;               (setq c (aref action 0))
-;;               (cond ((= c ?l) (enlarge-window dx t))
-;;                     ((= c ?h) (shrink-window dx t))
-;;                     ((= c ?j) (enlarge-window dy))
-;;                     ((= c ?k) (shrink-window dy))
-;;                     (t (let ((command (key-binding action)))
-;;                          (when command (call-interactively command)))
-;;                        (message "Quit")
-;;                        (throw 'end-flag t))))))))
-;; (global-set-key (kbd "C-c C-r") 'my-window-resizer)
-
-;;------------------------------------------------------------------------------
-;; local macros
-;;------------------------------------------------------------------------------
-;;; my-debug-message -----------------------------------------------------------
-;; 特定の関数を実行された際、引数と出力、backtrace を出力
-;; (eval-when-compile
-;;   (defmacro my-debug-message (fun-name)
-;;     `(progn
-;;        (fset (quote ,(intern (format "add-%s" fun-name)))
-;;              (lambda (f &rest args)
-;;                (backtrace)
-;;                ;; (message "(%s)before:%s" ,(format "%s" fun-name) (prin1-to-string args))
-;;                (message "(%s)before:%s" ,(format "%s" fun-name) args)
-
-;;                (let ((ret (apply f args)))
-;;                    (message "(%s)after:%s" ,(format "%s" fun-name) ret)
-;;                  ret)))
-;;        (advice-add ',fun-name :around ',(intern (format "add-%s" fun-name)) '((depth . 100))))))
 
 ;;==============================================================================
 ;; emacs built in package
@@ -406,21 +328,21 @@
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
   ;; 可視化する不可視文字のリスト
-  (setq whitespace-style '(face tabs tab-mark newline newline-mark spaces space-mark trailing))
+  (setq whitespace-style '(face trailing tabs spaces newline space-mark tab-mark newline-mark))
 
   ;; 表示の変更
   (setq whitespace-display-mappings
-        '(;; space → " "
+        '(;; space > " "
           (space-mark   ?\xA0   [?\u00A4]     [?_])
           (space-mark   ?\x8A0  [?\x8A4]      [?_])
           (space-mark   ?\x920  [?\x924]      [?_])
           (space-mark   ?\xE20  [?\xE24]      [?_])
           (space-mark   ?\xF20  [?\xF24]      [?_])
-          ;; full-width-space → "□"
+          ;; full-width-space > "□"
           (space-mark   ?\u3000 [?\u25a1]     [?_ ?_])
-          ;; tab → "»" with underline
+          ;; tab > "»" with underline
           (tab-mark     ?\t     [?\xBB ?\t]   [?\\ ?\t])
-          ;; newline → "｣"
+          ;; newline > "｣"
           (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
 
   ;; 以下の正規表現にマッチするものを"space"と認識
