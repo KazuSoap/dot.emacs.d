@@ -50,23 +50,6 @@
   (tr-ime-font-reflect-frame-parameter))
 
 ;;------------------------------------------------------------------------------
-;; 印刷設定
-;;------------------------------------------------------------------------------
-;; lpr-bufferコマンド で notepad を開くようにする
-(with-eval-after-load 'lpr
-  (eval-when-compile (require 'lpr))
-  (setq print-region-function
-        (lambda (start end _program &optional _delete _destination _display &rest _args)
-          (let* ((procname (make-temp-name "w32-print-"))
-                 (winfile (expand-file-name procname temporary-file-directory)))
-            (write-region start end winfile)
-            (set-process-sentinel
-             (start-process procname nil "notepad.exe" winfile)
-             (lambda (_process _state)
-               (when (file-exists-p winfile)
-                 (delete-file winfile))))))))
-
-;;------------------------------------------------------------------------------
 ;; fakecygpty
 ;; NTEmacs の仮想端末偽装
 ;; https://github.com/d5884/fakecygpty

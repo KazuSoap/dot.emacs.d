@@ -68,9 +68,6 @@
 (setq mouse-wheel-progressive-speed nil ; don't accelerate scrolling
       mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
 
-;; package
-(setq custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el")))
-
 ;; major mode of *scratch* buffer
 ;; (setq initial-major-mode #'fundamental-mode)
 
@@ -93,9 +90,8 @@
 ;; show startup time in [ms]
 (add-hook 'after-init-hook
           (lambda ()
-            (let* ((sec (string-to-number (emacs-init-time)))
-                   (ms (* 1000 sec)))
-              (message "Emacs loaded in %.3f ms" ms))))
+            (message "Emacs loaded in %.3f ms"
+                     (* 1000 (string-to-number (emacs-init-time))))))
 
 ;;------------------------------------------------------------------------------
 ;; face & frame parameters
@@ -138,6 +134,7 @@
 ;; (line-number-mode -1) ; default on
 ;; (size-indication-mode 1) ; default off
 (delete-selection-mode 1) ; default off
+;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1))) ; default on
 
 ;;------------------------------------------------------------------------------
 ;; load path
@@ -216,9 +213,6 @@
 ;; cua-mode
 ;; rectangle selection with C-Ret
 ;;------------------------------------------------------------------------------
-;; http://dev.ariel-networks.com/articles/emacs/part5/
-;; (with-eval-after-load 'cua-base
-;;   (setq-default cua-enable-cua-keys nil))
 (global-set-key (kbd "C-<return>") 'cua-rectangle-mark-mode)
 
 ;;------------------------------------------------------------------------------
@@ -229,26 +223,11 @@
   (set-face-attribute 'line-number-current-line nil :background "gray40"))
 
 ;;------------------------------------------------------------------------------
-;; display-time
-;;------------------------------------------------------------------------------
-;; (setq-default display-time-string-forms
-;;       '((format "%s/%s/%s(%s) %s:%s " year month day dayname 24-hours minutes)
-;;         load))
-;; (setq-default display-time-24hr-format t)
-;; (display-time)
-
-;;------------------------------------------------------------------------------
 ;; ediff
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'ediff
   (eval-when-compile (require 'ediff))
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
-
-;;------------------------------------------------------------------------------
-;; eldoc
-;;------------------------------------------------------------------------------
-;; (with-eval-after-load 'eldoc
-;;   (setq-default eldoc-idle-delay 0.5))
 
 ;;------------------------------------------------------------------------------
 ;; GDB
@@ -264,6 +243,29 @@
 
 ;; ;; show value in mini buffer when set to t
 ;; (setq-default gud-tooltip-echo-area nil)
+
+;;------------------------------------------------------------------------------
+;; lpr
+;; printer settings
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defmacro nt-printer ()
+    (when (eq system-type 'windows-nt)
+      (require 'lpr)
+      `(progn
+         ;; lpr-bufferコマンド で notepad を開くようにする
+         (with-eval-after-load 'lpr
+           (setq print-region-function
+                 (lambda (start end _program &optional _delete _destination _display &rest _args)
+                   (let* ((procname (make-temp-name "w32-print-"))
+                          (winfile (expand-file-name procname temporary-file-directory)))
+                     (write-region start end winfile)
+                     (set-process-sentinel
+                      (start-process procname nil "notepad.exe" winfile)
+                      (lambda (_process _state)
+                        (when (file-exists-p winfile)
+                          (delete-file winfile))))))))))))
+(nt-printer)
 
 ;;------------------------------------------------------------------------------
 ;; tab-bar-mode
