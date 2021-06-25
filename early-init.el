@@ -1,5 +1,8 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
+;;==============================================================================
+;; basic settings
+;;==============================================================================
 ;;------------------------------------------------------------------------------
 ;; windows-misc
 ;;------------------------------------------------------------------------------
@@ -145,7 +148,7 @@
 ;;------------------------------------------------------------------------------
 ;; local functions
 ;;------------------------------------------------------------------------------
-;;; my-revert-buffer-no-confirm ------------------------------------------------
+;; revert buffer
 ;; https://www.emacswiki.org/emacs/RevertBuffer
 (fset 'my-revert-buffer-no-confirm
       (lambda (&optional force-reverting)
@@ -155,8 +158,7 @@
           (error "The buffer has been modified"))))
 (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
 
-;;; my-mark-eob ----------------------------------------------------------------
-;; バッファの最後に "[EOB]" を表示
+;; show "[EOB]" at the end of buffer
 ;; http://www.emacswiki.org/cgi-bin/wiki?HighlightEndOfBuffer
 (fset 'my-mark-eob
       (lambda ()
@@ -180,14 +182,14 @@
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
 ;; auto-insert
-;; ファイルの種類に応じたテンプレートの挿入
+;; Insert template according to file type
 ;;------------------------------------------------------------------------------
 ;; (eval-when-compile (require 'autoinsert))
 ;; (with-eval-after-load 'autoinsert
-;;   ;; テンプレートのディレクトリ
+;;   ;; Template directory
 ;;   (setq-default auto-insert-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "auto-insert"))))
 
-;;   ;; テンプレート中で展開してほしいテンプレート変数を定義
+;;   ;; Define variables to expand in the template
 ;;   (setq-default template-replacements-alists
 ;;                 `(("%file%"             . ,(lambda () (file-name-nondirectory (buffer-file-name))))
 ;;                   ("%file-without-ext%" . ,(lambda () (file-name-sans-extension (file-name-nondirectory (buffer-file-name)))))
@@ -203,7 +205,7 @@
 ;;           (goto-char (point-max))
 ;;           (message "done.")))
 
-;;   ;; 各ファイルによってテンプレートを切り替える
+;;   ;; Switch templates according to file type
 ;;   (add-to-list 'auto-insert-alist '("\\.cpp$"   . ["template.cpp" my-template]))
 ;;   (add-to-list 'auto-insert-alist '("\\.h$"     . ["template.h" my-template]))
 ;;   (add-to-list 'auto-insert-alist '("Makefile$" . ["template.make" my-template])))
@@ -212,16 +214,15 @@
 
 ;;------------------------------------------------------------------------------
 ;; cua-mode
-;; C-Ret で矩形選択
+;; rectangle selection with C-Ret
 ;;------------------------------------------------------------------------------
-;; 詳しいキーバインド操作：http://dev.ariel-networks.com/articles/emacs/part5/
+;; http://dev.ariel-networks.com/articles/emacs/part5/
 ;; (with-eval-after-load 'cua-base
 ;;   (setq-default cua-enable-cua-keys nil))
 (global-set-key (kbd "C-<return>") 'cua-rectangle-mark-mode)
 
 ;;------------------------------------------------------------------------------
 ;; display-line-numbers-mode
-;; 行番号の表示
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'display-line-numbers
   (set-face-attribute 'line-number nil :background "gray10")
@@ -229,7 +230,6 @@
 
 ;;------------------------------------------------------------------------------
 ;; display-time
-;; 時刻の表示
 ;;------------------------------------------------------------------------------
 ;; (setq-default display-time-string-forms
 ;;       '((format "%s/%s/%s(%s) %s:%s " year month day dayname 24-hours minutes)
@@ -248,22 +248,21 @@
 ;; eldoc
 ;;------------------------------------------------------------------------------
 ;; (with-eval-after-load 'eldoc
-;;   (setq-default eldoc-idle-delay 0.5)) ;; eldoc 遅延
+;;   (setq-default eldoc-idle-delay 0.5))
 
 ;;------------------------------------------------------------------------------
 ;; GDB
-;; デバッガ
 ;;------------------------------------------------------------------------------
-;; ;;; 有用なバッファを開くモード
+;; ;; mode to open useful buffer
 ;; (setq-default gdb-many-windows t)
 
-;; ;;; 変数の上にマウスカーソルを置くと値を表示
+;; ;; hover mouse cursor over a variable to see its value
 ;; (add-hook 'gdb-mode-hook 'gud-tooltip-mode)
 
-;; ;;; I/O バッファを表示
+;; ;; show I/O buffer
 ;; (setq-default gdb-use-separate-io-buffer t)
 
-;; ;;; t にすると mini buffer に値が表示される
+;; ;; show value in mini buffer when set to t
 ;; (setq-default gud-tooltip-echo-area nil)
 
 ;;------------------------------------------------------------------------------
@@ -279,17 +278,18 @@
         (setq tab-bar-close-button-show nil)
         (setq tab-bar-tab-hints t)
         (setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)
-        (setq tab-bar-back-button "<")
-        (setq tab-bar-forward-button ">")
+
+        ;; remove background image
+        (add-text-properties 0 (length tab-bar-back-button) '(display t) tab-bar-back-button)
+        (add-text-properties 0 (length tab-bar-forward-button) '(display t) tab-bar-forward-button)
 
         ;; face
-        ;; tab-bar (header-line)
+        ;; header-line
         (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
-        ;; tab-bar-tab (selected)
+        ;; selected
         (set-face-attribute 'tab-bar-tab nil :foreground "yellow" :background "black" :box nil)
-        ;; tab-bar-tab-inactive (non-selected)
-        (set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")
-        ))
+        ;; non-selected
+        (set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")))
 (add-hook 'tab-bar-mode-hook 'my-tab-bar-mode-setup)
 
 ;;------------------------------------------------------------------------------
@@ -299,10 +299,10 @@
 (with-eval-after-load 'tramp
   (eval-when-compile (require 'tramp))
   (declare-function tramp-change-syntax "tramp")
-  (tramp-change-syntax 'simplified) ;; Emacs 26.1 or later
+  (tramp-change-syntax 'simplified) ; Emacs 26.1 or later
   (setq tramp-encoding-shell "bash")
 
-  ;; リモートサーバで shell を開いた時に日本語が文字化けしないよう、LC_ALL の設定を無効にする
+  ;; When connecting to a remote shell, disable the LC_ALL setting to prevent garbled Japanese characters
   ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
   (let ((process-environment (default-value 'tramp-remote-process-environment)))
     (setenv "LC_ALL" nil)
@@ -310,27 +310,27 @@
 
 ;;------------------------------------------------------------------------------
 ;; uniquify
-;; 同一ファイル名を区別する
+;; Distinguish the same file name
 ;;------------------------------------------------------------------------------
-;; 表示形式指定(default: 'post-forward-angle-brackets)
+;; Specify the display format (default: 'post-forward-angle-brackets)
 ;; (setq-default uniquify-buffer-name-style 'post-forward-angle-brackets)
 
-;; 無視するバッファ名
+;; Buffer name to ignore
 (setq uniquify-ignore-buffers-re "*[^*]+*")
 
 ;;------------------------------------------------------------------------------
 ;; whitespace-mode
-;; 不可視文字の可視化
+;; Visualize invisible characters
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'whitespace
   (eval-when-compile (require 'whitespace))
-  ;; 保存時に行末の空白を削除する
+  ;; delete trailing whitespace when saving
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
-  ;; 可視化する不可視文字のリスト
+  ;; list of invisible characters to visualize
   (setq whitespace-style '(face trailing tabs spaces newline space-mark tab-mark newline-mark))
 
-  ;; 表示の変更
+  ;; display mapping of invisible characters
   (setq whitespace-display-mappings
         '(;; space > " "
           (space-mark   ?\xA0   [?\u00A4]     [?_])
@@ -345,7 +345,7 @@
           ;; newline > "｣"
           (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
 
-  ;; 以下の正規表現にマッチするものを"space"と認識
+  ;; recognize "space" if it matches the following regular expression
   (setq whitespace-space-regexp "\\(\u3000+\\)")
 
   ;; face
@@ -356,25 +356,25 @@
 
 ;;------------------------------------------------------------------------------
 ;; windmove
-;; Emacsの分割ウィンドウを modifier-key + 矢印キー で移動
+;; Move the split window with "modifier-key + arrow keys"
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'windmove))
 (fset 'activate-windmove
       (lambda ()
         (unless (boundp 'windmove-wrap-around)
-          (windmove-default-keybindings 'meta) ;; modifier-key = Alt
-          (setq windmove-wrap-around t) ;; wrap-around を有効化
-          (remove-hook 'window-configuration-change-hook 'activate-windmove) ;; 呼出し後 hook から削除
-          (fmakunbound 'activate-windmove)))) ;; 呼出し後シンボルの関数ポインタを "void" にする
+          (windmove-default-keybindings 'meta) ; modifier-key = Alt
+          (setq windmove-wrap-around t) ; enable wrap-around
+          (remove-hook 'window-configuration-change-hook 'activate-windmove)
+          (fmakunbound 'activate-windmove))))
 (add-hook 'window-configuration-change-hook 'activate-windmove)
 
 ;;------------------------------------------------------------------------------
 ;; vc-mode
-;; バージョン管理
+;; version control
 ;;------------------------------------------------------------------------------
-;; vcを起動しない
+;; don't start "vc"
 (setq vc-handled-backends nil)
 
-;; vc 関係の hook 削除
+;; removed "hook" related to "vc"
 (remove-hook 'find-file-hook 'vc-find-file-hook)
 (remove-hook 'kill-buffer-hook 'vc-kill-buffer-hook)
