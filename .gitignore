@@ -9,7 +9,7 @@ site-lisp/extra_modules
 !remove_emacs_settings.reg
 !.Xresources
 !template.*
--proxy-.el
+package-quickstart.el
 my-custom-file.el
 srecode-map.el
 !sendesc.js
