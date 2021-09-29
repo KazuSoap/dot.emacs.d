@@ -1,20 +1,6 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; exec-path-from-shell
-;; shell から PATH の設定を引き継ぐ
-;; from package
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'exec-path-from-shell
-  (eval-when-compile (declare-function cygpath "early-init"))
-  (fset 'ad-exec-path-from-shell-setenv
-        (lambda (args)
-          (and (string= (car args) "PATH")
-               (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-          args))
-  (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv))
-
-;;------------------------------------------------------------------------------
 ;; magit
 ;; git クライアント
 ;; from package

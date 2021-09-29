@@ -13,7 +13,8 @@
     (when (eq system-type 'windows-nt)
       `(progn
          (autoload 'fakecygpty-activate "fakecygpty" t nil)
-         (add-hook 'after-init-hook #'fakecygpty-activate)))))
+         (add-hook 'after-init-hook #'fakecygpty-activate)
+         ))))
 (fakecygpty-settings)
 
 ;;------------------------------------------------------------------------------
@@ -62,6 +63,14 @@
     (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
 
   (defmacro copy-envs-settings ()
+    (when (and (eq system-type 'windows-nt) (fboundp 'cygpath))
+      (fset 'ad-exec-path-from-shell-setenv
+            (lambda (args)
+              (and (string= (car args) "PATH")
+                   (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
+              args))
+      (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv))
+
     ;; sync emacs environment variable with shell's one
     (exec-path-from-shell-initialize)
     `(progn
@@ -123,7 +132,6 @@
            ;; frame font
            (modify-all-frames-parameters `((ime-font . ,(frame-parameter nil 'font))))
            (tr-ime-font-reflect-frame-parameter))
-
          ))))
 (ime-settings)
 
