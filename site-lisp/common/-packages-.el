@@ -23,26 +23,23 @@
 ;; https://www.emacswiki.org/emacs/cygwin-mount.el
 ;;------------------------------------------------------------------------------
 (eval-when-compile
+  (when (eq system-type 'windows-nt)
+    (require 'cygwin-mount)
+    (defvar msys-bin (file-name-directory shell-file-name))
+
+    (setq-default cygwin-mount-program (concat msys-bin "mount.exe"))
+    (setq-default cygwin-mount-uname-program (concat msys-bin "uname.exe"))
+    (cygwin-mount-build-table-internal))
+
   (defmacro cygwin-mount-nt ()
     (when (eq system-type 'windows-nt)
       `(progn
          (autoload 'cygwin-mount-activate "cygwin-mount" t nil)
          (add-hook 'after-init-hook #'cygwin-mount-activate)
 
-         (eval-when-compile
-           (require 'cygwin-mount)
-           (defvar msys-bin (file-name-directory shell-file-name))
-           (setq cygwin-mount-program (concat msys-bin "mount.exe"))
-           (setq cygwin-mount-uname-program (concat msys-bin "uname.exe"))
-
-           (defmacro my-cygwin-mount-config ()
-             (cygwin-mount-build-table-internal)
-             `(progn
-                (setq cygwin-mount-table ',cygwin-mount-table--internal)
-                (fset 'cygwin-mount-get-cygdrive-prefix (lambda () ,(cygwin-mount-get-cygdrive-prefix))))))
-
          (with-eval-after-load 'cygwin-mount
-           (my-cygwin-mount-config))
+           (setq cygwin-mount-table ',cygwin-mount-table--internal)
+           (fset 'cygwin-mount-get-cygdrive-prefix (lambda () ,(cygwin-mount-get-cygdrive-prefix))))
          ))))
 (cygwin-mount-nt)
 
@@ -84,54 +81,94 @@
 ;; IME
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defvar w32-ime-mode-line-state-indicator)
-  (defvar w32-ime-mode-line-state-indicator-list)
-  (declare-function tr-ime-hook-check "tr-ime-hook")
-  (declare-function w32-ime-wrap-function-to-control-ime "w32-ime")
-  (declare-function tr-ime-font-reflect-frame-parameter "tr-ime-font")
+  (cond ((eq system-type 'windows-nt)
+         (defvar w32-ime-mode-line-state-indicator)
+         (defvar w32-ime-mode-line-state-indicator-list)
+         (declare-function tr-ime-hook-check "tr-ime-hook")
+         (declare-function w32-ime-wrap-function-to-control-ime "w32-ime")
+         (declare-function tr-ime-font-reflect-frame-parameter "tr-ime-font")
+         )
+        ((eq system-type 'gnu/linux)
+         nil
+         )
+        )
 
   (defmacro ime-settings ()
-    (when (eq system-type 'windows-nt)
-      `(progn
-         ;; 無変換キーで tr-ime & w32-ime を有効化
-         (global-set-key (kbd "<non-convert>")
-                         (lambda ()
-                           (interactive)
-                           (global-unset-key (kbd "<non-convert>"))
+    (cond ((eq system-type 'windows-nt)
+           `(progn
+              ;; 無変換キーで tr-ime & w32-ime を有効化
+              (global-set-key (kbd "<non-convert>")
+                              (lambda ()
+                                (interactive)
+                                (global-unset-key (kbd "<non-convert>"))
 
-                           ;; tr-imeの有効化
-                           ;; (tr-ime-advanced-install)
-                           (tr-ime-advanced-initialize)
-                           (tr-ime-hook-check)))
+                                ;; tr-imeの有効化
+                                ;; (tr-ime-advanced-install)
+                                (tr-ime-advanced-initialize)
+                                (tr-ime-hook-check)))
 
-         (with-eval-after-load 'w32-ime
-           ;; 標準IMEの設定
-           (setq default-input-method "W32-IME")
+              (with-eval-after-load 'w32-ime
+                ;; 標準IMEの設定
+                (setq default-input-method "W32-IME")
 
-           ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
-           (setq w32-ime-mode-line-state-indicator "[Aa]")
-           (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
+                ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
+                (setq w32-ime-mode-line-state-indicator "[Aa]")
+                (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
 
-           ;; IME の初期化
-           (w32-ime-initialize)
+                ;; IME の初期化
+                (w32-ime-initialize)
 
-           ;; IME ON/OFF時のカーソルカラー
-           (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
-           (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
+                ;; IME ON/OFF時のカーソルカラー
+                (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
+                (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
 
-           ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
-           (w32-ime-wrap-function-to-control-ime #'universal-argument)
-           (w32-ime-wrap-function-to-control-ime #'read-string)
-           (w32-ime-wrap-function-to-control-ime #'read-char)
-           (w32-ime-wrap-function-to-control-ime #'read-from-minibuffer)
-           (w32-ime-wrap-function-to-control-ime #'y-or-n-p)
-           (w32-ime-wrap-function-to-control-ime #'yes-or-no-p)
-           (w32-ime-wrap-function-to-control-ime #'map-y-or-n-p)
+                ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
+                (w32-ime-wrap-function-to-control-ime #'universal-argument)
+                (w32-ime-wrap-function-to-control-ime #'read-string)
+                (w32-ime-wrap-function-to-control-ime #'read-char)
+                (w32-ime-wrap-function-to-control-ime #'read-from-minibuffer)
+                (w32-ime-wrap-function-to-control-ime #'y-or-n-p)
+                (w32-ime-wrap-function-to-control-ime #'yes-or-no-p)
+                (w32-ime-wrap-function-to-control-ime #'map-y-or-n-p)
 
-           ;; frame font
-           (modify-all-frames-parameters `((ime-font . ,(frame-parameter nil 'font))))
-           (tr-ime-font-reflect-frame-parameter))
-         ))))
+                ;; frame font
+                (modify-all-frames-parameters `((ime-font . ,(frame-parameter nil 'font))))
+                (tr-ime-font-reflect-frame-parameter))
+              ))
+          ((eq system-type 'gnu/linux)
+           `(progn
+              (setq default-input-method "japanese-mozc")
+
+              (with-eval-after-load 'mozc
+                ;; (setq mozc-candidate-style 'overlay)
+                ;; (require 'mozc-popup)
+                ;; (setq mozc-candidate-style 'popup)
+                (require 'mozc-cand-posframe)
+                (setq mozc-candidate-style 'posframe)
+
+                ;; 無変換キーのキーイベントを横取りする
+                (fset 'ad-mozc-intercept-keys
+                      (lambda (f event)
+                        (cond
+                         ((member event '(muhenkan))
+                          ;; (message "%s" event) ;debug
+                          (mozc-clean-up-changes-on-buffer)
+                          (mozc-fall-back-on-default-binding event))
+                         (t ; else
+                          ;; (message "%s" event) ;debug
+                          (funcall f event)))))
+                (advice-add 'mozc-handle-event :around 'ad-mozc-intercept-keys))
+
+              (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method)
+              (global-set-key (kbd "<henkan>") (lambda () (interactive) (activate-input-method default-input-method)))
+              (global-set-key (kbd "<hiragana-katakana>") (lambda () (interactive) (activate-input-method default-input-method)))
+              (global-set-key (kbd "<muhenkan>") (lambda () (interactive) (deactivate-input-method)))
+
+              ;; IME ON/OFF時のカーソルカラー
+              (add-hook 'input-method-activate-hook (lambda () (set-cursor-color "yellow")))
+              (add-hook 'input-method-deactivate-hook (lambda () (set-cursor-color "thistle")))
+              ))
+          )))
 (ime-settings)
 
 ;;------------------------------------------------------------------------------

@@ -12,7 +12,7 @@
 ;; load files
 ;;------------------------------------------------------------------------------
 ;; -- win or linux misc -- ;;
-(load (eval-when-compile (replace-regexp-in-string "/" "-" (format "-%s-misc-" system-type))) t t)
+;; (load (eval-when-compile (replace-regexp-in-string "/" "-" (format "-%s-misc-" system-type))) t t)
 
 ;; -- common --;;
 (load "-major-mode-" t t)
