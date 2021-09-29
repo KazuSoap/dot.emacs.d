@@ -4,6 +4,87 @@
 ;; from package
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
+;; exec-path-from-shell
+;; シェルと環境変数を同期
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (require 'exec-path-from-shell)
+
+  (let ((add-env-vars '()))
+    (when (eq system-type 'windows-nt)
+      (setq add-env-vars (append add-env-vars '("LANG" "PKG_CONFIG_PATH" "http_proxy" "https_proxy"))))
+    (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t)) add-env-vars))
+
+  (defmacro setenv_cached-env-var (env-var-lst)
+    (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
+
+  (defmacro copy-envs-settings ()
+    ;; sync emacs environment variable with shell's one
+    (exec-path-from-shell-initialize)
+    `(progn
+       ,@(macroexpand '(setenv_cached-env-var exec-path-from-shell-variables))
+       (setq exec-path (append (split-string (getenv "PATH") path-separator) ',(last exec-path)))
+  )))
+
+(when (string= "0" (getenv "SHLVL"))
+  (copy-envs-settings))
+
+;;------------------------------------------------------------------------------
+;; IME
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defvar w32-ime-mode-line-state-indicator)
+  (defvar w32-ime-mode-line-state-indicator-list)
+  (declare-function tr-ime-hook-check "tr-ime-hook")
+  (declare-function w32-ime-wrap-function-to-control-ime "w32-ime")
+  (declare-function tr-ime-font-reflect-frame-parameter "tr-ime-font")
+
+  (defmacro ime-settings ()
+    (when (eq system-type 'windows-nt)
+      `(progn
+         ;; 無変換キーで tr-ime & w32-ime を有効化
+         (global-set-key (kbd "<non-convert>")
+                         (lambda ()
+                           (interactive)
+                           (global-unset-key (kbd "<non-convert>"))
+
+                           ;; tr-imeの有効化
+                           ;; (tr-ime-advanced-install)
+                           (tr-ime-advanced-initialize)
+                           (tr-ime-hook-check)))
+
+         (with-eval-after-load 'w32-ime
+           ;; 標準IMEの設定
+           (setq default-input-method "W32-IME")
+
+           ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
+           (setq w32-ime-mode-line-state-indicator "[Aa]")
+           (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
+
+           ;; IME の初期化
+           (w32-ime-initialize)
+
+           ;; IME ON/OFF時のカーソルカラー
+           (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
+           (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
+
+           ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
+           (w32-ime-wrap-function-to-control-ime #'universal-argument)
+           (w32-ime-wrap-function-to-control-ime #'read-string)
+           (w32-ime-wrap-function-to-control-ime #'read-char)
+           (w32-ime-wrap-function-to-control-ime #'read-from-minibuffer)
+           (w32-ime-wrap-function-to-control-ime #'y-or-n-p)
+           (w32-ime-wrap-function-to-control-ime #'yes-or-no-p)
+           (w32-ime-wrap-function-to-control-ime #'map-y-or-n-p)
+
+           ;; frame font
+           (modify-all-frames-parameters `((ime-font . ,(frame-parameter nil 'font))))
+           (tr-ime-font-reflect-frame-parameter))
+
+         ))))
+(ime-settings)
+
+;;------------------------------------------------------------------------------
 ;; company
 ;; 補完システム
 ;;------------------------------------------------------------------------------
@@ -27,31 +108,6 @@
   (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
   (set-face-attribute 'company-tooltip nil :background "midnight blue")
   )
-
-;;------------------------------------------------------------------------------
-;; exec-path-from-shell
-;; シェルと環境変数を同期
-;;------------------------------------------------------------------------------
-(eval-when-compile
-  (require 'exec-path-from-shell)
-  (let ((add-env-vars '()))
-    (when (eq system-type 'windows-nt)
-      (setq add-env-vars (append add-env-vars '("LANG" "PKG_CONFIG_PATH" "http_proxy" "https_proxy"))))
-    (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t)) add-env-vars))
-
-  (defmacro setenv_cached-env-var (env-var-lst)
-    (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
-
-  (defmacro copy-envs-settings ()
-    ;; sync emacs environment variable with shell's one
-    (exec-path-from-shell-initialize)
-    `(progn
-       ,@(macroexpand '(setenv_cached-env-var exec-path-from-shell-variables))
-       (setq exec-path (append (split-string (getenv "PATH") path-separator) ',(last exec-path)))
-       )))
-
-(when (string= "0" (getenv "SHLVL"))
-  (copy-envs-settings))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck

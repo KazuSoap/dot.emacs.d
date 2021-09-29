@@ -1,55 +1,6 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; IME
-;;------------------------------------------------------------------------------
-(eval-when-compile
-  (defvar w32-ime-mode-line-state-indicator)
-  (defvar w32-ime-mode-line-state-indicator-list)
-  (declare-function tr-ime-hook-check "tr-ime-hook")
-  (declare-function w32-ime-wrap-function-to-control-ime "w32-ime")
-  (declare-function tr-ime-font-reflect-frame-parameter "tr-ime-font"))
-
-;; 無変換キーで tr-ime & w32-ime を有効化
-(global-set-key (kbd "<non-convert>")
-                (lambda ()
-                  (interactive)
-                  (global-unset-key (kbd "<non-convert>"))
-
-                  ;; tr-imeの有効化
-                  ;; (tr-ime-advanced-install)
-                  (tr-ime-advanced-initialize)
-                  (tr-ime-hook-check)))
-
-(with-eval-after-load 'w32-ime
-  ;; 標準IMEの設定
-  (setq default-input-method "W32-IME")
-
-  ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
-  (setq w32-ime-mode-line-state-indicator "[Aa]")
-  (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
-
-  ;; IME の初期化
-  (w32-ime-initialize)
-
-  ;; IME ON/OFF時のカーソルカラー
-  (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
-  (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
-
-  ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
-  (w32-ime-wrap-function-to-control-ime #'universal-argument)
-  (w32-ime-wrap-function-to-control-ime #'read-string)
-  (w32-ime-wrap-function-to-control-ime #'read-char)
-  (w32-ime-wrap-function-to-control-ime #'read-from-minibuffer)
-  (w32-ime-wrap-function-to-control-ime #'y-or-n-p)
-  (w32-ime-wrap-function-to-control-ime #'yes-or-no-p)
-  (w32-ime-wrap-function-to-control-ime #'map-y-or-n-p)
-
-  ;; frame font
-  (modify-all-frames-parameters `((ime-font . ,(frame-parameter nil 'font))))
-  (tr-ime-font-reflect-frame-parameter))
-
-;;------------------------------------------------------------------------------
 ;; fakecygpty
 ;; NTEmacs の仮想端末偽装
 ;; https://github.com/d5884/fakecygpty
