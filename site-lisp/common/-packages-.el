@@ -4,6 +4,19 @@
 ;; from package
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
+;; fakecygpty
+;; NTEmacs の仮想端末偽装
+;; https://github.com/d5884/fakecygpty
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defmacro fakecygpty-settings ()
+    (when (eq system-type 'windows-nt)
+      `(progn
+         (autoload 'fakecygpty-activate "fakecygpty" t nil)
+         (add-hook 'after-init-hook #'fakecygpty-activate)))))
+(fakecygpty-settings)
+
+;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
 ;; シェルと環境変数を同期
 ;;------------------------------------------------------------------------------

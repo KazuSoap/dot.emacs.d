@@ -1,14 +1,6 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; fakecygpty
-;; NTEmacs の仮想端末偽装
-;; https://github.com/d5884/fakecygpty
-;;------------------------------------------------------------------------------
-(autoload 'fakecygpty-activate "fakecygpty" t nil)
-(add-hook 'after-init-hook #'fakecygpty-activate)
-
-;;------------------------------------------------------------------------------
 ;; cygwin-mount
 ;; Teach EMACS about cygwin styles and mount points.
 ;; https://www.emacswiki.org/emacs/cygwin-mount.el
