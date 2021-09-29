@@ -122,7 +122,8 @@
   (setq flycheck-emacs-lisp-load-path 'inherit) ;; use the `load-path' of the current Emacs session
 
   (declare-function flycheck-add-mode "flycheck")
-  (flycheck-add-mode 'emacs-lisp 'elisp-mode))
+  ;; (flycheck-add-mode 'emacs-lisp 'elisp-mode)
+  )
 
 ;;------------------------------------------------------------------------------
 ;; helm
@@ -223,12 +224,6 @@
 ;;     (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
 ;;       (add-to-list 'smart-compile-alist `("\\.pum$" . ,sc-cmd) t)
 ;;       )))
-
-;;------------------------------------------------------------------------------
-;; shell-pop
-;; シェルバッファをポップアップ
-;;------------------------------------------------------------------------------
-;; (global-set-key [f8] 'shell-pop)
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
