@@ -54,6 +54,9 @@
 ;; hide startup-message
 (setq inhibit-startup-screen t)
 
+;; change *scratch* message
+(setq initial-scratch-message nil)
+
 ;; show file path in title bar
 (setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
 
@@ -69,7 +72,7 @@
       mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
 
 ;; major mode of *scratch* buffer
-;; (setq initial-major-mode #'fundamental-mode)
+(setq initial-major-mode #'fundamental-mode)
 
 ;; default major-mode
 (setq-default major-mode #'text-mode)
