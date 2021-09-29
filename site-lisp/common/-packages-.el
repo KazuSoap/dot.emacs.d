@@ -9,13 +9,13 @@
 ;; https://github.com/d5884/fakecygpty
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defmacro fakecygpty-settings ()
+  (defmacro fakecygpty-nt ()
     (when (eq system-type 'windows-nt)
       `(progn
          (autoload 'fakecygpty-activate "fakecygpty" t nil)
          (add-hook 'after-init-hook #'fakecygpty-activate)
          ))))
-(fakecygpty-settings)
+(fakecygpty-nt)
 
 ;;------------------------------------------------------------------------------
 ;; cygwin-mount
@@ -23,7 +23,7 @@
 ;; https://www.emacswiki.org/emacs/cygwin-mount.el
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (defmacro cygwin-mount-settings ()
+  (defmacro cygwin-mount-nt ()
     (when (eq system-type 'windows-nt)
       `(progn
          (autoload 'cygwin-mount-activate "cygwin-mount" t nil)
@@ -39,13 +39,12 @@
              (cygwin-mount-build-table-internal)
              `(progn
                 (setq cygwin-mount-table ',cygwin-mount-table--internal)
-                ;; (advice-add 'cygwin-mount-get-cygdrive-prefix :override (lambda () ,(cygwin-mount-get-cygdrive-prefix)))
                 (fset 'cygwin-mount-get-cygdrive-prefix (lambda () ,(cygwin-mount-get-cygdrive-prefix))))))
 
          (with-eval-after-load 'cygwin-mount
            (my-cygwin-mount-config))
          ))))
-(cygwin-mount-settings)
+(cygwin-mount-nt)
 
 ;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
@@ -213,6 +212,37 @@
   (setq highlight-indent-guides-auto-even-face-perc 25))
 
 ;;------------------------------------------------------------------------------
+;; irony
+;; A C/C++ minor mode powered by libclang
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (require 'irony)
+  (defmacro irony-nt ()
+    (when (eq system-type 'windows-nt)
+      `(progn
+         (with-eval-after-load 'irony
+           ;; Windows Subsystem for Linux(WSL) の irony-server と共存するための設定
+           ;; (setq-default irony-server-install-prefix (concat (default-value 'irony-server-install-prefix) "win-nt/"))
+
+           ;; Set the buffer size to 64K on Windows (from the original 4K)
+           (setq irony-server-w32-pipe-buffer-size (* 64 1024))
+
+           ;; irony-server-install に失敗する問題の修正
+           ;; コンパイラに clang を指定
+           (fset 'ad-irony--install-server-read-command
+                 (lambda (args)
+                   "modify irony--install-server-read-command"
+                   (setenv "CC" "clang") (setenv "CXX" "clang++")
+                   `(,(replace-regexp-in-string
+                       (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
+                       "\\1 -G'MSYS Makefiles'"
+                       (car args)))))
+           (advice-add 'irony--install-server-read-command :filter-args 'ad-irony--install-server-read-command)
+           (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
+         ))))
+(irony-nt)
+
+;;------------------------------------------------------------------------------
 ;; irony-eldoc
 ;; irony-mode support for eldoc-mode
 ;; from https://github.com/josteink/irony-eldoc
@@ -237,6 +267,17 @@
 ;; magit
 ;; git クライアント
 ;;------------------------------------------------------------------------------
+;; (eval-when-compile
+;;   (defmacro magit-nt ()
+;;     (when (eq system-type 'windows-nt)
+;;       `(progn
+;;          (with-eval-after-load 'magit-utils
+;;            (unless (get-process "my-bash-process")
+;;              (start-process "my-bash-process" "my-bash" "bash")
+;;              (set-process-query-on-exit-flag (get-process "my-bash-process") nil)))
+;;          ))))
+;; (magit-nt)
+
 (with-eval-after-load 'magit
   (eval-when-compile (defvar git-commit-summary-max-length))
   (setq git-commit-summary-max-length 999))
