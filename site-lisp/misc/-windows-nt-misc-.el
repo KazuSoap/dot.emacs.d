@@ -1,30 +1,6 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 ;;------------------------------------------------------------------------------
-;; cygwin-mount
-;; Teach EMACS about cygwin styles and mount points.
-;; https://www.emacswiki.org/emacs/cygwin-mount.el
-;;------------------------------------------------------------------------------
-(autoload 'cygwin-mount-activate "cygwin-mount" t nil)
-(add-hook 'after-init-hook #'cygwin-mount-activate)
-
-(eval-when-compile
-  (require 'cygwin-mount)
-  (defvar msys-bin (file-name-directory shell-file-name))
-  (setq cygwin-mount-program (concat msys-bin "mount.exe"))
-  (setq cygwin-mount-uname-program (concat msys-bin "uname.exe"))
-
-  (defmacro my-cygwin-mount-config ()
-    (cygwin-mount-build-table-internal)
-    `(progn
-       (setq cygwin-mount-table ',cygwin-mount-table--internal)
-       ;; (advice-add 'cygwin-mount-get-cygdrive-prefix :override (lambda () ,(cygwin-mount-get-cygdrive-prefix)))
-       (fset 'cygwin-mount-get-cygdrive-prefix (lambda () ,(cygwin-mount-get-cygdrive-prefix))))))
-
-(with-eval-after-load 'cygwin-mount
-  (my-cygwin-mount-config))
-
-;;------------------------------------------------------------------------------
 ;; exec-path-from-shell
 ;; shell から PATH の設定を引き継ぐ
 ;; from package
