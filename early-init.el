@@ -61,6 +61,9 @@
 ;; garbage collection
 (setq gc-cons-threshold (* 128 1024 1024))
 
+;; Maximum number of bytes to read from subprocess in a single chunk.
+(setq read-process-output-max (* 1024 1024))
+
 ;; hide startup-message
 (setq inhibit-startup-screen t)
 

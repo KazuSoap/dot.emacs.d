@@ -187,11 +187,11 @@
 ;; A company front-end with icons.
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'company
-  (eval-when-compile (defvar company-box-enable-icon))
+  (eval-when-compile (require 'company-box))
   (add-hook 'company-mode-hook 'company-box-mode)
-  (setq company-box-enable-icon nil)
-  ;;(setq company-box-icons-alist 'company-box-icons-all-the-icons)
-  ;;(setq company-box-doc-enable nil)
+  ;; (setq company-box-enable-icon nil)
+  ;; (setq company-box-icons-alist 'company-box-icons-all-the-icons)
+  ;; (setq company-box-doc-enable nil)
   (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
   (set-face-attribute 'company-tooltip nil :background "midnight blue")
   )
@@ -300,6 +300,85 @@
 ;;       new-string)))
 ;; (advice-add 'irony-eldoc--strip-underscores :override 'ad-irony-eldoc--strip-underscores)
 
+;;------------------------------------------------------------------------------
+;; lsp-mode
+;; Language Server Protocol Support for Emacs
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'lsp-mode
+  (eval-when-compile
+    (require 'lsp-mode)
+    (require 'lsp-diagnostics)
+    (require 'lsp-headerline))
+
+  ;; .venv, .mypy_cache を watch 対象から外す
+  (dolist (dir '("[/\\\\]\\.venv$"
+                 "[/\\\\]\\.mypy_cache$"
+                 "[/\\\\]__pycache__$"))
+    (add-to-list 'lsp-file-watch-ignored dir))
+
+  ;; lsp-mode の設定はここを参照してください。
+  ;; https://emacs-lsp.github.io/lsp-mode/page/settings/
+
+  (setq lsp-auto-configure t)
+  (setq lsp-completion-enable t)
+
+  ;; imenu-listを使う場合は(lsp-uiの imenu 統合を使わない場合は) nil にする
+  ; ;(setq-default lsp-enable-imenu nil)
+
+  ;; クロスリファレンスとの統合を有効化する
+  ;; xref-find-definitions
+  ;; xref-find-references
+  (setq lsp-enable-xref t)
+
+  ;; linter framework として flycheck を使う
+  (setq lsp-diagnostics-provider :flycheck)
+
+  ;; ミニバッファでの関数情報表示
+  (setq lsp-eldoc-enable-hover t)
+
+  ;; nii: ミニバッファでの関数情報をシグニチャだけにする
+  ;; t: ミニバッファでの関数情報で、doc-string 本体を表示する
+  (setq lsp-eldoc-render-all nil)
+
+  ;; breadcrumb
+  ;; 最上部にパンくずリストを表示する。
+  ;; https://emacs-lsp.github.io/lsp-mode/page/settings/headerline/#lsp-headerline-breadcrumb-segments
+  ;; lsp-headerline-breadcrumb-segments に指定できるキーワードは以下の通り。
+  ;;   project
+  ;;   file
+  ;;   path-up-to-project
+  ;;   symbols
+  (setq lsp-headerline-breadcrumb-enable t)
+  (setq lsp-headerline-breadcrumb-segments '(project file symbols))
+
+  ;; snippet
+  (setq lsp-enable-snippet t)
+  )
+
+
+
+;;------------------------------------------------------------------------------
+;; lsp-ui
+;; UI integrations for lsp-mode
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'lsp-ui
+  (eval-when-compile (require 'lsp-ui))
+
+  ;; ui-peek を有効化する
+  (setq lsp-ui-peek-enable t)
+
+  ;; 候補が一つでも、常にpeek表示する。
+  (setq lsp-ui-peek-always-show t)
+
+  ;; sideline で flycheck 等の情報を表示する
+  (setq lsp-ui-sideline-show-diagnostics t)
+
+  ;; sideline で コードアクションを表示する
+  (setq lsp-ui-sideline-show-code-actions t)
+
+  ;; ホバーで表示されるものを、ホバーの変わりにsidelineで表示する
+  ;;(setq lsp-ui-sideline-show-hover t)
+  )
 ;;------------------------------------------------------------------------------
 ;; magit
 ;; git クライアント

@@ -14,6 +14,10 @@
 ;; major-mode-hook
 ;;------------------------------------------------------------------------------
 (eval-when-compile
+  (require 'cc-mode)
+  (require 'flycheck)
+  (require 'python)
+
   ;; 共通
   (defsubst my-common-mode-setup ()
     (display-line-numbers-mode)
@@ -28,7 +32,6 @@
     (company-mode)) ;; 補完
 
   ;; c/c++-mode共通
-  (require 'cc-mode)
   (defsubst my-c/c++-mode-setup ()
     ;; (eldoc-mode)
     (flycheck-mode)
@@ -109,6 +112,9 @@
         (my-common-programing-mode-setup)
         (my-common-mode-setup)
         (ggtags-mode)
+        (require 'lsp-pyright)
+        (lsp-deferred)
+        ;; (setq flycheck-disabled-checkers '(python-mypy))
         (highlight-indent-guides-mode)
-        (setq-default python-indent-offset 2)))
+        (setq python-indent-offset 2)))
 (add-hook 'python-mode-hook 'my-python-mode-setup)
