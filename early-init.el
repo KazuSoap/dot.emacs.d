@@ -54,7 +54,7 @@
 ;; hide startup-message
 (setq inhibit-startup-screen t)
 
-;; change *scratch* message
+;; change the message in *scratch* buffer
 (setq initial-scratch-message nil)
 
 ;; show file path in title bar
