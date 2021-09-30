@@ -28,6 +28,7 @@
     (company-mode)) ;; 補完
 
   ;; c/c++-mode共通
+  (require 'cc-mode)
   (defsubst my-c/c++-mode-setup ()
     ;; (eldoc-mode)
     (flycheck-mode)
@@ -36,36 +37,15 @@
     (irony-mode)
     (google-set-c-style)
     (google-make-newline-indent)
-    (add-to-list (make-local-variable 'company-backends) '(company-irony-c-headers company-irony))))
+    (setq c-basic-offset 4)
+    (add-to-list (make-local-variable 'company-backends) '(company-irony-c-headers company-irony)))
+  )
 
 ;; text-mode
 (fset 'my-text-mode-setup
       (lambda ()
         (my-common-mode-setup)))
 (add-hook 'text-mode-hook 'my-text-mode-setup)
-
-;; c-mode-common
-(fset 'my-c-mode-common-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)))
-(add-hook 'c-mode-common-hook 'my-c-mode-common-setup)
-
-;; c-mode共通
-(fset 'my-c-mode-setup
-      (lambda ()
-        (my-c/c++-mode-setup)
-        ;; irony 追加のコンパイルオプションを設定
-        (setq irony-additional-clang-options '("-std=c99"))))
-(add-hook 'c-mode-hook 'my-c-mode-setup)
-
-;; c++-mode共通
-(fset 'my-c++-mode-setup
-      (lambda ()
-        (my-c/c++-mode-setup)
-        ;; irony 追加のコンパイルオプションを設定
-        (setq irony-additional-clang-options '("-std=c++14"))))
-(add-hook 'c++-mode-hook 'my-c++-mode-setup)
 
 ;; emacs-lisp-mode / elisp-mode
 (fset 'my-elisp-mode-setup
@@ -75,6 +55,29 @@
         (flycheck-mode)))
 ;; (add-hook 'elisp-mode-hook 'my-elisp-mode-setup)
 (add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-setup)
+
+;; c-mode-common
+(fset 'my-c-mode-common-setup
+      (lambda ()
+        (my-common-programing-mode-setup)
+        (my-common-mode-setup)))
+(add-hook 'c-mode-common-hook 'my-c-mode-common-setup)
+
+;; c-mode
+(fset 'my-c-mode-setup
+      (lambda ()
+        (my-c/c++-mode-setup)
+        ;; irony 追加のコンパイルオプションを設定
+        (setq irony-additional-clang-options '("-std=c99"))))
+(add-hook 'c-mode-hook 'my-c-mode-setup)
+
+;; c++-mode
+(fset 'my-c++-mode-setup
+      (lambda ()
+        (my-c/c++-mode-setup)
+        ;; irony 追加のコンパイルオプションを設定
+        (setq irony-additional-clang-options '("-std=c++14"))))
+(add-hook 'c++-mode-hook 'my-c++-mode-setup)
 
 ;; ;; plantuml-mode
 ;; (fset 'my-plantuml-mode-setup
