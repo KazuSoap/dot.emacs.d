@@ -1,12 +1,11 @@
 /*/
 !site-lisp/
 site-lisp/extra_modules
+!registry/
 !auto-insert/
 *.*
 !*.el
 !byte-compile.sh
-!emacs_settings.reg
-!remove_emacs_settings.reg
 !.Xresources
 !template.*
 package-quickstart.el
