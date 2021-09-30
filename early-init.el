@@ -52,6 +52,11 @@
          ;;           args)))
 
          ;; (advice-add 'package-download-transaction :before 'start-my-shell-process)
+
+         ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
+         (setq w32-pass-lwindow-to-system nil)
+         (setq w32-lwindow-modifier 'super)
+         (w32-register-hot-key [s-])
          ))))
 (windows-nt-core)
 
