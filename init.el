@@ -12,5 +12,5 @@
 ;; load files
 ;;------------------------------------------------------------------------------
 ;; -- common --;;
-(load "-major-mode-" t t)
 (load "-packages-" t t)
+(load "-major-mode-" t t)
