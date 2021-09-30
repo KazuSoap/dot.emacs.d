@@ -116,5 +116,5 @@
         (lsp-deferred)
         ;; (setq flycheck-disabled-checkers '(python-mypy))
         (highlight-indent-guides-mode)
-        (setq python-indent-offset 2)))
+        (setq python-indent-offset 4)))
 (add-hook 'python-mode-hook 'my-python-mode-setup)
