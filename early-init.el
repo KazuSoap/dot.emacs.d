@@ -34,7 +34,7 @@
          ;; (3) if not set elsewhere.
          (prefer-coding-system 'utf-8-unix)
 
-         ;; "cygpath for emacs lisp"
+         ;; cygpath for emacs lisp
          (fset 'cygpath
                (lambda (&optional option path)
                  (when path
