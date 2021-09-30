@@ -34,15 +34,25 @@
          ;; (3) if not set elsewhere.
          (prefer-coding-system 'utf-8-unix)
 
+         ;; "cygpath for emacs lisp"
          (fset 'cygpath
                (lambda (&optional option path)
-                 "cygpath for emacs lisp"
                  (when path
                    (with-temp-buffer
                      (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
                      (unless (bobp)
                        (goto-char (point-min))
-                       (buffer-substring-no-properties (point) (line-end-position)))))))))))
+                       (buffer-substring-no-properties (point) (line-end-position)))))))
+
+         ;; (fset 'start-my-shell-process
+         ;;       (lambda (&rest args)
+         ;;         (unless (get-process "my-shell-process")
+         ;;           (start-process "my-shell-process" "my-shell" (getenv "SHELL"))
+         ;;           (set-process-query-on-exit-flag (get-process "my-shell-process") nil)
+         ;;           args)))
+
+         ;; (advice-add 'package-download-transaction :before 'start-my-shell-process)
+         ))))
 (windows-nt-core)
 
 ;;------------------------------------------------------------------------------
