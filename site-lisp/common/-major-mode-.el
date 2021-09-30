@@ -111,7 +111,7 @@
       (lambda ()
         (my-common-programing-mode-setup)
         (my-common-mode-setup)
-        (ggtags-mode)
+        ;; (ggtags-mode)
         (require 'lsp-pyright)
         (lsp-deferred)
         ;; (setq flycheck-disabled-checkers '(python-mypy))
