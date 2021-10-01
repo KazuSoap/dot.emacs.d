@@ -103,6 +103,7 @@
 (load-theme 'wheatgrass t)
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459" :box nil)
 (set-face-attribute 'fringe nil :background "black")
+(set-face-attribute 'fixed-pitch nil :family "ricty diminished discord")
 
 ;; fontset
 ;; XLFD
