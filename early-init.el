@@ -18,7 +18,7 @@
           (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))))
 
   ;; Windows Specific Settings
-  (defmacro windows-nt-core ()
+  (defmacro misc-nt ()
     (when (eq system-type 'windows-nt)
       `(progn
          ;; Set environment variable
@@ -34,31 +34,13 @@
          ;; (3) if not set elsewhere.
          (prefer-coding-system 'utf-8-unix)
 
-         ;; cygpath for emacs lisp
-         (fset 'cygpath
-               (lambda (&optional option path)
-                 (when path
-                   (with-temp-buffer
-                     (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
-                     (unless (bobp)
-                       (goto-char (point-min))
-                       (buffer-substring-no-properties (point) (line-end-position)))))))
-
-         ;; (fset 'start-my-shell-process
-         ;;       (lambda (&rest args)
-         ;;         (unless (get-process "my-shell-process")
-         ;;           (start-process "my-shell-process" "my-shell" (getenv "SHELL"))
-         ;;           (set-process-query-on-exit-flag (get-process "my-shell-process") nil)
-         ;;           args)))
-
-         ;; (advice-add 'package-download-transaction :before 'start-my-shell-process)
-
          ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
-         (setq w32-pass-lwindow-to-system nil)
+         ;; (setq w32-pass-lwindow-to-system nil)
          (setq w32-lwindow-modifier 'super)
-         (w32-register-hot-key [s-])
+         ;; (w32-register-hot-key [s-])
+         (w32-register-hot-key [s-l])
          ))))
-(windows-nt-core)
+(misc-nt)
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
@@ -119,7 +101,7 @@
 ;;------------------------------------------------------------------------------
 ;; color-theme
 (load-theme 'wheatgrass t)
-(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459")
+(set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459" :box nil)
 (set-face-attribute 'fringe nil :background "black")
 
 ;; fontset
@@ -130,7 +112,7 @@
 (create-fontset-from-fontset-spec
  (eval-when-compile
    (let ((fontset-base
-          (cond ((eq system-type 'windows-nt)
+          (cond ((eq system-type 'windows-nt) ; if
                  "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty")
                 (t ; else
                  "-PfEd-ricty diminished discord-bold-normal-normal-*-*-*-*-*-m-0-fontset-myricty")))
@@ -149,7 +131,7 @@
 ;; global minor-mode
 ;;------------------------------------------------------------------------------
 (tool-bar-mode -1) ; default on
-;; (menu-bar-mode -1) ; default on
+(menu-bar-mode -1) ; default on
 (fringe-mode -1) ; default on
 (column-number-mode 1) ; default off
 ;; (line-number-mode -1) ; default on
@@ -166,6 +148,37 @@
 ;;------------------------------------------------------------------------------
 ;; local functions
 ;;------------------------------------------------------------------------------
+;; cygpath for emacs lisp
+(eval-when-compile
+  (defmacro cygpath-nt ()
+    (when (eq system-type 'windows-nt)
+      `(progn
+         (fset 'cygpath
+               (lambda (&optional option path)
+                 (when path
+                   (with-temp-buffer
+                     (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
+                     (unless (bobp)
+                       (goto-char (point-min))
+                       (buffer-substring-no-properties (point) (line-end-position)))))))
+         ))))
+(cygpath-nt)
+
+;; (eval-when-compile
+;;   (defmacro start-my-shell-process-nt ()
+;;     (when (eq system-type 'windows-nt)
+;;       `(progn
+;;          (fset 'start-my-shell-process
+;;                (lambda (&rest args)
+;;                  (unless (get-process "my-shell-process")
+;;                    (start-process "my-shell-process" "my-shell" (getenv "SHELL"))
+;;                    (set-process-query-on-exit-flag (get-process "my-shell-process") nil)
+;;                    args)))
+
+;;          (advice-add 'package-download-transaction :before 'start-my-shell-process)
+;;          ))))
+;; (start-my-shell-process-nt)
+
 ;; revert buffer
 ;; https://www.emacswiki.org/emacs/RevertBuffer
 (fset 'my-revert-buffer-no-confirm
