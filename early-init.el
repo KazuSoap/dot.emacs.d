@@ -67,6 +67,10 @@
 (setq auto-save-default nil  ; #*
       make-backup-files nil) ; *.~
 
+;; Threshold when splitting a window
+;; (setq split-height-threshold nil) ; split by placing the new window below
+(setq split-width-threshold nil) ; split by placing the new window right
+
 ;; mouse scroll
 (setq mouse-wheel-progressive-speed nil ; don't accelerate scrolling
       mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
