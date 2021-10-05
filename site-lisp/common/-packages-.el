@@ -375,7 +375,10 @@
 
 (with-eval-after-load 'magit
   (eval-when-compile (defvar git-commit-summary-max-length))
-  (setq git-commit-summary-max-length 999))
+
+  (setq git-commit-summary-max-length 999)
+  (add-hook 'git-commit-setup-hook 'turn-off-auto-fill t)
+  )
 
 ;;------------------------------------------------------------------------------
 ;; migemo
