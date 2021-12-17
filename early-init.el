@@ -266,7 +266,12 @@
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'ediff
   (eval-when-compile (require 'ediff))
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain))
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally)
+  (set-face-attribute 'ediff-even-diff-A nil :background "gray20")
+  (set-face-attribute 'ediff-even-diff-B nil :background "gray20")
+  (set-face-attribute 'ediff-odd-diff-A  nil :background "gray20")
+  (set-face-attribute 'ediff-odd-diff-B  nil :background "gray20"))
 
 ;;------------------------------------------------------------------------------
 ;; GDB
