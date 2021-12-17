@@ -297,7 +297,7 @@
     (when (eq system-type 'windows-nt)
       (require 'lpr)
       `(progn
-         ;; lpr-bufferコマンド で notepad を開くようにする
+         ;; Open notepad with lpr-buffer command
          (with-eval-after-load 'lpr
            (setq print-region-function
                  (lambda (start end _program &optional _delete _destination _display &rest _args)
