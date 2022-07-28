@@ -40,16 +40,18 @@
          ;; (w32-register-hot-key [s-])
          (w32-register-hot-key [s-l])
          ))))
-(misc-nt)
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
 ;;------------------------------------------------------------------------------
 ;; garbage collection
-(setq gc-cons-threshold (* 128 1024 1024))
+(setq gc-cons-threshold most-positive-fixnum)
+
+;; windows-misc
+(misc-nt)
 
 ;; Maximum number of bytes to read from subprocess in a single chunk.
-(setq read-process-output-max (* 1024 1024))
+(setq read-process-output-max (eval-when-compile (* 1024 1024)))
 
 ;; hide startup-message
 (setq inhibit-startup-screen t)
@@ -94,11 +96,16 @@
 ;; translate "C-h" to "Back Space"
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-;; show startup time in [ms]
+;; after-init-hook
 (add-hook 'after-init-hook
           (lambda ()
+            ;; 128mb
+            (setq gc-cons-threshold (eval-when-compile (* 128 1024 1024)))
+
+            ;; show startup time in [ms]
             (message "Emacs loaded in %.3f ms"
-                     (* 1000 (string-to-number (emacs-init-time))))))
+                     (* 1000 (string-to-number (emacs-init-time))))
+            ))
 
 ;;------------------------------------------------------------------------------
 ;; face & frame parameters
@@ -213,6 +220,33 @@
           (overlay-put eob-mark 'after-string eob-text))))
 (add-hook 'find-file-hook 'my-mark-eob)
 
+;; ;; (fset 'my-expand-file-name
+;; ;;       (lambda (f &rest args)
+;; ;;         ;; (cond ((string-match-p "^\\(//\\|\\\\\\).+\\|^/\\(scp:\\|ssh:\\|rsync:\\|\\).+\\(@\\|!\\)|^/dtvsrv:.*" (car args))
+;; ;;         ;; (cond ((string-match-p "^/dtvsrv:.*" (car args))
+;; ;;         (cond ((string-match-p "^/dtvsrv:\\(c:\\|msys64\\)" (car args))
+;; ;;         ;; (cond ((string-match-p "^/.*" (car args))
+;; ;;                (message (format "0>%s" (car args)))
+;; ;;                (let ((out (apply f args)))
+;; ;;                  (message (format "1>%s" out))
+;; ;;                  out
+;; ;;                  ;; (car args)
+;; ;;                  ))
+;; ;;               (t ; else
+;; ;;                (apply f args)))))
+;; (fset 'my-expand-file-name
+;;       (lambda (f &rest args)
+;;         ;; (message (format "0>%s" args))
+;;         (let ((out (apply f args)))
+;;           (message (format "%s->%s" args out))
+;;           (cond ((string-match-p "^/dtvsrv:\\(c:\\|msys64\\)" (car args))
+;;                  ())
+;;                 (t ; else
+;;                  out))
+;;           out)))
+
+;; (advice-add 'expand-file-name :around 'my-expand-file-name)
+
 ;;==============================================================================
 ;; emacs built in package
 ;;==============================================================================
@@ -320,7 +354,7 @@
         (tab-bar-history-mode +1)
 
         (setq tab-bar-show 1)
-        (setq tab-bar-new-button-show nil)
+        (setq tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator))
         (setq tab-bar-close-button-show nil)
         (setq tab-bar-tab-hints t)
         (setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)

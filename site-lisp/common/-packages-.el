@@ -368,14 +368,14 @@
 ;; magit
 ;; git クライアント
 ;;------------------------------------------------------------------------------
-(eval-when-compile
-  (defmacro magit-nt ()
-    (when (and (eq system-type 'windows-nt) (fboundp 'start-my-shell-process))
-      `(progn
-         (with-eval-after-load 'magit-utils
-           (start-my-shell-process))
-         ))))
-(magit-nt)
+;; (eval-when-compile
+;;   (defmacro magit-nt ()
+;;     (when (and (eq system-type 'windows-nt) (fboundp 'start-my-shell-process))
+;;       `(progn
+;;          (with-eval-after-load 'magit-utils
+;;            (start-my-shell-process))
+;;          ))))
+;; (magit-nt)
 
 (with-eval-after-load 'magit
   (eval-when-compile (defvar git-commit-summary-max-length))
@@ -425,6 +425,9 @@
 (with-eval-after-load 'smart-compile
   (eval-when-compile (require 'smart-compile))
 
-  (add-to-list 'smart-compile-alist '(elisp-mode emacs-lisp-byte-compile))
-  )
+  (let ((cmd
+         (lambda ()
+           (emacs-lisp-byte-compile)
+           (native-compile buffer-file-name))))
+    (add-to-list 'smart-compile-alist `(emacs-lisp-mode ,cmd))))
 (global-set-key (kbd "C-c c") #'smart-compile)
