@@ -181,6 +181,9 @@
 ;; company
 ;; 補完システム
 ;;------------------------------------------------------------------------------
+;; company-box
+;; A company front-end with icons.
+;;------------------------------------------------------------------------------
 (with-eval-after-load 'company
   (eval-when-compile (require 'company))
 
@@ -188,22 +191,27 @@
   (setq company-minimum-prefix-length 3) ;; 補完開始文字長
   (setq company-selection-wrap-around t) ;; 最下時に↓で最初に戻る
   (define-key (default-value 'company-mode-map) (kbd "C-<tab>") 'company-complete)
-  )
-
-;;------------------------------------------------------------------------------
-;; company-box
-;; A company front-end with icons.
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'company
-  (eval-when-compile (require 'company-box))
-
-  ;; (setq company-box-enable-icon nil)
-  ;; (setq company-box-icons-alist 'company-box-icons-all-the-icons)
-  ;; (setq company-box-doc-enable nil)
-  (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
-  (set-face-attribute 'company-tooltip nil :background "midnight blue")
   (add-hook 'company-mode-hook 'company-box-mode)
   )
+
+(with-eval-after-load 'company-box
+  (eval-when-compile (require 'company-box)
+                     (require 'frame-local))
+
+  (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
+  (set-face-attribute 'company-tooltip nil :background "midnight blue")
+
+  (fset 'ad-company-box--display
+        (lambda (&rest args)
+          (set-frame-parameter (company-box--get-frame) 'tab-bar-lines 0)
+          args))
+  (advice-add 'company-box--display :after 'ad-company-box--display)
+
+  (fset 'ad-company-box-doc--show
+        (lambda (&rest args)
+          (set-frame-parameter (frame-local-getq company-box-doc-frame) 'tab-bar-lines 0)
+          args))
+  (advice-add 'company-box-doc--show :after 'ad-company-box-doc--show))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck
