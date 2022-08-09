@@ -195,22 +195,27 @@
   )
 
 (with-eval-after-load 'company-box
-  (eval-when-compile (require 'company-box)
-                     (require 'frame-local))
+  (eval-when-compile
+    (require 'company-box)
+    (require 'frame-local)
+    (declare-function company-box--get-frame "company-box")
+    (declare-function frame-local-get "frame-local")
+
+    (defmacro fix-company-box (get-frame-func &rest margs)
+      `(lambda (&rest args)
+         (let ((frame (,get-frame-func ,(car margs))))
+           (when frame
+             (set-frame-parameter frame 'tab-bar-lines 0)))
+         args)
+      ))
 
   (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
   (set-face-attribute 'company-tooltip nil :background "midnight blue")
 
-  (fset 'ad-company-box--display
-        (lambda (&rest args)
-          (set-frame-parameter (company-box--get-frame) 'tab-bar-lines 0)
-          args))
+  (fset 'ad-company-box--display (fix-company-box company-box--get-frame))
   (advice-add 'company-box--display :after 'ad-company-box--display)
 
-  (fset 'ad-company-box-doc--show
-        (lambda (&rest args)
-          (set-frame-parameter (frame-local-getq company-box-doc-frame) 'tab-bar-lines 0)
-          args))
+  (fset 'ad-company-box-doc--show (fix-company-box frame-local-getq company-box-doc-frame))
   (advice-add 'company-box-doc--show :after 'ad-company-box-doc--show))
 
 ;;------------------------------------------------------------------------------
@@ -235,7 +240,7 @@
 (with-eval-after-load 'helm
   ;; helm autoload bug fix
   ;; -> Error running timer: (void-function helm-completion--flex-transform-pattern)
-  (require 'helm-mode)
+  ;; (require 'helm-mode)
 
   (eval-when-compile (require 'helm-files))
 
@@ -380,7 +385,7 @@
 ;;   (defmacro magit-nt ()
 ;;     (when (and (eq system-type 'windows-nt) (fboundp 'start-my-shell-process))
 ;;       `(progn
-;;          (with-eval-after-load 'magit-utils
+;;          (with-eval-after-load 'magit-section
 ;;            (start-my-shell-process))
 ;;          ))))
 ;; (magit-nt)
