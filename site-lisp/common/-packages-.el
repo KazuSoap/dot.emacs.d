@@ -237,13 +237,8 @@
 ;; helm
 ;; emacsに統一的なある”操作方式”を提供するフレームワーク
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'helm-files))
 (with-eval-after-load 'helm
-  ;; helm autoload bug fix
-  ;; -> Error running timer: (void-function helm-completion--flex-transform-pattern)
-  ;; (require 'helm-mode)
-
-  (eval-when-compile (require 'helm-files))
-
   ;; 自動補完を無効にする
   (setq helm-ff-auto-update-initial-value nil)
   )
