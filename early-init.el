@@ -96,7 +96,12 @@
 ;; translate "C-h" to "Back Space"
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-;; after-init-hook
+(add-hook 'window-state-change-hook
+          (lambda ()
+            ;; disable vertical scrollbar on minibuffer
+            (set-window-scroll-bars (minibuffer-window) nil nil)
+            ))
+
 (add-hook 'after-init-hook
           (lambda ()
             ;; 128mb
