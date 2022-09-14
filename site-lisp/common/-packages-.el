@@ -36,9 +36,22 @@
 ;; https://github.com/d5884/fakecygpty
 ;;------------------------------------------------------------------------------
 (eval-when-compile
+  (when (eq system-type 'windows-nt)
+    (require 'fakecygpty)
+    (defvar ad-fakecygpty-program-regexps
+      (concat "^"
+              (expand-file-name "/")
+              "\\(usr/\\(local/\\)?\\)?bin/.*")))
+
   (defmacro fakecygpty-nt ()
     (when (eq system-type 'windows-nt)
       `(progn
+         (fset 'ad-fakecygpty--ignored-program
+               (lambda (program)
+                 (let ((program (file-name-nondirectory program)))
+                   (not (string-match-p ,ad-fakecygpty-program-regexps (executable-find program))))))
+         (advice-add 'fakecygpty--ignored-program :before-until 'ad-fakecygpty--ignored-program)
+
          (autoload 'fakecygpty-activate "fakecygpty" t nil)
          (add-hook 'after-init-hook #'fakecygpty-activate)
          ))))
