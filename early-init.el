@@ -9,13 +9,12 @@
 (eval-when-compile
   ;; Get the installation location of "msys2"
   (defconst msys-root
-    (let* ((reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
+    (let* ((coding-system-for-read 'emacs-mule-dos) ;; Assume CRLF represents end-of-line, because of dos-command.
+           (reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
            (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
       (ignore-errors
         (expand-file-name
-         (replace-regexp-in-string
-          "+$" ""
-          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))))
+          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))
 
   ;; Windows Specific Settings
   (defmacro misc-nt ()
