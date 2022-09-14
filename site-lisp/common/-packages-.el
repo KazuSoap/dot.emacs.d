@@ -439,3 +439,17 @@
            (native-compile buffer-file-name))))
     (add-to-list 'smart-compile-alist `(emacs-lisp-mode ,cmd))))
 (global-set-key (kbd "C-c c") #'smart-compile)
+
+;;------------------------------------------------------------------------------
+;; web-mode
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'web-mode
+  (eval-when-compile (require 'web-mode))
+
+  (setq web-mode-engines-alist '(("php"    . "\\.phtml\\'")))
+
+  (setq web-mode-content-types-alist '(("js" . "\\.\\(js[x]\\|vue\\)?\\'")))
+  (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))
+
+  (setq indent-tabs-mode nil)
+  (setq web-mode-enable-current-element-highlight t))
