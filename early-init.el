@@ -16,6 +16,23 @@
         (expand-file-name
           (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))
 
+  ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
+  ;; the following hacks are no longer necessary.
+  ;; (https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663)
+  ;; However, that hack is still needed in certain environments.
+  ;; (defmacro set-function-args-encode (arg-pos)
+  ;;   "Set the character code of the parameter passed to the subprocess to cp932"
+  ;;   `(lambda (args)
+  ;;      (when (> (length args) ,arg-pos)
+  ;;        ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
+  ;;        (setf (nthcdr ,arg-pos args)
+  ;;              (mapcar (lambda (arg)
+  ;;                        (if (multibyte-string-p arg)
+  ;;                            (encode-coding-string arg 'cp932)
+  ;;                          arg))
+  ;;                      (nthcdr ,arg-pos args))))
+  ;;      args))
+
   ;; Windows Specific Settings
   (defmacro misc-nt ()
     (when (eq system-type 'windows-nt)
@@ -38,6 +55,10 @@
          (setq w32-lwindow-modifier 'super)
          ;; (w32-register-hot-key [s-])
          (w32-register-hot-key [s-l])
+
+         ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
+         ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
+         ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
          ))))
 
 ;;------------------------------------------------------------------------------
@@ -95,12 +116,6 @@
 ;; translate "C-h" to "Back Space"
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-(add-hook 'window-state-change-hook
-          (lambda ()
-            ;; disable vertical scrollbar on minibuffer
-            (set-window-scroll-bars (minibuffer-window) nil nil)
-            ))
-
 (add-hook 'after-init-hook
           (lambda ()
             ;; 128mb
@@ -142,6 +157,12 @@
         (height . 30)
         (alpha . 85)
         (font . "fontset-myricty")))
+
+(add-hook 'window-state-change-hook
+          (lambda ()
+            ;; disable vertical scrollbar on minibuffer
+            (set-window-scroll-bars (minibuffer-window) nil nil)
+            ))
 
 ;;------------------------------------------------------------------------------
 ;; global minor-mode
