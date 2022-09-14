@@ -17,7 +17,7 @@
           (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))
 
   ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
-  ;; the following hacks are no longer necessary.
+  ;; the following hack is no longer necessary.
   ;; (https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663)
   ;; However, that hack is still needed in certain environments.
   ;; (defmacro set-function-args-encode (arg-pos)
