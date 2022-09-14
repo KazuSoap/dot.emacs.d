@@ -7,8 +7,9 @@
 ;; (define-derived-mode elisp-mode emacs-lisp-mode "ELisp")
 
 ;; 拡張子による major-mode の関連付け
-;; (add-to-list 'auto-mode-alist '("\\.el$" . elisp-mode))
-(add-to-list 'auto-mode-alist '("\\.elc$" . fundamental-mode))
+;; (add-to-list 'auto-mode-alist '("\\.el\\'" . elisp-mode))
+(add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js?\\|vue?\\)\\'" . web-mode))
 
 ;;------------------------------------------------------------------------------
 ;; major-mode-hook
@@ -17,6 +18,7 @@
   (require 'cc-mode)
   (require 'flycheck)
   (require 'python)
+  (require 'web-mode)
 
   ;; 共通
   (defsubst my-common-mode-setup ()
@@ -105,6 +107,22 @@
         (my-common-programing-mode-setup)
         (my-common-mode-setup)))
 (add-hook 'js-mode-hook 'my-js-mode-setup)
+
+
+;; web mode
+(fset 'my-web-mode-setup
+      (lambda ()
+        (my-common-mode-setup)
+        (highlight-indent-guides-mode)
+        (company-mode)
+        (setq truncate-lines t) ;; 画面外文字の切り詰め
+        (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
+
+        (setq web-mode-markup-indent-offset 2)
+        (setq web-mode-css-indent-offset 2)
+        (setq web-mode-code-indent-offset 2)
+        ))
+(add-hook 'web-mode-hook 'my-web-mode-setup)
 
 ;; python-mode
 (fset 'my-python-mode-setup
