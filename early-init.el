@@ -19,7 +19,7 @@
   ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
   ;; the following hack is no longer necessary.
   ;; (https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663)
-  ;; However, that hack is still needed in certain environments.
+  ;; However, the following hack is still needed in certain environments.
   ;; (defmacro set-function-args-encode (arg-pos)
   ;;   "Set the character code of the parameter passed to the subprocess to cp932"
   ;;   `(lambda (args)
