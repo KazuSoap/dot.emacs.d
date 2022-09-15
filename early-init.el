@@ -111,7 +111,7 @@
 ;; (setq-default bidi-paragraph-direction 'left-to-right) ; Force text direction (default)
 
 ;; Set "yes" to "y" and "no" to "n"
-(fset 'yes-or-no-p #'y-or-n-p)
+(setq use-short-answers t)
 
 ;; translate "C-h" to "Back Space"
 (define-key key-translation-map [?\C-h] [?\C-?])
