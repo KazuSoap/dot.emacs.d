@@ -11,12 +11,8 @@
 (eval-when-compile
   (when (eq system-type 'windows-nt)
     (require 'cygwin-mount)
-    (defvar msys-bin (file-name-directory shell-file-name))
-    (defvar cygwin-mount-table--internal)
-
-    (setq-default cygwin-mount-program (concat msys-bin "mount.exe"))
-    (setq-default cygwin-mount-uname-program (concat msys-bin "uname.exe"))
-    (cygwin-mount-build-table-internal))
+    (cygwin-mount-build-table-internal)
+    (cygwin-mount-activate))
 
   (defmacro cygwin-mount-nt ()
     (when (eq system-type 'windows-nt)
@@ -459,7 +455,7 @@
 (with-eval-after-load 'web-mode
   (eval-when-compile (require 'web-mode))
 
-  (setq web-mode-engines-alist '(("php"    . "\\.phtml\\'")))
+  (setq web-mode-engines-alist '(("php" . "\\.phtml\\'")))
 
   (setq web-mode-content-types-alist '(("js" . "\\.\\(js[x]\\|vue\\)?\\'")))
   (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))

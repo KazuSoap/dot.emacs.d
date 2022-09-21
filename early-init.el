@@ -8,13 +8,13 @@
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   ;; Get the installation location of "msys2"
-  (defconst msys-root
+  (defvar msys-root
     (let* ((coding-system-for-read 'emacs-mule-dos) ;; Assume CRLF represents end-of-line, because of dos-command.
            (reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
            (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
       (ignore-errors
         (expand-file-name
-          (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))
+         (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))
 
   ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
   ;; the following hack is no longer necessary.
@@ -36,30 +36,34 @@
   ;; Windows Specific Settings
   (defmacro misc-nt ()
     (when (eq system-type 'windows-nt)
-      `(progn
-         ;; Set environment variable
-         (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
-         (setenv "SHELL" ,(concat msys-root "/usr/bin/bash"))
-         (setenv "MSYSTEM" "MINGW64")
-         (or (getenv "SHLVL") (setenv "SHLVL" "0"))
-         (setq shell-file-name ,(getenv "SHELL"))
+        `(progn
+           ;; Set environment variable
+           (unless (getenv "SHLVL")
+             (setenv "SHLVL" "0")
+             (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
+             (setenv "PATH"
+                     (mapconcat #'identity
+                                (setq exec-path (list ,(concat msys-root "/mingw64/bin") ,(concat msys-root "/usr/bin")))
+                                ";"))
+             (setenv "SHELL" (setq shell-file-name "bash"))
+             (setenv "MSYSTEM" "MINGW64"))
 
-         ;; Set the default char-code in the following cases;
-         ;; (1) when creating a new file,
-         ;; (2) subprocess I/O,
-         ;; (3) if not set elsewhere.
-         (prefer-coding-system 'utf-8-unix)
+           ;; Set the default char-code in the following cases;
+           ;; (1) when creating a new file,
+           ;; (2) subprocess I/O,
+           ;; (3) if not set elsewhere.
+           (prefer-coding-system 'utf-8-unix)
 
-         ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
-         ;; (setq w32-pass-lwindow-to-system nil)
-         (setq w32-lwindow-modifier 'super)
-         ;; (w32-register-hot-key [s-])
-         (w32-register-hot-key [s-l])
+           ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
+           ;; (setq w32-pass-lwindow-to-system nil)
+           (setq w32-lwindow-modifier 'super)
+           ;; (w32-register-hot-key [s-])
+           (w32-register-hot-key [s-l])
 
-         ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-         ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
-         ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
-         ))))
+           ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
+           ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
+           ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
+           ))))
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
@@ -194,7 +198,7 @@
                (lambda (&optional option path)
                  (when path
                    (with-temp-buffer
-                     (call-process ,(concat msys-root "/usr/bin/cygpath") nil '(t nil) nil option path)
+                     (call-process "cygpath" nil '(t nil) nil option path)
                      (unless (bobp)
                        (goto-char (point-min))
                        (buffer-substring-no-properties (point) (line-end-position)))))))
