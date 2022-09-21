@@ -71,6 +71,9 @@
 ;; garbage collection
 (setq gc-cons-threshold most-positive-fixnum)
 
+;; suppress warnings and errors from asynchronous native compilation
+(setq-default native-comp-async-report-warnings-errors nil)
+
 ;; windows-misc
 (misc-nt)
 
@@ -373,6 +376,27 @@
                         (when (file-exists-p winfile)
                           (delete-file winfile))))))))))))
 (nt-printer)
+
+;;------------------------------------------------------------------------------
+;; Native Compile
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (require 'comp)
+  ;; Compile files that would natively compile before
+  ;; loading the "early-init" files and cause errors.
+  (native-compile (locate-file "japan-util.el" load-path))
+
+  ;; Quitting emacs while native compilation in progress can leave zero byte
+  ;; sized *.eln files behind. So delete such files when byte-compiling this file.
+  (when (boundp 'native-comp-eln-load-path)
+    (let ((eln-cache-dir (expand-file-name "eln-cache/" user-emacs-directory))
+          (find-exec (executable-find "find")))
+      (setcar native-comp-eln-load-path eln-cache-dir)
+      (when find-exec
+        (call-process find-exec nil nil nil eln-cache-dir
+                      "-name" "*.eln" "-size" "0" "-delete" "-or"
+                      "-name" "*.eln.tmp" "-size" "0" "-delete" "-or"
+                      "-name" "*.eln.old" "-delete")))))
 
 ;;------------------------------------------------------------------------------
 ;; tab-bar-mode
