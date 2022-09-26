@@ -73,16 +73,16 @@
               args))
       (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
 
-      (let ((add-env-vars '()))
-        (setq add-env-vars (append add-env-vars '("LANG" "PKG_CONFIG_PATH" "http_proxy" "https_proxy")))
-        (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t)) add-env-vars))
+      ;; (let ((add-env-vars '()))
+      ;;   (setq add-env-vars (append add-env-vars '("PKG_CONFIG_PATH" "http_proxy" "https_proxy")))
+      ;;   (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t)) add-env-vars))
 
       (exec-path-from-shell-initialize)
 
       `(progn
          (when (string= "0" (getenv "SHLVL"))
            ,@(macroexpand '(setenv_cached-env-var exec-path-from-shell-variables))
-           (setq exec-path (append (split-string (getenv "PATH") path-separator) ',(last exec-path))))
+           (setq exec-path (append (parse-colon-path (getenv "PATH")) ',(last exec-path))))
          ))))
 (copy-envs-settings)
 

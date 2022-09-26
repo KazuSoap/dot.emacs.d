@@ -36,16 +36,21 @@
   ;; Windows Specific Settings
   (defmacro misc-nt ()
     (when (eq system-type 'windows-nt)
+      (let ((msys-path
+             (mapconcat (lambda (subpath) (concat msys-root subpath "/bin"))
+                        '("/mingw64" "/usr" "/usr/local")
+                        path-separator)))
+
+        (setq exec-path (parse-colon-path (setenv "PATH" msys-path)))
+
         `(progn
            ;; Set environment variable
            (unless (getenv "SHLVL")
              (setenv "SHLVL" "0")
              (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
-             (setenv "PATH"
-                     (mapconcat #'identity
-                                (setq exec-path (list ,(concat msys-root "/mingw64/bin") ,(concat msys-root "/usr/bin")))
-                                ";"))
+             (setq exec-path (parse-colon-path (setenv "PATH" ,msys-path)))
              (setenv "SHELL" (setq shell-file-name "bash"))
+             (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
              (setenv "MSYSTEM" "MINGW64"))
 
            ;; Set the default char-code in the following cases;
@@ -63,7 +68,7 @@
            ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
            ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
            ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
-           ))))
+           )))))
 
 ;;------------------------------------------------------------------------------
 ;; common-misc
