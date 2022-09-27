@@ -4,83 +4,10 @@
 ;; basic settings
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
-;; windows-misc
-;;------------------------------------------------------------------------------
-(eval-when-compile
-  ;; Get the installation location of "msys2"
-  (defvar msys-root
-    (let* ((coding-system-for-read 'emacs-mule-dos) ;; Assume CRLF represents end-of-line, because of dos-command.
-           (reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
-           (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
-      (ignore-errors
-        (expand-file-name
-         (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n"))))))
-
-  ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
-  ;; the following hack is no longer necessary.
-  ;; (https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663)
-  ;; However, the following hack is still needed in certain environments.
-  ;; (defmacro set-function-args-encode (arg-pos)
-  ;;   "Set the character code of the parameter passed to the subprocess to cp932"
-  ;;   `(lambda (args)
-  ;;      (when (> (length args) ,arg-pos)
-  ;;        ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
-  ;;        (setf (nthcdr ,arg-pos args)
-  ;;              (mapcar (lambda (arg)
-  ;;                        (if (multibyte-string-p arg)
-  ;;                            (encode-coding-string arg 'cp932)
-  ;;                          arg))
-  ;;                      (nthcdr ,arg-pos args))))
-  ;;      args))
-
-  ;; Windows Specific Settings
-  (defmacro misc-nt ()
-    (when (eq system-type 'windows-nt)
-      (let ((msys-path
-             (mapconcat (lambda (subpath) (concat msys-root subpath "/bin"))
-                        '("/mingw64" "/usr" "/usr/local")
-                        path-separator)))
-
-        (setq exec-path (parse-colon-path (setenv "PATH" msys-path)))
-
-        `(progn
-           ;; Set environment variable
-           (unless (getenv "SHLVL")
-             (setenv "SHLVL" "0")
-             (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
-             (setq exec-path (parse-colon-path (setenv "PATH" ,msys-path)))
-             (setenv "SHELL" (setq shell-file-name "bash"))
-             (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
-             (setenv "MSYSTEM" "MINGW64"))
-
-           ;; Set the default char-code in the following cases;
-           ;; (1) when creating a new file,
-           ;; (2) subprocess I/O,
-           ;; (3) if not set elsewhere.
-           (prefer-coding-system 'utf-8-unix)
-
-           ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
-           ;; (setq w32-pass-lwindow-to-system nil)
-           (setq w32-lwindow-modifier 'super)
-           ;; (w32-register-hot-key [s-])
-           (w32-register-hot-key [s-l])
-
-           ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-           ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
-           ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
-           )))))
-
-;;------------------------------------------------------------------------------
 ;; common-misc
 ;;------------------------------------------------------------------------------
 ;; garbage collection
 (setq gc-cons-threshold most-positive-fixnum)
-
-;; suppress warnings and errors from asynchronous native compilation
-(setq-default native-comp-async-report-warnings-errors nil)
-
-;; windows-misc
-(misc-nt)
 
 ;; Maximum number of bytes to read from subprocess in a single chunk.
 (setq read-process-output-max (eval-when-compile (* 1024 1024)))
@@ -91,8 +18,8 @@
 ;; change the message in *scratch* buffer
 (setq initial-scratch-message nil)
 
-;; show file path in title bar
-(setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
+;; major mode of *scratch* buffer
+(setq initial-major-mode #'fundamental-mode)
 
 ;; don't beep
 (setq ring-bell-function #'ignore)
@@ -101,16 +28,12 @@
 (setq auto-save-default nil  ; #*
       make-backup-files nil) ; *.~
 
-;; Threshold when splitting a window
-;; (setq split-height-threshold nil) ; split by placing the new window below
-(setq split-width-threshold nil) ; split by placing the new window right
-
 ;; mouse scroll
 (setq mouse-wheel-progressive-speed nil ; don't accelerate scrolling
       mouse-wheel-scroll-amount '(1 ((shift) . 2) ((control))))
 
-;; major mode of *scratch* buffer
-(setq initial-major-mode #'fundamental-mode)
+;; Set "yes" to "y" and "no" to "n"
+(setq use-short-answers t)
 
 ;; default major-mode
 (setq-default major-mode #'text-mode)
@@ -121,9 +44,6 @@
 ;; bidirectional text
 (setq-default bidi-display-reordering nil) ; Set whether to allow bidirectional text.
 ;; (setq-default bidi-paragraph-direction 'left-to-right) ; Force text direction (default)
-
-;; Set "yes" to "y" and "no" to "n"
-(setq use-short-answers t)
 
 ;; translate "C-h" to "Back Space"
 (define-key key-translation-map [?\C-h] [?\C-?])
@@ -170,6 +90,13 @@
         (alpha . 85)
         (font . "fontset-myricty")))
 
+;; show file path in title bar
+(setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
+
+;; Threshold when splitting a window
+;; (setq split-height-threshold nil) ; split by placing the new window below
+(setq split-width-threshold nil) ; split by placing the new window right
+
 (add-hook 'window-state-change-hook
           (lambda ()
             ;; disable vertical scrollbar on minibuffer
@@ -187,6 +114,75 @@
 ;; (size-indication-mode 1) ; default off
 (delete-selection-mode 1) ; default off
 ;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1))) ; default on
+
+
+;;------------------------------------------------------------------------------
+;; windows-misc
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
+  ;; the following hack is no longer necessary.
+  ;; (https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663)
+  ;; However, the following hack is still needed in certain environments.
+  ;; (defmacro set-function-args-encode (arg-pos)
+  ;;   "Set the character code of the parameter passed to the subprocess to cp932"
+  ;;   `(lambda (args)
+  ;;      (when (> (length args) ,arg-pos)
+  ;;        ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
+  ;;        (setf (nthcdr ,arg-pos args)
+  ;;              (mapcar (lambda (arg)
+  ;;                        (if (multibyte-string-p arg)
+  ;;                            (encode-coding-string arg 'cp932)
+  ;;                          arg))
+  ;;                      (nthcdr ,arg-pos args))))
+  ;;      args))
+
+  ;; Windows Specific Settings
+  (defmacro misc-nt ()
+    (when (eq system-type 'windows-nt)
+      (let* ((msys-root ;; Get the installation location of "msys2"
+              (cond ((executable-find "reg")
+                     (let* ((coding-system-for-read 'emacs-mule-dos) ;; Assume CRLF represents end-of-line, because of dos-command.
+                            (reg_hkcu_uninstall_key "\"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\"")
+                            (reg_query_cmd (concat "reg query " reg_hkcu_uninstall_key " -v InstallLocation -s | findstr msys64")))
+                       (expand-file-name
+                        (nth 3 (split-string (shell-command-to-string reg_query_cmd) " +\\|\n")))))
+                    (t ; else
+                     (downcase (directory-file-name (string-trim (shell-command-to-string "cygpath -am /")))))))
+             (msys-path ;; Set a minimum "PATH"
+              (mapconcat (lambda (subpath) (concat msys-root subpath "/bin"))
+                         '("/mingw64" "/usr" "/usr/local")
+                         path-separator)))
+
+        (setq exec-path (parse-colon-path (setenv "PATH" msys-path)))
+
+        `(progn
+           ;; Set environment variable
+           (unless (getenv "SHLVL")
+             (setenv "SHLVL" "0")
+             (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
+             (setq exec-path (parse-colon-path (setenv "PATH" ,msys-path)))
+             (setenv "SHELL" (setq shell-file-name "bash"))
+             (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
+             (setenv "MSYSTEM" "MINGW64"))
+
+           ;; Set the default char-code in the following cases;
+           ;; (1) when creating a new file,
+           ;; (2) subprocess I/O,
+           ;; (3) if not set elsewhere.
+           (prefer-coding-system 'utf-8-unix)
+
+           ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
+           ;; (setq w32-pass-lwindow-to-system nil)
+           (setq w32-lwindow-modifier 'super)
+           ;; (w32-register-hot-key [s-])
+           (w32-register-hot-key [s-l])
+
+           ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
+           ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
+           ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
+           )))))
+(misc-nt)
 
 ;;------------------------------------------------------------------------------
 ;; load path
@@ -402,6 +398,10 @@
                       "-name" "*.eln" "-size" "0" "-delete" "-or"
                       "-name" "*.eln.tmp" "-size" "0" "-delete" "-or"
                       "-name" "*.eln.old" "-delete")))))
+
+(with-eval-after-load 'comp
+    ;; suppress warnings and errors from asynchronous native compilation
+    (setq native-comp-async-report-warnings-errors nil))
 
 ;;------------------------------------------------------------------------------
 ;; tab-bar-mode
