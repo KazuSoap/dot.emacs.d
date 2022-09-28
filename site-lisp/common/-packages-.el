@@ -431,7 +431,7 @@
 
   (eval-and-compile (require 'smart-compile))
   (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
-    (add-to-list 'smart-compile-alist `("\\.pum$" . ,sc-cmd) t)
+    (add-to-list 'smart-compile-alist `("\\.puml?\\'" . ,sc-cmd) t)
     ))
 
 ;;------------------------------------------------------------------------------
