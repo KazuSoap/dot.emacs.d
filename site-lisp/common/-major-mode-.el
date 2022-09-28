@@ -10,7 +10,7 @@
 ;; (add-to-list 'auto-mode-alist '("\\.el\\'" . elisp-mode))
 (add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
 (add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js?\\|vue?\\)\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
+;; (add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
 
 ;;------------------------------------------------------------------------------
 ;; major-mode-hook
@@ -85,14 +85,14 @@
         (setq irony-additional-clang-options '("-std=c++14"))))
 (add-hook 'c++-mode-hook 'my-c++-mode-setup)
 
-;; plantuml-mode
-(fset 'my-plantuml-mode-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)
-        (flycheck-mode)
-        (flycheck-plantuml-setup)))
-(add-hook 'plantuml-mode-hook 'my-plantuml-mode-setup)
+;; ;; plantuml-mode
+;; (fset 'my-plantuml-mode-setup
+;;       (lambda ()
+;;         (my-common-programing-mode-setup)
+;;         (my-common-mode-setup)
+;;         (flycheck-mode)
+;;         (flycheck-plantuml-setup)))
+;; (add-hook 'plantuml-mode-hook 'my-plantuml-mode-setup)
 
 ;; sh-mode
 (fset 'my-sh-mode-setup
@@ -102,13 +102,12 @@
         (flycheck-mode)))
 (add-hook 'sh-mode-hook 'my-sh-mode-setup)
 
-;; javascript mode
-(fset 'my-js-mode-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)))
-(add-hook 'js-mode-hook 'my-js-mode-setup)
-
+;; ;; javascript mode
+;; (fset 'my-js-mode-setup
+;;       (lambda ()
+;;         (my-common-programing-mode-setup)
+;;         (my-common-mode-setup)))
+;; (add-hook 'js-mode-hook 'my-js-mode-setup)
 
 ;; web mode
 (fset 'my-web-mode-setup

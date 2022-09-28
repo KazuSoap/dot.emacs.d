@@ -10,9 +10,9 @@
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   (when (eq system-type 'windows-nt)
-    (require 'cygwin-mount)
-    (cygwin-mount-build-table-internal)
-    (cygwin-mount-activate))
+      (require 'cygwin-mount)
+      (cygwin-mount-build-table-internal)
+      (cygwin-mount-activate))
 
   (defmacro cygwin-mount-nt ()
     (when (eq system-type 'windows-nt)
@@ -28,29 +28,26 @@
 
 ;;------------------------------------------------------------------------------
 ;; fakecygpty
-;; NTEmacs の仮想端末偽装
+;; cygwin's pty feature for NTEmacs
 ;; https://github.com/d5884/fakecygpty
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   (when (eq system-type 'windows-nt)
-    (require 'fakecygpty)
-    (defvar ad-fakecygpty-program-regexps
-      (concat "^"
-              (expand-file-name "/")
-              "\\(usr/\\(local/\\)?\\)?bin/.*")))
+    (require 'fakecygpty))
 
   (defmacro fakecygpty-nt ()
     (when (eq system-type 'windows-nt)
-      `(progn
-         (fset 'ad-fakecygpty--ignored-program
-               (lambda (program)
-                 (let ((program (file-name-nondirectory program)))
-                   (not (string-match-p ,ad-fakecygpty-program-regexps (executable-find program))))))
-         (advice-add 'fakecygpty--ignored-program :before-until 'ad-fakecygpty--ignored-program)
+      (let ((program-path-regexps (concat "^" (expand-file-name "/") "\\(usr/\\(local/\\)?\\)?bin/.*")))
+        `(progn
+           (autoload 'fakecygpty-activate "fakecygpty" t nil)
+           (add-hook 'after-init-hook #'fakecygpty-activate)
 
-         (autoload 'fakecygpty-activate "fakecygpty" t nil)
-         (add-hook 'after-init-hook #'fakecygpty-activate)
-         ))))
+           (with-eval-after-load 'fakecygpty
+             (fset 'ad-fakecygpty--ignored-program
+                   (lambda (program)
+                     (not (string-match-p ,program-path-regexps (executable-find (file-name-nondirectory program))))))
+             (advice-add 'fakecygpty--ignored-program :before-until 'ad-fakecygpty--ignored-program))
+           )))))
 (fakecygpty-nt)
 
 ;;------------------------------------------------------------------------------
@@ -58,7 +55,8 @@
 ;; sync emacs environment variable with shell's one
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (require 'exec-path-from-shell)
+  (when (eq system-type 'windows-nt)
+    (require 'exec-path-from-shell))
 
   (defmacro setenv_cached-env-var (env-var-lst)
     (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
@@ -73,9 +71,8 @@
               args))
       (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
 
-      ;; (let ((add-env-vars '()))
-      ;;   (setq add-env-vars (append add-env-vars '("PKG_CONFIG_PATH" "http_proxy" "https_proxy")))
-      ;;   (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t)) add-env-vars))
+      ;; (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t))
+      ;;       '("PKG_CONFIG_PATH" "http_proxy" "https_proxy"))
 
       (exec-path-from-shell-initialize)
 
@@ -188,36 +185,34 @@
 
 ;;------------------------------------------------------------------------------
 ;; company
-;; 補完システム
+;; a modular completion framework
 ;;------------------------------------------------------------------------------
 ;; company-box
-;; A company front-end with icons.
+;; a company front-end with icons
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'company
-  (eval-when-compile (require 'company))
+(eval-when-compile (require 'company))
 
-  (setq company-idle-delay nil) ;; 遅延
-  (setq company-minimum-prefix-length 3) ;; 補完開始文字長
-  (setq company-selection-wrap-around t) ;; 最下時に↓で最初に戻る
+(with-eval-after-load 'company
+  (setq company-idle-delay nil)
+  (setq company-minimum-prefix-length 3) ; minimum prefix length for idle completion
+  (setq company-selection-wrap-around t)
   (define-key (default-value 'company-mode-map) (kbd "C-<tab>") 'company-complete)
-  (add-hook 'company-mode-hook 'company-box-mode)
-  )
+  (add-hook 'company-mode-hook 'company-box-mode))
+
+(eval-when-compile
+  (require 'company-box)
+  (require 'frame-local)
+  (declare-function company-box--get-frame "company-box")
+  (declare-function frame-local-get "frame-local")
+
+  (defmacro fix-company-box (get-frame-func &rest margs)
+    `(lambda (&rest args)
+       (let ((frame (,get-frame-func ,(car margs))))
+         (when frame
+           (set-frame-parameter frame 'tab-bar-lines 0)))
+       args)))
 
 (with-eval-after-load 'company-box
-  (eval-when-compile
-    (require 'company-box)
-    (require 'frame-local)
-    (declare-function company-box--get-frame "company-box")
-    (declare-function frame-local-get "frame-local")
-
-    (defmacro fix-company-box (get-frame-func &rest margs)
-      `(lambda (&rest args)
-         (let ((frame (,get-frame-func ,(car margs))))
-           (when frame
-             (set-frame-parameter frame 'tab-bar-lines 0)))
-         args)
-      ))
-
   (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
   (set-face-attribute 'company-tooltip nil :background "midnight blue")
 
@@ -231,26 +226,22 @@
 ;; flycheck
 ;; エラーチェッカー
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'flycheck
-  (eval-when-compile (require 'flycheck))
-  ;; (declare-function flycheck-add-mode "flycheck")
+(eval-when-compile (require 'flycheck))
 
-  (setq flycheck-display-errors-delay 0.3) ;; 遅延
-  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)) ;; remove useless warnings
-  (setq flycheck-emacs-lisp-load-path 'inherit) ;; use the `load-path' of the current Emacs session
-  (add-hook 'flycheck-mode-hook (lambda () (setq left-fringe-width 8))) ;; 左フリンジを有効化
-  ;; (flycheck-add-mode 'emacs-lisp 'elisp-mode)
-  )
+(with-eval-after-load 'flycheck
+  (setq flycheck-display-errors-delay 0.3)
+  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)) ; remove useless warnings
+  (setq flycheck-emacs-lisp-load-path 'inherit) ; use the `load-path' of the current Emacs session
+  (add-hook 'flycheck-mode-hook (lambda () (setq left-fringe-width 8)))) ; Enable left-fringe only in flycheck-mode
 
 ;;------------------------------------------------------------------------------
 ;; helm
 ;; emacsに統一的なある”操作方式”を提供するフレームワーク
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'helm-files))
+
 (with-eval-after-load 'helm
-  ;; 自動補完を無効にする
-  (setq helm-ff-auto-update-initial-value nil)
-  )
+  (setq helm-ff-auto-update-initial-value nil)) ; Disable autocomplete
 
 ;; key-bind
 (global-set-key (kbd "M-x") #'helm-M-x)
@@ -264,16 +255,15 @@
 ;; highlight-indent-guides
 ;; A minor mode highlights indentation levels via font-lock.
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'highlight-indent-guides
   (eval-when-compile (require 'highlight-indent-guides))
 
+(with-eval-after-load 'highlight-indent-guides
   ;; (setq-default highlight-indent-guides-method 'character)
   ;; (setq-default highlight-indent-guides-auto-character-face-perc 100)
   ;; (setq-default highlight-indent-guides-character ?\|)
   ;; (setq-default highlight-indent-guides-method 'column)
   (setq highlight-indent-guides-auto-odd-face-perc 40)
-  (setq highlight-indent-guides-auto-even-face-perc 25)
-  )
+  (setq highlight-indent-guides-auto-even-face-perc 25))
 
 ;;------------------------------------------------------------------------------
 ;; irony
@@ -289,11 +279,11 @@
            ;; Set the buffer size to 64K on Windows (from the original 4K)
            (setq irony-server-w32-pipe-buffer-size (* 64 1024))
 
-           ;; irony-server-install に失敗する問題の修正
+           ;; fixed issue with irony-server-install
            (fset 'ad-irony--install-server-read-command
                  (lambda (args)
                    "modify irony--install-server-read-command"
-                   (setenv "CC" "clang") (setenv "CXX" "clang++") ; コンパイラに clang を指定
+                   (setenv "CC" "clang") (setenv "CXX" "clang++") ; set clang to compiler
                    `(,(replace-regexp-in-string
                        (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
                        "\\1 -G'MSYS Makefiles'"
@@ -398,52 +388,51 @@
   (eval-when-compile (defvar git-commit-summary-max-length))
 
   (setq git-commit-summary-max-length 999)
-  (add-hook 'git-commit-setup-hook 'turn-off-auto-fill t)
-  )
+  (add-hook 'git-commit-setup-hook 'turn-off-auto-fill t))
 
 ;;------------------------------------------------------------------------------
 ;; migemo
 ;; ローマ字入力で日本語文字列を検索
 ;;------------------------------------------------------------------------------
-(fset 'ad-migemo-register-isearch-keybinding
-      (lambda ()
-        (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
-        (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
-        (define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
-        (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
-        (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)))
-(advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding)
+(with-eval-after-load 'migemo
+  (fset 'ad-migemo-register-isearch-keybinding
+        (lambda ()
+          (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
+          (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
+          (define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
+          (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
+          (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)))
+  (advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding))
 (add-hook 'isearch-mode-hook (lambda () (require 'cmigemo)))
 
-;; ------------------------------------------------------------------------------
-;; plantuml-mode
-;; ------------------------------------------------------------------------------
-(with-eval-after-load 'plantuml-mode
-  (eval-when-compile (require 'plantuml-mode))
+;; ;; ------------------------------------------------------------------------------
+;; ;; plantuml-mode
+;; ;; ------------------------------------------------------------------------------
+;; (with-eval-after-load 'plantuml-mode
+;;   (eval-when-compile (require 'plantuml-mode))
 
-  (setq plantuml-jar-path
-        (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
+;;   (setq plantuml-jar-path
+;;         (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
 
-  ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
-  (setq-default plantuml-output-type "png")
+;;   ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
+;;   (setq-default plantuml-output-type "png")
 
-  (setq plantuml-default-exec-mode 'jar)
+;;   (setq plantuml-default-exec-mode 'jar)
 
-  (eval-and-compile (require 'smart-compile))
-  (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
-    (add-to-list 'smart-compile-alist `("\\.puml?\\'" . ,sc-cmd) t)
-    ))
+;;   (eval-and-compile (require 'smart-compile))
+;;   (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
+;;     (add-to-list 'smart-compile-alist `("\\.puml?\\'" . ,sc-cmd) t)
+;;     ))
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'smart-compile
-  (eval-when-compile (require 'smart-compile))
+(eval-when-compile (require 'smart-compile))
 
-  (let ((cmd
-         (lambda ()
-           (emacs-lisp-byte-compile)
-           (native-compile buffer-file-name))))
+(with-eval-after-load 'smart-compile
+  (let ((cmd (lambda ()
+               (emacs-lisp-byte-compile)
+               (native-compile buffer-file-name))))
     (add-to-list 'smart-compile-alist `(emacs-lisp-mode ,cmd))))
 (global-set-key (kbd "C-c c") #'smart-compile)
 
