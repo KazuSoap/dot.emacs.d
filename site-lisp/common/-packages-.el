@@ -418,23 +418,21 @@
 ;; ------------------------------------------------------------------------------
 ;; plantuml-mode
 ;; ------------------------------------------------------------------------------
-;; (eval-when-compile (require 'plantuml-mode)
-;;                    (require 'smart-compile))
-;; (with-eval-after-load 'plantuml-mode
-;;   (setq-default plantuml-jar-path "c:/msys64/usr/local/bin/plantuml.jar")
+(with-eval-after-load 'plantuml-mode
+  (eval-when-compile (require 'plantuml-mode))
 
-;;   ;; javaにオプションを渡したい場合はここにかく
-;;   (setq-default plantuml-java-options "")
+  (setq plantuml-jar-path
+        (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
 
-;;   ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
-;;   ;; (setq-default plantuml-output-type "txt")
+  ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
+  (setq-default plantuml-output-type "png")
 
-;;   (setq-default plantuml-default-exec-mode 'jar)
+  (setq plantuml-default-exec-mode 'jar)
 
-;;   (with-eval-after-load 'smart-compile
-;;     (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
-;;       (add-to-list 'smart-compile-alist `("\\.pum$" . ,sc-cmd) t)
-;;       )))
+  (eval-and-compile (require 'smart-compile))
+  (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
+    (add-to-list 'smart-compile-alist `("\\.pum$" . ,sc-cmd) t)
+    ))
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
