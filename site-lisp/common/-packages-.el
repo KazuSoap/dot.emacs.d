@@ -5,14 +5,14 @@
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
 ;; cygwin-mount
-;; Teach EMACS about cygwin styles and mount points.
+;; teach EMACS about cygwin styles and mount points
 ;; https://www.emacswiki.org/emacs/cygwin-mount.el
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   (when (eq system-type 'windows-nt)
-      (require 'cygwin-mount)
-      (cygwin-mount-build-table-internal)
-      (cygwin-mount-activate))
+    (require 'cygwin-mount)
+    (cygwin-mount-build-table-internal)
+    (cygwin-mount-activate))
 
   (defmacro cygwin-mount-nt ()
     (when (eq system-type 'windows-nt)
@@ -224,7 +224,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; flycheck
-;; エラーチェッカー
+;; on-the-fly syntax checking
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'flycheck))
 
@@ -236,7 +236,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; helm
-;; emacsに統一的なある”操作方式”を提供するフレームワーク
+;; an Emacs incremental and narrowing framework
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'helm-files))
 
@@ -253,7 +253,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; highlight-indent-guides
-;; A minor mode highlights indentation levels via font-lock.
+;; a minor mode highlights indentation levels via font-lock
 ;;------------------------------------------------------------------------------
   (eval-when-compile (require 'highlight-indent-guides))
 
@@ -267,7 +267,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; irony
-;; A C/C++ minor mode powered by libclang
+;; a C/C++ minor mode powered by libclang
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   (require 'irony)
@@ -373,7 +373,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; magit
-;; git クライアント
+;; a Git porcelain inside Emacs
 ;;------------------------------------------------------------------------------
 ;; (eval-when-compile
 ;;   (defmacro magit-nt ()
@@ -392,7 +392,7 @@
 
 ;;------------------------------------------------------------------------------
 ;; migemo
-;; ローマ字入力で日本語文字列を検索
+;; Japanese incremental search through dynamic pattern expansion
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'migemo
   (fset 'ad-migemo-register-isearch-keybinding
@@ -414,7 +414,7 @@
 ;;   (setq plantuml-jar-path
 ;;         (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
 
-;;   ;; plantumlのプレビュー出力形式(svg,png,txt,utxt)
+;;   ;; specify the desired output type to use for generated diagrams(svg,png,txt)
 ;;   (setq-default plantuml-output-type "png")
 
 ;;   (setq plantuml-default-exec-mode 'jar)
