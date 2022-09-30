@@ -31,7 +31,7 @@
     (setq tab-width 4) ;; tab 幅
     (setq truncate-lines t) ;; 画面外文字の切り詰め
     (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
-    (show-paren-mode) ;; 括弧のハイライト
+    ;; (show-paren-mode) ; default on
     (company-mode)) ;; 補完
 
   ;; c/c++-mode共通
