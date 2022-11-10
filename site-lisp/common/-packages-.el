@@ -84,6 +84,26 @@
 (copy-envs-settings)
 
 ;;------------------------------------------------------------------------------
+;; shebang-exec
+;; https://qiita.com/s-fubuki/items/67ddcf36970cd5492d2c
+;; https://gist.github.com/s-fubuki/819a7f7e7cb2cbcaa5b9bd04dcb1e713
+;;------------------------------------------------------------------------------
+;; (eval-when-compile
+;;   (defmacro shebang-exec-nt ()
+;;     (when (eq system-type 'windows-nt)
+;;       `(progn
+;;          (add-hook 'after-init-hook (lambda () (require 'shebang-exec)))
+
+;;          (with-eval-after-load 'shebang-exec
+;;            (fset 'ad-executable-find
+;;                  (lambda (&rest args)
+;;                    (locate-file (car args) exec-path nil 'file-executable-p)
+;;                    ))
+;;            (advice-add 'executable-find :after-until 'ad-executable-find))
+;;          ))))
+;; (shebang-exec-nt)
+
+;;------------------------------------------------------------------------------
 ;; IME
 ;;------------------------------------------------------------------------------
 (eval-when-compile
@@ -255,7 +275,7 @@
 ;; highlight-indent-guides
 ;; a minor mode highlights indentation levels via font-lock
 ;;------------------------------------------------------------------------------
-  (eval-when-compile (require 'highlight-indent-guides))
+(eval-when-compile (require 'highlight-indent-guides))
 
 (with-eval-after-load 'highlight-indent-guides
   ;; (setq-default highlight-indent-guides-method 'character)
@@ -389,6 +409,30 @@
 
   (setq git-commit-summary-max-length 999)
   (add-hook 'git-commit-setup-hook 'turn-off-auto-fill t))
+
+;;------------------------------------------------------------------------------
+;; markdown-mode
+;;------------------------------------------------------------------------------
+;; (with-eval-after-load 'markdown-mode
+;;   (eval-when-compile (require 'markdown-mode))
+;;   (setq markdown-fontify-code-blocks-natively t)
+;;   (setq markdown-content-type "application/xhtml+xml")
+;;   (setq markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"))
+;;   (setq markdown-xhtml-header-content "
+;; <style>
+;; body {
+;;   box-sizing: border-box;
+;;   width: 100%;
+;;   margin: 40px auto;
+;;   padding: 0 10px;
+;; }
+;; </style>
+;; <script>
+;; document.addEventListener('DOMContentLoaded', () => {
+;;   document.body.classList.add('markdown-body');
+;; });
+;; </script>
+;; " ))
 
 ;;------------------------------------------------------------------------------
 ;; migemo
