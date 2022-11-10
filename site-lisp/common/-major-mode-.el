@@ -11,6 +11,7 @@
 (add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
 (add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js?\\|vue?\\)\\'" . web-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
+;; (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
 ;;------------------------------------------------------------------------------
 ;; major-mode-hook
@@ -20,6 +21,7 @@
   (require 'flycheck)
   (require 'python)
   (require 'web-mode)
+  ;; (require 'plantuml-mode)
 
   ;; 共通
   (defsubst my-common-mode-setup ()
@@ -91,7 +93,8 @@
 ;;         (my-common-programing-mode-setup)
 ;;         (my-common-mode-setup)
 ;;         (flycheck-mode)
-;;         (flycheck-plantuml-setup)))
+;;         (flycheck-plantuml-setup)
+;;         (setq plantuml-indent-level 2)))
 ;; (add-hook 'plantuml-mode-hook 'my-plantuml-mode-setup)
 
 ;; sh-mode
