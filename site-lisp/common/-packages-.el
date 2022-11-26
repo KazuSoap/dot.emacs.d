@@ -413,26 +413,26 @@
 ;;------------------------------------------------------------------------------
 ;; markdown-mode
 ;;------------------------------------------------------------------------------
-;; (with-eval-after-load 'markdown-mode
-;;   (eval-when-compile (require 'markdown-mode))
-;;   (setq markdown-fontify-code-blocks-natively t)
-;;   (setq markdown-content-type "application/xhtml+xml")
-;;   (setq markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"))
-;;   (setq markdown-xhtml-header-content "
-;; <style>
-;; body {
-;;   box-sizing: border-box;
-;;   width: 100%;
-;;   margin: 40px auto;
-;;   padding: 0 10px;
-;; }
-;; </style>
-;; <script>
-;; document.addEventListener('DOMContentLoaded', () => {
-;;   document.body.classList.add('markdown-body');
-;; });
-;; </script>
-;; " ))
+(with-eval-after-load 'markdown-mode
+  (eval-when-compile (require 'markdown-mode))
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-content-type "application/xhtml+xml")
+  (setq markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"))
+  (setq markdown-xhtml-header-content "
+<style>
+body {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 10px;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('markdown-body');
+});
+</script>
+" ))
 
 ;;------------------------------------------------------------------------------
 ;; migemo

@@ -11,7 +11,7 @@
 (add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
 (add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js?\\|vue?\\)\\'" . web-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
-;; (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
 ;;------------------------------------------------------------------------------
 ;; major-mode-hook
