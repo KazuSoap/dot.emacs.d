@@ -150,18 +150,18 @@
                     (t ; else
                      (downcase (directory-file-name (string-trim (shell-command-to-string "cygpath -am /")))))))
              (msys-path ;; Set a minimum "PATH"
-              (mapconcat (lambda (subpath) (concat msys-root subpath "/bin"))
-                         '("/mingw64" "/usr" "/usr/local")
-                         path-separator)))
+              (mapcar (lambda (subpath) (concat msys-root subpath "/bin/"))
+                      '("/mingw64" "/usr" "/usr/local"))))
 
-        (setq exec-path (parse-colon-path (setenv "PATH" msys-path)))
+        (mapc (lambda (dir) (add-to-list 'exec-path dir)) msys-path)
+        (setenv "PATH" (mapconcat #'identity exec-path path-separator))
 
         `(progn
            ;; Set environment variable
            (unless (getenv "SHLVL")
              (setenv "SHLVL" "0")
              (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
-             (setq exec-path (parse-colon-path (setenv "PATH" ,msys-path)))
+             (setenv "PATH" (mapconcat #'identity (setq exec-path ',msys-path) path-separator))
              (setenv "SHELL" (setq shell-file-name "bash"))
              (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
              (setenv "MSYSTEM" "MINGW64"))
