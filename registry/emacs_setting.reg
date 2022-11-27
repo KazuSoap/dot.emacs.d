@@ -1,0 +1,10 @@
+Windows Registry Editor Version 5.00
+
+[-HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
+
+[HKEY_CURRENT_USER\SOFTWARE\GNU\Emacs]
+
+//==============================================================================
+// Environment Variable
+//==============================================================================
+"HOME"="c:/msys64/home/Kazu.Soap"

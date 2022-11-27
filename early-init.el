@@ -74,14 +74,14 @@
 ;; -maker-family-weight-slant-widthtype-style-px-height-resX-resY-spacing-width-registry-encoding
 (create-fontset-from-fontset-spec
  (eval-when-compile
-   (let ((fontset-base
-          (cond ((eq system-type 'windows-nt) ; if
-                 "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty")
-                (t ; else
-                 "-PfEd-ricty diminished discord-bold-normal-normal-*-*-*-*-*-m-0-fontset-myricty")))
-         (ascii-font "ascii:-*-*-*-*-*-*-14-*-*-*-*-*-iso10646-1")
-         (unicode-font "unicode:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1"))
-     (mapconcat #'identity `(,fontset-base ,ascii-font ,unicode-font) ","))))
+   (let ((fontset-elems
+          `(,(cond ((eq system-type 'windows-nt) ; if
+                    "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty")
+                   (t ; else
+                    "-PfEd-ricty diminished discord-bold-normal-normal-*-*-*-*-*-m-0-fontset-myricty"))
+            "ascii:-*-*-*-*-*-*-14-*-*-*-*-*-iso10646-1"
+            "unicode:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1")))
+     (mapconcat #'identity fontset-elems ","))))
 
 ;; frame parameters
 (setq default-frame-alist
