@@ -119,6 +119,22 @@
 ;;------------------------------------------------------------------------------
 ;; windows-misc
 ;;------------------------------------------------------------------------------
+;; cygpath for emacs lisp
+(eval-when-compile
+  (defmacro cygpath-nt ()
+    (when (eq system-type 'windows-nt)
+      `(progn
+         (fset 'cygpath
+               (lambda (&optional option path)
+                 (when path
+                   (with-temp-buffer
+                     (call-process "cygpath" nil '(t nil) nil option path)
+                     (unless (bobp)
+                       (goto-char (point-min))
+                       (buffer-substring-no-properties (point) (line-end-position)))))))
+         ))))
+(cygpath-nt)
+
 (eval-when-compile
   ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
   ;; the following hack is no longer necessary.
@@ -136,6 +152,9 @@
   ;;                          arg))
   ;;                      (nthcdr ,arg-pos args))))
   ;;      args))
+
+  (defmacro setenv_cached-env-var (env-var-lst)
+    (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
 
   ;; Windows Specific Settings
   (defmacro misc-nt ()
@@ -156,32 +175,51 @@
         (mapc (lambda (dir) (add-to-list 'exec-path dir)) msys-path)
         (setenv "PATH" (mapconcat #'identity exec-path path-separator))
 
-        `(progn
-           ;; Set environment variable
-           (unless (getenv "SHLVL")
-             (setenv "SHLVL" "0")
-             (setenv "HOME" (concat ,(concat msys-root "/home/") user-login-name))
-             (setenv "PATH" (mapconcat #'identity (setq exec-path ',msys-path) path-separator))
-             (setenv "SHELL" (setq shell-file-name "bash"))
-             (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
-             (setenv "MSYSTEM" "MINGW64"))
+        (let ((setenv_list
+               (cond ((and (require 'exec-path-from-shell nil t) (fboundp 'cygpath))
+                      ;; convert path format from unix style to win-nt style
+                      (fset 'ad-exec-path-from-shell-setenv
+                            (lambda (args)
+                              (and (string= (car args) "PATH")
+                                   (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
+                              args))
+                      (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
 
-           ;; Set the default char-code in the following cases;
-           ;; (1) when creating a new file,
-           ;; (2) subprocess I/O,
-           ;; (3) if not set elsewhere.
-           (prefer-coding-system 'utf-8-unix)
+                      ;; (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t))
+                      ;;       '("PKG_CONFIG_PATH" "http_proxy" "https_proxy"))
 
-           ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
-           ;; (setq w32-pass-lwindow-to-system nil)
-           (setq w32-lwindow-modifier 'super)
-           ;; (w32-register-hot-key [s-])
-           (w32-register-hot-key [s-l])
+                      (exec-path-from-shell-initialize)
+                      (macroexpand '(setenv_cached-env-var exec-path-from-shell-variables)))
+                     (t
+                      (macroexpand '(setenv_cached-env-var '("PATH")))))))
+          `(progn
+             ;; Set environment variable
+             (unless (getenv "SHLVL")
+               ,@setenv_list
+               (setq exec-path (append (parse-colon-path (getenv "PATH")) ',(last exec-path)))
+               (setenv "SHLVL" "0")
+               (setenv "SHELL" (setq shell-file-name "bash"))
+               (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
+               (setenv "MSYSTEM" "MINGW64"))
 
-           ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-           ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
-           ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
-           )))))
+             ;; Set the default char-code in the following cases;
+             ;; (1) when creating a new file,
+             ;; (2) subprocess I/O,
+             ;; (3) if not set elsewhere.
+             (prefer-coding-system 'utf-8-unix)
+
+             ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
+             ;; (setq w32-pass-lwindow-to-system nil)
+             (setq w32-lwindow-modifier 'super)
+             ;; (w32-register-hot-key [s-])
+             (w32-register-hot-key [s-l])
+
+             ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
+             ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
+             ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
+             ))
+
+        ))))
 (misc-nt)
 
 ;;------------------------------------------------------------------------------
@@ -193,22 +231,6 @@
 ;;------------------------------------------------------------------------------
 ;; local functions
 ;;------------------------------------------------------------------------------
-;; cygpath for emacs lisp
-(eval-when-compile
-  (defmacro cygpath-nt ()
-    (when (eq system-type 'windows-nt)
-      `(progn
-         (fset 'cygpath
-               (lambda (&optional option path)
-                 (when path
-                   (with-temp-buffer
-                     (call-process "cygpath" nil '(t nil) nil option path)
-                     (unless (bobp)
-                       (goto-char (point-min))
-                       (buffer-substring-no-properties (point) (line-end-position)))))))
-         ))))
-(cygpath-nt)
-
 ;; (eval-when-compile
 ;;   (defmacro start-my-shell-process-nt ()
 ;;     (when (eq system-type 'windows-nt)
@@ -400,8 +422,20 @@
                       "-name" "*.eln.old" "-delete")))))
 
 (with-eval-after-load 'comp
-    ;; suppress warnings and errors from asynchronous native compilation
-    (setq native-comp-async-report-warnings-errors nil))
+  ;; suppress warnings and errors from asynchronous native compilation
+  (setq native-comp-async-report-warnings-errors nil)
+  (setq native-comp-async-jobs-number 8)
+  (setq native-comp-speed 3))
+
+;;------------------------------------------------------------------------------
+;; package system
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'package
+  (eval-when-compile (require 'package))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (setq package-menu-async nil
+        package-quickstart t
+        custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el"))))
 
 ;;------------------------------------------------------------------------------
 ;; tab-bar-mode

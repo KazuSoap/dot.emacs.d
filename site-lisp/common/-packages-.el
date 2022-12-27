@@ -51,39 +51,6 @@
 (fakecygpty-nt)
 
 ;;------------------------------------------------------------------------------
-;; exec-path-from-shell
-;; sync emacs environment variable with shell's one
-;;------------------------------------------------------------------------------
-(eval-when-compile
-  (when (eq system-type 'windows-nt)
-    (require 'exec-path-from-shell))
-
-  (defmacro setenv_cached-env-var (env-var-lst)
-    (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
-
-  (defmacro copy-envs-settings ()
-    (when (and (eq system-type 'windows-nt) (fboundp 'cygpath))
-      ;; convert path format from unix style to win-nt style
-      (fset 'ad-exec-path-from-shell-setenv
-            (lambda (args)
-              (and (string= (car args) "PATH")
-                   (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-              args))
-      (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
-
-      ;; (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t))
-      ;;       '("PKG_CONFIG_PATH" "http_proxy" "https_proxy"))
-
-      (exec-path-from-shell-initialize)
-
-      `(progn
-         (when (string= "0" (getenv "SHLVL"))
-           ,@(macroexpand '(setenv_cached-env-var exec-path-from-shell-variables))
-           (setq exec-path (append (parse-colon-path (getenv "PATH")) ',(last exec-path))))
-         ))))
-(copy-envs-settings)
-
-;;------------------------------------------------------------------------------
 ;; shebang-exec
 ;; https://qiita.com/s-fubuki/items/67ddcf36970cd5492d2c
 ;; https://gist.github.com/s-fubuki/819a7f7e7cb2cbcaa5b9bd04dcb1e713
