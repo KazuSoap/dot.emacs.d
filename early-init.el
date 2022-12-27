@@ -51,7 +51,7 @@
 (add-hook 'after-init-hook
           (lambda ()
             ;; 128mb
-            (setq gc-cons-threshold (eval-when-compile (* 128 1024 1024)))
+            ;; (setq gc-cons-threshold (eval-when-compile (* 128 1024 1024)))
 
             ;; show startup time in [ms]
             (message "Emacs loaded in %.3f ms"
@@ -119,22 +119,6 @@
 ;;------------------------------------------------------------------------------
 ;; windows-misc
 ;;------------------------------------------------------------------------------
-;; cygpath for emacs lisp
-(eval-when-compile
-  (defmacro cygpath-nt ()
-    (when (eq system-type 'windows-nt)
-      `(progn
-         (fset 'cygpath
-               (lambda (&optional option path)
-                 (when path
-                   (with-temp-buffer
-                     (call-process "cygpath" nil '(t nil) nil option path)
-                     (unless (bobp)
-                       (goto-char (point-min))
-                       (buffer-substring-no-properties (point) (line-end-position)))))))
-         ))))
-(cygpath-nt)
-
 (eval-when-compile
   ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
   ;; the following hack is no longer necessary.
@@ -177,6 +161,16 @@
 
         (let ((setenv_list
                (cond ((and (require 'exec-path-from-shell nil t) (fboundp 'cygpath))
+                      ;; cygpath for emacs lisp
+                      (fset 'cygpath
+                            (lambda (&optional option path)
+                              (when path
+                                (with-temp-buffer
+                                  (call-process "cygpath" nil '(t nil) nil option path)
+                                  (unless (bobp)
+                                    (goto-char (point-min))
+                                    (buffer-substring-no-properties (point) (line-end-position)))))))
+
                       ;; convert path format from unix style to win-nt style
                       (fset 'ad-exec-path-from-shell-setenv
                             (lambda (args)
