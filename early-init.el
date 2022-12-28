@@ -115,7 +115,6 @@
 (delete-selection-mode 1) ; default off
 ;; (add-hook 'after-init-hook (lambda () (blink-cursor-mode -1))) ; default on
 
-
 ;;------------------------------------------------------------------------------
 ;; windows-misc
 ;;------------------------------------------------------------------------------
@@ -156,64 +155,64 @@
               (mapcar (lambda (subpath) (concat msys-root subpath "/bin/"))
                       '("/mingw64" "/usr" "/usr/local"))))
 
-        (mapc (lambda (dir) (add-to-list 'exec-path dir)) msys-path)
-        (setenv "PATH" (mapconcat #'identity exec-path path-separator))
+        (mapc (lambda (dir) (add-to-list 'exec-path dir)) msys-path))
 
-        (let ((setenv_list
-               (cond ((and (require 'exec-path-from-shell nil t) (fboundp 'cygpath))
-                      ;; cygpath for emacs lisp
-                      (fset 'cygpath
-                            (lambda (&optional option path)
-                              (when path
-                                (with-temp-buffer
-                                  (call-process "cygpath" nil '(t nil) nil option path)
-                                  (unless (bobp)
-                                    (goto-char (point-min))
-                                    (buffer-substring-no-properties (point) (line-end-position)))))))
+      (setenv "PATH" (mapconcat #'identity exec-path path-separator))
 
-                      ;; convert path format from unix style to win-nt style
-                      (fset 'ad-exec-path-from-shell-setenv
-                            (lambda (args)
-                              (and (string= (car args) "PATH")
-                                   (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-                              args))
-                      (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
+      (let ((setenv_list
+             (cond ((require 'exec-path-from-shell nil t)
+                    ;; cygpath for emacs lisp
+                    (fset 'cygpath
+                          (lambda (&optional option path)
+                            (when path
+                              (with-temp-buffer
+                                (call-process "cygpath" nil '(t nil) nil option path)
+                                (unless (bobp)
+                                  (goto-char (point-min))
+                                  (buffer-substring-no-properties (point) (line-end-position)))))))
 
-                      ;; (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t))
-                      ;;       '("PKG_CONFIG_PATH" "http_proxy" "https_proxy"))
+                    ;; convert path format from unix style to win-nt style
+                    (fset 'ad-exec-path-from-shell-setenv
+                          (lambda (args)
+                            (and (string= (car args) "PATH")
+                                 (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
+                            args))
+                    (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
 
-                      (exec-path-from-shell-initialize)
-                      (macroexpand '(setenv_cached-env-var exec-path-from-shell-variables)))
-                     (t
-                      (macroexpand '(setenv_cached-env-var '("PATH")))))))
-          `(progn
-             ;; Set environment variable
-             (unless (getenv "SHLVL")
-               ,@setenv_list
-               (setq exec-path (append (parse-colon-path (getenv "PATH")) ',(last exec-path)))
-               (setenv "SHLVL" "0")
-               (setenv "SHELL" (setq shell-file-name "bash"))
-               (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
-               (setenv "MSYSTEM" "MINGW64"))
+                    ;; (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t))
+                    ;;       '("PKG_CONFIG_PATH" "http_proxy" "https_proxy"))
 
-             ;; Set the default char-code in the following cases;
-             ;; (1) when creating a new file,
-             ;; (2) subprocess I/O,
-             ;; (3) if not set elsewhere.
-             (prefer-coding-system 'utf-8-unix)
+                    (exec-path-from-shell-initialize)
+                    (macroexpand '(setenv_cached-env-var exec-path-from-shell-variables)))
+                   (t
+                    (macroexpand '(setenv_cached-env-var '("PATH")))))))
+        `(progn
+           ;; Set environment variable
+           (unless (getenv "SHLVL")
+             ,@setenv_list
+             (setq exec-path (append (parse-colon-path (getenv "PATH")) ',(last exec-path)))
+             (setenv "SHLVL" "0")
+             (setenv "SHELL" (setq shell-file-name "bash"))
+             (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
+             (setenv "MSYSTEM" "MINGW64"))
 
-             ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
-             ;; (setq w32-pass-lwindow-to-system nil)
-             (setq w32-lwindow-modifier 'super)
-             ;; (w32-register-hot-key [s-])
-             (w32-register-hot-key [s-l])
+           ;; Set the default char-code in the following cases;
+           ;; (1) when creating a new file,
+           ;; (2) subprocess I/O,
+           ;; (3) if not set elsewhere.
+           (prefer-coding-system 'utf-8-unix)
 
-             ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-             ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
-             ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
-             ))
+           ;; allow a key sequence to be seen by Emacs instead of being grabbed by Windows
+           ;; (setq w32-pass-lwindow-to-system nil)
+           (setq w32-lwindow-modifier 'super)
+           ;; (w32-register-hot-key [s-])
+           (w32-register-hot-key [s-l])
 
-        ))))
+           ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
+           ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
+           ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
+           ))
+      )))
 (misc-nt)
 
 ;;------------------------------------------------------------------------------
