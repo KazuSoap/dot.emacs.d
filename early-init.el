@@ -401,10 +401,6 @@
 ;;------------------------------------------------------------------------------
 (eval-when-compile
   (require 'comp)
-  ;; Compile files that would natively compile before
-  ;; loading the "early-init" files and cause errors.
-  (native-compile (locate-file "japan-util.el" load-path))
-
   ;; Quitting emacs while native compilation in progress can leave zero byte
   ;; sized *.eln files behind. So delete such files when byte-compiling this file.
   (when (boundp 'native-comp-eln-load-path)
