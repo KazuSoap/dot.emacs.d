@@ -142,6 +142,9 @@
   ;; Windows Specific Settings
   (defmacro misc-nt ()
     (when (eq system-type 'windows-nt)
+      ;; Compile files that would natively compile before loading the "early-init" files and cause errors.
+      (native-compile (locate-file "japan-util.el" load-path))
+
       (let* ((msys-root ;; Get the installation location of "msys2"
               (cond ((executable-find "reg")
                      (let* ((coding-system-for-read 'emacs-mule-dos) ;; Assume CRLF represents end-of-line, because of dos-command.
