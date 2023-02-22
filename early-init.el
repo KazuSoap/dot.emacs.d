@@ -1,4 +1,6 @@
-;;; -*- coding: utf-8; lexical-binding: t -*-
+;;; early-init.el --- -*- coding: utf-8; lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 
 ;;==============================================================================
 ;; basic settings
@@ -48,16 +50,6 @@
 ;; translate "C-h" to "Back Space"
 (define-key key-translation-map [?\C-h] [?\C-?])
 
-(add-hook 'after-init-hook
-          (lambda ()
-            ;; 128mb
-            ;; (setq gc-cons-threshold (eval-when-compile (* 128 1024 1024)))
-
-            ;; show startup time in [ms]
-            (message "Emacs loaded in %.3f ms"
-                     (* 1000 (string-to-number (emacs-init-time))))
-            ))
-
 ;;------------------------------------------------------------------------------
 ;; face & frame parameters
 ;;------------------------------------------------------------------------------
@@ -65,7 +57,6 @@
 (load-theme 'wheatgrass t)
 (set-face-attribute 'mode-line nil :foreground "gray85" :background "#4a5459" :box nil)
 (set-face-attribute 'fringe nil :background "black")
-(set-face-attribute 'fixed-pitch nil :family "ricty diminished discord")
 
 ;; fontset
 ;; XLFD
@@ -96,12 +87,6 @@
 ;; Threshold when splitting a window
 ;; (setq split-height-threshold nil) ; split by placing the new window below
 (setq split-width-threshold nil) ; split by placing the new window right
-
-(add-hook 'window-state-change-hook
-          (lambda ()
-            ;; disable vertical scrollbar on minibuffer
-            (set-window-scroll-bars (minibuffer-window) nil nil)
-            ))
 
 ;;------------------------------------------------------------------------------
 ;; global minor-mode
@@ -246,29 +231,30 @@
 (fset 'my-revert-buffer-no-confirm
       (lambda (&optional force-reverting)
         (interactive "P")
-        (if (or force-reverting (not (buffer-modified-p)))
-            (revert-buffer :ignore-auto :noconfirm)
-          (error "The buffer has been modified"))))
+        (cond ((or force-reverting (not (buffer-modified-p)))
+               (revert-buffer :ignore-auto :noconfirm))
+              (t ; else
+               (error "The buffer has been modified")))))
 (global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
 
 ;; show "[EOB]" at the end of buffer
 ;; http://www.emacswiki.org/cgi-bin/wiki?HighlightEndOfBuffer
-(fset 'my-mark-eob
-      (lambda ()
-        (let ((existing-overlays (overlays-in (point-max) (point-max)))
-              (eob-mark (make-overlay (point-max) (point-max) nil t t))
-              (eob-text "[EOB]"))
-          ;; Delete any previous EOB markers.  Necessary so that they don't
-          ;; accumulate on calls to revert-buffer.
-          (dolist (next-overlay existing-overlays)
-            (if (overlay-get next-overlay 'eob-overlay)
-                (delete-overlay next-overlay)))
-          ;; Add a new EOB marker.
-          (put-text-property 0 (length eob-text)
-                             'face '(foreground-color . "slate gray") eob-text)
-          (overlay-put eob-mark 'eob-overlay t)
-          (overlay-put eob-mark 'after-string eob-text))))
-(add-hook 'find-file-hook 'my-mark-eob)
+(eval-when-compile
+  (defmacro set-my-mark-eob ()
+    '(lambda ()
+       (let ((existing-overlays (overlays-in (point-max) (point-max)))
+             (eob-mark (make-overlay (point-max) (point-max) nil t t))
+             (eob-text "[EOB]"))
+         ;; Delete any previous EOB markers.  Necessary so that they don't
+         ;; accumulate on calls to revert-buffer.
+         (dolist (next-overlay existing-overlays)
+           (when (overlay-get next-overlay 'eob-overlay)
+             (delete-overlay next-overlay)))
+         ;; Add a new EOB marker.
+         (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
+         (overlay-put eob-mark 'eob-overlay t)
+         (overlay-put eob-mark 'after-string eob-text)))))
+(add-hook 'find-file-hook (set-my-mark-eob))
 
 ;; ;; (fset 'my-expand-file-name
 ;; ;;       (lambda (f &rest args)
@@ -336,26 +322,19 @@
 ;; cua-mode
 ;; rectangle selection with C-Ret
 ;;------------------------------------------------------------------------------
-(global-set-key (kbd "C-<return>") 'cua-rectangle-mark-mode)
+(global-set-key (kbd "C-<return>") #'cua-rectangle-mark-mode)
 
 ;;------------------------------------------------------------------------------
 ;; display-line-numbers-mode
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'display-line-numbers
-  (set-face-attribute 'line-number nil :background "gray10")
-  (set-face-attribute 'line-number-current-line nil :background "gray40"))
+  (require 'my-built-in))
 
 ;;------------------------------------------------------------------------------
 ;; ediff
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'ediff
-  (eval-when-compile (require 'ediff))
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-  (setq ediff-split-window-function 'split-window-horizontally)
-  (set-face-attribute 'ediff-even-diff-A nil :background "gray20")
-  (set-face-attribute 'ediff-even-diff-B nil :background "gray20")
-  (set-face-attribute 'ediff-odd-diff-A  nil :background "gray20")
-  (set-face-attribute 'ediff-odd-diff-B  nil :background "gray20"))
+  (require 'my-built-in))
 
 ;;------------------------------------------------------------------------------
 ;; GDB
@@ -380,19 +359,9 @@
   (defmacro nt-printer ()
     (when (eq system-type 'windows-nt)
       (require 'lpr)
-      `(progn
-         ;; Open notepad with lpr-buffer command
+      '(progn
          (with-eval-after-load 'lpr
-           (setq print-region-function
-                 (lambda (start end _program &optional _delete _destination _display &rest _args)
-                   (let* ((procname (make-temp-name "w32-print-"))
-                          (winfile (expand-file-name procname temporary-file-directory)))
-                     (write-region start end winfile)
-                     (set-process-sentinel
-                      (start-process procname nil "notepad.exe" winfile)
-                      (lambda (_process _state)
-                        (when (file-exists-p winfile)
-                          (delete-file winfile))))))))))))
+           (require 'my-built-in))))))
 (nt-printer)
 
 ;;------------------------------------------------------------------------------
@@ -412,64 +381,47 @@
                       "-name" "*.eln.tmp" "-size" "0" "-delete" "-or"
                       "-name" "*.eln.old" "-delete")))))
 
-(with-eval-after-load 'comp
-  ;; suppress warnings and errors from asynchronous native compilation
-  (setq native-comp-async-report-warnings-errors nil)
-  (setq native-comp-async-jobs-number 8)
-  (setq native-comp-speed 3))
+;; suppress warnings and errors from asynchronous native compilation
+(setq native-comp-async-report-warnings-errors nil)
+(setq native-comp-async-jobs-number 8)
+(setq native-comp-speed 3)
 
 ;;------------------------------------------------------------------------------
 ;; package system
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'package
-  (eval-when-compile (require 'package))
-  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-  (setq package-menu-async nil
-        package-quickstart t
-        custom-file (eval-when-compile (concat user-emacs-directory "my-custom-file.el"))))
+  (require 'my-built-in))
 
 ;;------------------------------------------------------------------------------
 ;; tab-bar-mode
 ;; frame-local tabs with named persistent window configurations
 ;;------------------------------------------------------------------------------
-(fset 'my-tab-bar-mode-setup
-      (lambda ()
-        (tab-bar-history-mode +1)
+(tab-bar-history-mode +1)
 
-        (setq tab-bar-show 1)
-        (setq tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator))
-        (setq tab-bar-close-button-show nil)
-        (setq tab-bar-tab-hints t)
-        (setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)
+(setq tab-bar-show 1)
+(setq tab-bar-format '(tab-bar-format-history tab-bar-format-tabs tab-bar-separator))
+(setq tab-bar-close-button-show nil)
+(setq tab-bar-tab-hints t)
+(setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)
 
-        ;; remove background image
-        (add-text-properties 0 (length tab-bar-back-button) '(display t) tab-bar-back-button)
-        (add-text-properties 0 (length tab-bar-forward-button) '(display t) tab-bar-forward-button)
+;; remove background image
+(add-text-properties 0 (length tab-bar-back-button) '(display t) tab-bar-back-button)
+(add-text-properties 0 (length tab-bar-forward-button) '(display t) tab-bar-forward-button)
 
-        ;; face
-        ;; header-line
-        (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
-        ;; selected
-        (set-face-attribute 'tab-bar-tab nil :foreground "yellow" :background "black" :box nil)
-        ;; non-selected
-        (set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")))
-(add-hook 'tab-bar-mode-hook 'my-tab-bar-mode-setup)
+;; face
+;; header-line
+;; -> set with after-init-hook
+;; selected
+(set-face-attribute 'tab-bar-tab nil :foreground "yellow" :background "black" :box nil)
+;; non-selected
+(set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")
 
 ;;------------------------------------------------------------------------------
-;; TRAMP(TransparentRemoteAccessMultipleProtocol)
+;; TRAMP(Transparent Remote Access Multiple Protocol)
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'tramp
-  (eval-when-compile (require 'tramp))
-  (declare-function tramp-change-syntax "tramp")
-  (tramp-change-syntax 'simplified) ; Emacs 26.1 or later
-  (setq tramp-encoding-shell "bash")
-
-  ;; When connecting to a remote shell, disable the LC_ALL setting to prevent garbled Japanese characters
-  ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
-  (let ((process-environment (default-value 'tramp-remote-process-environment)))
-    (setenv "LC_ALL" nil)
-    (setq tramp-remote-process-environment process-environment)))
+  (require 'my-built-in))
 
 ;;------------------------------------------------------------------------------
 ;; uniquify
@@ -486,50 +438,16 @@
 ;; Visualize invisible characters
 ;;------------------------------------------------------------------------------
 (with-eval-after-load 'whitespace
-  (eval-when-compile (require 'whitespace))
-  ;; delete trailing whitespace when saving
-  (add-hook 'before-save-hook #'delete-trailing-whitespace)
-
-  ;; list of invisible characters to visualize
-  (setq whitespace-style '(face trailing tabs spaces newline space-mark tab-mark newline-mark))
-
-  ;; display mapping of invisible characters
-  (setq whitespace-display-mappings
-        '(;; space > " "
-          (space-mark   ?\xA0   [?\u00A4]     [?_])
-          (space-mark   ?\x8A0  [?\x8A4]      [?_])
-          (space-mark   ?\x920  [?\x924]      [?_])
-          (space-mark   ?\xE20  [?\xE24]      [?_])
-          (space-mark   ?\xF20  [?\xF24]      [?_])
-          ;; full-width-space > "□"
-          (space-mark   ?\u3000 [?\u25a1]     [?_ ?_])
-          ;; tab > "»" with underline
-          (tab-mark     ?\t     [?\xBB ?\t]   [?\\ ?\t])
-          ;; newline > "｣"
-          (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
-
-  ;; recognize "space" if it matches the following regular expression
-  (setq whitespace-space-regexp "\\(\u3000+\\)")
-
-  ;; face
-  (set-face-attribute 'whitespace-space nil :foreground "GreenYellow" :background "black")
-  (set-face-attribute 'whitespace-tab nil :foreground "LightSkyBlue" :background "black" :underline t)
-  (set-face-attribute 'whitespace-newline nil :foreground "DeepSkyBlue")
-  (set-face-attribute 'whitespace-trailing nil :background "DeepPink"))
+  (require 'my-built-in))
 
 ;;------------------------------------------------------------------------------
 ;; windmove
 ;; Move the split window with "modifier-key + arrow keys"
 ;;------------------------------------------------------------------------------
-(eval-when-compile (require 'windmove))
-(fset 'activate-windmove
-      (lambda ()
-        (unless (boundp 'windmove-wrap-around)
-          (windmove-default-keybindings 'meta) ; modifier-key = Alt
-          (setq windmove-wrap-around t) ; enable wrap-around
-          (remove-hook 'window-configuration-change-hook 'activate-windmove)
-          (fmakunbound 'activate-windmove))))
-(add-hook 'window-configuration-change-hook 'activate-windmove)
+(eval-when-compile
+  (require 'windmove)
+  ;; -> set with after-init-hook
+  )
 
 ;;------------------------------------------------------------------------------
 ;; vc-mode
@@ -539,5 +457,37 @@
 (setq vc-handled-backends nil)
 
 ;; removed "hook" related to "vc"
-(remove-hook 'find-file-hook 'vc-find-file-hook)
-(remove-hook 'kill-buffer-hook 'vc-kill-buffer-hook)
+(remove-hook 'find-file-hook #'vc-refresh-state)
+(remove-hook 'kill-buffer-hook #'vc-kill-buffer-hook)
+
+;;==============================================================================
+;; emacs built in hook
+;;==============================================================================
+;;------------------------------------------------------------------------------
+;; after-init-hook
+;;------------------------------------------------------------------------------
+(add-hook 'after-init-hook
+          (lambda ()
+            ;; show startup time in [ms]
+            (message "Emacs loaded in %.3f ms" (* 1000 (string-to-number (emacs-init-time))))
+
+            ;; face
+            (set-face-attribute 'fixed-pitch nil :font "fontset-myricty")
+            (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
+
+            ;; windmove
+            ;; Move the split window with "modifier-key + arrow keys"
+            (windmove-default-keybindings 'meta) ; modifier-key = Alt
+            (setq windmove-wrap-around t) ; enable wrap-around
+            ))
+
+;;------------------------------------------------------------------------------
+;; window-state-change-hook
+;;------------------------------------------------------------------------------
+(add-hook 'window-state-change-hook
+          (lambda ()
+            ;; disable vertical scrollbar on minibuffer
+            (set-window-scroll-bars (minibuffer-window) nil nil)
+            ))
+
+;;; early-init.el ends here
