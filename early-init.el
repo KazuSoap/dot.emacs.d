@@ -164,23 +164,22 @@
 
       (let ((setenv_list
              (cond ((require 'exec-path-from-shell nil t)
-                    ;; cygpath for emacs lisp
-                    (fset 'cygpath
-                          (lambda (&optional option path)
-                            (when path
-                              (with-temp-buffer
-                                (call-process "cygpath" nil '(t nil) nil option path)
-                                (unless (bobp)
-                                  (goto-char (point-min))
-                                  (buffer-substring-no-properties (point) (line-end-position)))))))
-
-                    ;; convert path format from unix style to win-nt style
-                    (fset 'ad-exec-path-from-shell-setenv
-                          (lambda (args)
-                            (and (string= (car args) "PATH")
-                                 (setf (nth 1 args) (cygpath "-amp" (nth 1 args))))
-                            args))
-                    (advice-add 'exec-path-from-shell-setenv :filter-args 'ad-exec-path-from-shell-setenv)
+                    (let* ((cygpath
+                            ;; cygpath for emacs lisp
+                            (lambda (&optional option path)
+                              (when path
+                                (with-temp-buffer
+                                  (call-process "cygpath" nil '(t nil) nil option path)
+                                  (unless (bobp)
+                                    (goto-char (point-min))
+                                    (buffer-substring-no-properties (point) (line-end-position)))))))
+                           (ad-exec-path-from-shell-setenv
+                            ;; convert path format from unix style to win-nt style
+                            (lambda (args)
+                              (and (string= (car args) "PATH")
+                                   (setf (nth 1 args) (funcall cygpath "-amp" (nth 1 args))))
+                              args)))
+                      (advice-add 'exec-path-from-shell-setenv :filter-args ad-exec-path-from-shell-setenv))
 
                     ;; (mapc (lambda (x) (add-to-list 'exec-path-from-shell-variables x t))
                     ;;       '("PKG_CONFIG_PATH" "http_proxy" "https_proxy"))
