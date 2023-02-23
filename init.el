@@ -75,45 +75,39 @@
   (require 'flycheck)
   (require 'python)
   (require 'web-mode)
-  ;; (require 'plantuml-mode)
+  (require 'plantuml-mode)
   )
 
-;; 派生モード elisp-mode
-;; (define-derived-mode elisp-mode emacs-lisp-mode "ELisp")
-
 ;; 拡張子による major-mode の関連付け
-;; (add-to-list 'auto-mode-alist '("\\.el\\'" . elisp-mode))
 (add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js?\\|vue?\\)\\'" . web-mode))
-;; (add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js\\(on\\)?\\|vue?\\)\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
 ;;------------------------------------------------------------------------------
 ;; major-mode-hook
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  (require 'cc-mode)
-  (require 'flycheck)
-  (require 'python)
-  (require 'web-mode)
-  ;; (require 'plantuml-mode)
-
   ;; 共通
   (defsubst my-common-mode-setup ()
     (require 'my-package)
     (display-line-numbers-mode)
-    (whitespace-mode)) ;; whitespace
+    (whitespace-mode) ;; whitespace
+    )
 
   ;; プログラミング言語共通
-  (defsubst my-common-programing-mode-setup ()
-    (setq tab-width 4) ;; tab 幅
+  (defsubst my-common-programing-mode-setup (tab-w)
+    (my-common-mode-setup)
+
+    (setq tab-width tab-w) ;; tab 幅
     (setq truncate-lines t) ;; 画面外文字の切り詰め
     (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
     ;; (show-paren-mode) ; default on
-    (company-mode)) ;; 補完
+    (company-mode) ;; 補完
+    )
 
   ;; c/c++-mode共通
-  (defsubst my-c/c++-mode-setup ()
+  (defsubst my-c/c++-mode-setup (irony-option)
     ;; (eldoc-mode)
     (flycheck-mode)
     (flycheck-irony-setup)
@@ -122,96 +116,75 @@
     (google-set-c-style)
     (google-make-newline-indent)
     (setq c-basic-offset 4)
-    (add-to-list (make-local-variable 'company-backends) '(company-irony-c-headers company-irony)))
-  )
+    (add-to-list (make-local-variable 'company-backends) '(company-irony))
+
+    ;; irony 追加のコンパイルオプションを設定
+    (setq irony-additional-clang-options irony-option)
+    ))
 
 ;; text-mode
-(fset 'my-text-mode-setup
-      (lambda ()
-        (my-common-mode-setup)))
-(add-hook 'text-mode-hook 'my-text-mode-setup)
+(add-hook 'text-mode-hook
+          (lambda ()
+            (my-common-mode-setup)
+            ))
 
-;; emacs-lisp-mode / elisp-mode
-(fset 'my-elisp-mode-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)
-        (flycheck-mode)))
-;; (add-hook 'elisp-mode-hook 'my-elisp-mode-setup)
-(add-hook 'emacs-lisp-mode-hook 'my-elisp-mode-setup)
+;; emacs-lisp-mode
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (my-common-programing-mode-setup 4)
+            (flycheck-mode)
+            ))
 
 ;; c-mode-common
-(fset 'my-c-mode-common-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)))
-(add-hook 'c-mode-common-hook 'my-c-mode-common-setup)
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (my-common-programing-mode-setup 4)
+            ))
 
 ;; c-mode
-(fset 'my-c-mode-setup
-      (lambda ()
-        (my-c/c++-mode-setup)
-        ;; irony 追加のコンパイルオプションを設定
-        (setq irony-additional-clang-options '("-std=c99"))))
-(add-hook 'c-mode-hook 'my-c-mode-setup)
+(add-hook 'c-mode-hook
+          (lambda ()
+            (my-c/c++-mode-setup '("-std=c99"))
+            ))
 
 ;; c++-mode
-(fset 'my-c++-mode-setup
-      (lambda ()
-        (my-c/c++-mode-setup)
-        ;; irony 追加のコンパイルオプションを設定
-        (setq irony-additional-clang-options '("-std=c++14"))))
-(add-hook 'c++-mode-hook 'my-c++-mode-setup)
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (my-c/c++-mode-setup '("-std=c++14"))
+            ))
 
-;; ;; plantuml-mode
-;; (fset 'my-plantuml-mode-setup
-;;       (lambda ()
-;;         (my-common-programing-mode-setup)
-;;         (my-common-mode-setup)
-;;         (flycheck-mode)
-;;         (flycheck-plantuml-setup)
-;;         (setq plantuml-indent-level 2)))
-;; (add-hook 'plantuml-mode-hook 'my-plantuml-mode-setup)
+;; plantuml-mode
+(add-hook 'plantuml-mode-hook
+          (lambda ()
+            (my-common-programing-mode-setup 2)
+            (flycheck-mode)
+            (flycheck-plantuml-setup)
+            (setq plantuml-indent-level 2)))
 
 ;; sh-mode
-(fset 'my-sh-mode-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)
-        (flycheck-mode)))
-(add-hook 'sh-mode-hook 'my-sh-mode-setup)
-
-;; ;; javascript mode
-;; (fset 'my-js-mode-setup
-;;       (lambda ()
-;;         (my-common-programing-mode-setup)
-;;         (my-common-mode-setup)))
-;; (add-hook 'js-mode-hook 'my-js-mode-setup)
+(add-hook 'sh-mode-hook
+          (lambda ()
+            (my-common-programing-mode-setup 4)
+            (flycheck-mode)))
 
 ;; web mode
-(fset 'my-web-mode-setup
-      (lambda ()
-        (my-common-mode-setup)
-        (highlight-indent-guides-mode)
-        (company-mode)
-        (setq truncate-lines t) ;; 画面外文字の切り詰め
-        (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
+(add-hook 'web-mode-hook
+          (lambda ()
+            (my-common-programing-mode-setup 2)
+            ;; (highlight-indent-guides-mode)
 
-        (setq web-mode-markup-indent-offset 2)
-        (setq web-mode-css-indent-offset 2)
-        (setq web-mode-code-indent-offset 2)
-        ))
-(add-hook 'web-mode-hook 'my-web-mode-setup)
+            (setq web-mode-markup-indent-offset 2)
+            (setq web-mode-css-indent-offset 2)
+            (setq web-mode-code-indent-offset 2)
+            ))
 
 ;; python-mode
-(fset 'my-python-mode-setup
-      (lambda ()
-        (my-common-programing-mode-setup)
-        (my-common-mode-setup)
-        ;; (ggtags-mode)
-        ;; (setq flycheck-disabled-checkers '(python-mypy))
-        (highlight-indent-guides-mode)
-        (setq python-indent-offset 4)))
-(add-hook 'python-mode-hook 'my-python-mode-setup)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (my-common-programing-mode-setup 4)
+            ;; (ggtags-mode)
+            ;; (setq flycheck-disabled-checkers '(python-mypy))
+            (highlight-indent-guides-mode)
+            (setq python-indent-offset 4)))
 
 ;;; init.el ends here

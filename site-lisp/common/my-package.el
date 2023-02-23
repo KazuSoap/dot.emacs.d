@@ -317,24 +317,18 @@ document.addEventListener('DOMContentLoaded', () => {
           (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)))
   (advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding))
 
-;; ;; ------------------------------------------------------------------------------
-;; ;; plantuml-mode
-;; ;; ------------------------------------------------------------------------------
-;; (with-eval-after-load 'plantuml-mode
-;;   (eval-when-compile (require 'plantuml-mode))
+;; ------------------------------------------------------------------------------
+;; plantuml-mode
+;; ------------------------------------------------------------------------------
+(with-eval-after-load 'plantuml-mode
+  (eval-when-compile (require 'plantuml-mode))
 
-;;   (setq plantuml-jar-path
-;;         (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
+  (setq plantuml-jar-path
+        (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
 
-;;   ;; specify the desired output type to use for generated diagrams(svg,png,txt)
-;;   (setq-default plantuml-output-type "png")
-
-;;   (setq plantuml-default-exec-mode 'jar)
-
-;;   (eval-and-compile (require 'smart-compile))
-;;   (let ((sc-cmd (concat "java -jar " plantuml-jar-path " -charset UTF-8 -tsvg %f")))
-;;     (add-to-list 'smart-compile-alist `("\\.puml?\\'" . ,sc-cmd) t)
-;;     ))
+  ;; specify the desired output type to use for generated diagrams(svg,png,txt)
+  (setq plantuml-output-type "png")
+  (setq plantuml-default-exec-mode 'jar))
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
