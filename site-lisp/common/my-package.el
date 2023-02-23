@@ -1,4 +1,6 @@
-;;; -*- coding: utf-8; lexical-binding: t -*-
+;;; my-package.el --- -*- coding: utf-8; lexical-binding: t -*-
+;;; Commentary:
+;;; Code:
 
 ;;==============================================================================
 ;; from package
@@ -18,9 +20,9 @@
     (when (eq system-type 'windows-nt)
       `(progn
          (autoload 'cygwin-mount-activate "cygwin-mount" t nil)
-         (add-hook 'after-init-hook #'cygwin-mount-activate)
 
-         (with-eval-after-load 'cygwin-mount
+         (with-eval-after-load 'shell
+           (cygwin-mount-activate)
            (setq cygwin-mount-table ',cygwin-mount-table--internal)
            (fset 'cygwin-mount-get-cygdrive-prefix (lambda () ,(cygwin-mount-get-cygdrive-prefix))))
          ))))
@@ -40,9 +42,9 @@
       (let ((program-path-regexps (concat "^" (expand-file-name "/") "\\(usr/\\(local/\\)?\\)?bin/.*")))
         `(progn
            (autoload 'fakecygpty-activate "fakecygpty" t nil)
-           (add-hook 'after-init-hook #'fakecygpty-activate)
 
-           (with-eval-after-load 'fakecygpty
+           (with-eval-after-load 'shell
+             (fakecygpty-activate)
              (fset 'ad-fakecygpty--ignored-program
                    (lambda (program)
                      (not (string-match-p ,program-path-regexps (executable-find (file-name-nondirectory program))))))
@@ -85,17 +87,6 @@
 
          (setq ime-settings-core
                `(progn
-                  ;; 無変換キーで tr-ime & w32-ime を有効化
-                  (global-set-key (kbd "<non-convert>")
-                                  (lambda ()
-                                    (interactive)
-                                    (global-unset-key (kbd "<non-convert>"))
-
-                                    ;; tr-imeの有効化
-                                    ;; (tr-ime-advanced-install)
-                                    (tr-ime-advanced-initialize)
-                                    (tr-ime-hook-check)))
-
                   (with-eval-after-load 'w32-ime
                     ;; 標準IMEの設定
                     (setq default-input-method "W32-IME")
@@ -127,14 +118,11 @@
 
         ((eq system-type 'gnu/linux) ; else if
          (require 'mozc)
+         (declare-function mozc-clean-up-changes-on-buffer "mozc")
+         (declare-function mozc-fall-back-on-default-binding "mozc")
 
          (setq ime-settings-core
                `(progn
-                  (declare-function mozc-clean-up-changes-on-buffer "mozc")
-                  (declare-function mozc-fall-back-on-default-binding "mozc")
-
-                  (setq default-input-method "japanese-mozc")
-
                   (with-eval-after-load 'mozc
                     ;; (setq mozc-candidate-style 'overlay)
                     ;; (require 'mozc-popup)
@@ -230,14 +218,6 @@
 (with-eval-after-load 'helm
   (setq helm-ff-auto-update-initial-value nil)) ; Disable autocomplete
 
-;; key-bind
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(global-set-key (kbd "C-x C-r") #'helm-recentf)
-(global-set-key (kbd "M-y") #'helm-show-kill-ring)
-(global-set-key (kbd "C-c i") #'helm-imenu)
-(global-set-key (kbd "C-x C-b") #'helm-buffers-list)
-
 ;;------------------------------------------------------------------------------
 ;; highlight-indent-guides
 ;; a minor mode highlights indentation levels via font-lock
@@ -279,84 +259,6 @@
            (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
          ))))
 (irony-nt)
-
-;;------------------------------------------------------------------------------
-;; lsp-mode
-;; Language Server Protocol Support for Emacs
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'lsp-mode
-  (eval-when-compile
-    (require 'lsp-mode)
-    (require 'lsp-diagnostics)
-    (require 'lsp-headerline))
-
-  ;; .venv, .mypy_cache を watch 対象から外す
-  (dolist (dir '("[/\\\\]\\.venv$"
-                 "[/\\\\]\\.mypy_cache$"
-                 "[/\\\\]__pycache__$"))
-    (add-to-list 'lsp-file-watch-ignored dir))
-
-  ;; lsp-mode の設定はここを参照してください。
-  ;; https://emacs-lsp.github.io/lsp-mode/page/settings/
-
-  (setq lsp-auto-configure t)
-  (setq lsp-completion-enable t)
-
-  ;; imenu-listを使う場合は(lsp-uiの imenu 統合を使わない場合は) nil にする
-  ; ;(setq lsp-enable-imenu nil)
-
-  ;; クロスリファレンスとの統合を有効化する
-  ;; xref-find-definitions
-  ;; xref-find-references
-  (setq lsp-enable-xref t)
-
-  ;; linter framework として flycheck を使う
-  ;; (setq lsp-diagnostics-provider :flycheck)
-
-  ;; ミニバッファでの関数情報表示
-  (setq lsp-eldoc-enable-hover t)
-
-  ;; nii: ミニバッファでの関数情報をシグニチャだけにする
-  ;; t: ミニバッファでの関数情報で、doc-string 本体を表示する
-  (setq lsp-eldoc-render-all nil)
-
-  ;; breadcrumb
-  ;; 最上部にパンくずリストを表示する。
-  ;; https://emacs-lsp.github.io/lsp-mode/page/settings/headerline/#lsp-headerline-breadcrumb-segments
-  ;; lsp-headerline-breadcrumb-segments に指定できるキーワードは以下の通り。
-  ;;   project
-  ;;   file
-  ;;   path-up-to-project
-  ;;   symbols
-  (setq lsp-headerline-breadcrumb-enable t)
-  (setq lsp-headerline-breadcrumb-segments '(project file symbols))
-
-  ;; snippet
-  (setq lsp-enable-snippet t)
-  )
-
-;;------------------------------------------------------------------------------
-;; lsp-ui
-;; UI integrations for lsp-mode
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'lsp-ui
-  (eval-when-compile (require 'lsp-ui))
-
-  ;; ui-peek を有効化する
-  (setq lsp-ui-peek-enable t)
-
-  ;; 候補が一つでも、常にpeek表示する。
-  (setq lsp-ui-peek-always-show t)
-
-  ;; sideline で flycheck 等の情報を表示する
-  (setq lsp-ui-sideline-show-diagnostics t)
-
-  ;; sideline で コードアクションを表示する
-  (setq lsp-ui-sideline-show-code-actions t)
-
-  ;; ホバーで表示されるものを、ホバーの変わりにsidelineで表示する
-  ;;(setq lsp-ui-sideline-show-hover t)
-  )
 
 ;;------------------------------------------------------------------------------
 ;; magit
@@ -414,7 +316,6 @@ document.addEventListener('DOMContentLoaded', () => {
           (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
           (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)))
   (advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding))
-(add-hook 'isearch-mode-hook (lambda () (require 'cmigemo)))
 
 ;; ;; ------------------------------------------------------------------------------
 ;; ;; plantuml-mode
@@ -460,3 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   (setq indent-tabs-mode nil)
   (setq web-mode-enable-current-element-highlight t))
+
+
+(provide 'my-package)
+;;; my-package.el ends here
