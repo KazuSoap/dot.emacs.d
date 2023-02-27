@@ -127,9 +127,6 @@
   ;; Windows Specific Settings
   (defmacro misc-nt ()
     (when (eq system-type 'windows-nt)
-      ;; Compile files that would natively compile before loading the "early-init" files and cause errors.
-      (native-compile (locate-file "japan-util.el" load-path))
-
       (let* ((msys-root ;; Get the installation location of "msys2"
               (cond ((executable-find "reg")
                      (let* ((coding-system-for-read 'emacs-mule-dos) ;; Assume CRLF represents end-of-line, because of dos-command.
@@ -146,6 +143,9 @@
         (mapc (lambda (dir) (add-to-list 'exec-path dir)) msys-path))
 
       (setenv "PATH" (mapconcat #'identity exec-path path-separator))
+
+      ;; Compile files that would natively compile before loading the "early-init" files and cause errors.
+      (native-compile (locate-file "japan-util.el" load-path))
 
       (let ((setenv_list
              (cond ((require 'exec-path-from-shell nil t)
@@ -287,7 +287,7 @@
 ;; (advice-add 'expand-file-name :around 'my-expand-file-name)
 
 ;;==============================================================================
-;; emacs built in package
+;; built-in package
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
 ;; auto-insert
@@ -328,18 +328,6 @@
 (global-set-key (kbd "C-<return>") #'cua-rectangle-mark-mode)
 
 ;;------------------------------------------------------------------------------
-;; display-line-numbers-mode
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'display-line-numbers
-  (require 'my-built-in))
-
-;;------------------------------------------------------------------------------
-;; ediff
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'ediff
-  (require 'my-built-in))
-
-;;------------------------------------------------------------------------------
 ;; GDB
 ;;------------------------------------------------------------------------------
 ;; ;; mode to open useful buffer
@@ -353,19 +341,6 @@
 
 ;; ;; show value in mini buffer when set to t
 ;; (setq-default gud-tooltip-echo-area nil)
-
-;;------------------------------------------------------------------------------
-;; lpr
-;; printer settings
-;;------------------------------------------------------------------------------
-(eval-when-compile
-  (defmacro nt-printer ()
-    (when (eq system-type 'windows-nt)
-      (require 'lpr)
-      '(progn
-         (with-eval-after-load 'lpr
-           (require 'my-built-in))))))
-(nt-printer)
 
 ;;------------------------------------------------------------------------------
 ;; Native Compile
@@ -388,12 +363,6 @@
 (setq native-comp-async-report-warnings-errors nil)
 (setq native-comp-async-jobs-number 8)
 (setq native-comp-speed 3)
-
-;;------------------------------------------------------------------------------
-;; package system
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'package
-  (require 'my-built-in))
 
 ;;------------------------------------------------------------------------------
 ;; tab-bar-mode
@@ -420,13 +389,6 @@
 (set-face-attribute 'tab-bar-tab-inactive nil :foreground "Gray72" :background "black")
 
 ;;------------------------------------------------------------------------------
-;; TRAMP(Transparent Remote Access Multiple Protocol)
-;; edit remoto file from local emacs
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'tramp
-  (require 'my-built-in))
-
-;;------------------------------------------------------------------------------
 ;; uniquify
 ;; Distinguish the same file name
 ;;------------------------------------------------------------------------------
@@ -435,22 +397,6 @@
 
 ;; Buffer name to ignore
 (setq uniquify-ignore-buffers-re "*[^*]+*")
-
-;;------------------------------------------------------------------------------
-;; whitespace-mode
-;; Visualize invisible characters
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'whitespace
-  (require 'my-built-in))
-
-;;------------------------------------------------------------------------------
-;; windmove
-;; Move the split window with "modifier-key + arrow keys"
-;;------------------------------------------------------------------------------
-(eval-when-compile
-  (require 'windmove)
-  ;; -> set with after-init-hook
-  )
 
 ;;------------------------------------------------------------------------------
 ;; vc-mode
@@ -464,11 +410,36 @@
 (remove-hook 'kill-buffer-hook #'vc-kill-buffer-hook)
 
 ;;==============================================================================
-;; emacs built in hook
+;; built-in packages not loaded immediately
+;;==============================================================================
+;;------------------------------------------------------------------------------
+;; lpr
+;; printer settings
+;;------------------------------------------------------------------------------
+(eval-when-compile
+  (defmacro nt-printer ()
+    (when (eq system-type 'windows-nt)
+      (require 'lpr)
+      '(progn
+         (with-eval-after-load 'lpr
+           (require 'my-built-in))))))
+(nt-printer)
+
+;;------------------------------------------------------------------------------
+;; package system
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'package
+  (require 'my-built-in))
+
+;;==============================================================================
+;; built-in hook
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
 ;; after-init-hook
 ;;------------------------------------------------------------------------------
+(eval-when-compile
+  (require 'windmove))
+
 (add-hook 'after-init-hook
           (lambda ()
             ;; show startup time in [ms]
