@@ -82,6 +82,7 @@
 (eval-when-compile
   (defmacro ime-settings ()
     (cond ((eq system-type 'windows-nt) ; if
+           (require 'tr-ime)
            (require 'w32-ime)
            (declare-function tr-ime-font-reflect-frame-parameter "tr-ime-font")
 

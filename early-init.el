@@ -183,6 +183,9 @@
              (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
              (setenv "MSYSTEM" "MINGW64"))
 
+           ;; Revert the 'null-device' modified in 'dos-w32.el'
+           (setq null-device "/dev/null")
+
            ;; Set the default char-code in the following cases;
            ;; (1) when creating a new file,
            ;; (2) subprocess I/O,
