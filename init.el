@@ -42,6 +42,11 @@
           ((eq system-type 'gnu/linux)
            `(progn
               (setq default-input-method "japanese-mozc")
+              (global-set-key (kbd "<zenkaku-hankaku>") 'toggle-input-method)
+              (global-set-key (kbd "<henkan>") (lambda () (interactive) (activate-input-method default-input-method)))
+              (global-set-key (kbd "<hiragana-katakana>") (lambda () (interactive) (activate-input-method default-input-method)))
+              (global-set-key (kbd "<muhenkan>") (lambda () (interactive) (deactivate-input-method)))
+
               (with-eval-after-load 'mozc
                 (require 'my-package))))
           )))
