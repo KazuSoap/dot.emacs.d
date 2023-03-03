@@ -73,72 +73,16 @@
 ;; major-mode
 ;;==============================================================================
 ;;------------------------------------------------------------------------------
-;; markdown-mode
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'markdown-mode
-  (eval-when-compile (require 'markdown-mode))
-  (setq markdown-fontify-code-blocks-natively t)
-  (setq markdown-content-type "application/xhtml+xml")
-  (setq markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"))
-  (setq markdown-xhtml-header-content "
-<style>
-body {
-  box-sizing: border-box;
-  width: 100%;
-  margin: 40px auto;
-  padding: 0 10px;
-}
-</style>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  document.body.classList.add('markdown-body');
-});
-</script>
-" ))
-
-;;------------------------------------------------------------------------------
-;; plantuml-mode
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'plantuml-mode
-  (eval-when-compile (require 'plantuml-mode))
-
-  (setq plantuml-jar-path
-        (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
-
-  ;; specify the desired output type to use for generated diagrams(svg,png,txt)
-  (setq plantuml-output-type "png")
-  (setq plantuml-default-exec-mode 'jar))
-
-;;------------------------------------------------------------------------------
-;; web-mode
-;;------------------------------------------------------------------------------
-(with-eval-after-load 'web-mode
-  (eval-when-compile (require 'web-mode))
-
-  (setq web-mode-engines-alist '(("php" . "\\.phtml\\'")))
-
-  (setq web-mode-content-types-alist '(("js" . "\\.\\(js[x]\\|vue\\)?\\'")))
-  (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))
-
-  (setq indent-tabs-mode nil)
-  (setq web-mode-enable-current-element-highlight t)
-  )
-
-;;------------------------------------------------------------------------------
 ;; auto-mode-alist
 ;;------------------------------------------------------------------------------
 (add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
-(add-to-list 'auto-mode-alist '("\\.\\(html?\\|ptml?\\|php?\\|tpl?\\|js\\(on\\)?\\|vue?\\)\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(html?\\|php\\|tpl\\|js\\(on\\)?\\|vue\\)\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
 ;;------------------------------------------------------------------------------
 ;; major-mode-hook
 ;;------------------------------------------------------------------------------
-(eval-when-compile
-  (require 'cc-mode)
-  (require 'python))
-
 ;; 共通
 (eval-when-compile
   (declare-function my-mode-setup "init.el"))
@@ -167,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ;; c/c++-mode共通
 (eval-when-compile
+  (require 'cc-mode)
   (declare-function my-c/c++-mode-setup "init.el"))
 
 (fset 'my-c/c++-mode-setup
@@ -186,32 +131,20 @@ document.addEventListener('DOMContentLoaded', () => {
         ))
 
 ;;; built-in
-;; text-mode
-(add-hook 'text-mode-hook #'my-mode-setup)
+;; c-mode-common
+(add-hook 'c-mode-common-hook (apply-partially #'my-prog-mode-setup 4))
+
+;; c-mode
+(add-hook 'c-mode-hook (apply-partially #'my-c/c++-mode-setup '("-std=c99")))
+
+;; c++-mode
+(add-hook 'c++-mode-hook (apply-partially #'my-c/c++-mode-setup '("-std=c++14")))
 
 ;; emacs-lisp-mode
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
             (my-prog-mode-setup 4)
             (flycheck-mode)
-            ))
-
-;; c-mode-common
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (my-prog-mode-setup 4)
-            ))
-
-;; c-mode
-(add-hook 'c-mode-hook
-          (lambda ()
-            (my-c/c++-mode-setup '("-std=c99"))
-            ))
-
-;; c++-mode
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (my-c/c++-mode-setup '("-std=c++14"))
             ))
 
 ;; sh-mode
@@ -225,14 +158,27 @@ document.addEventListener('DOMContentLoaded', () => {
 (add-hook 'python-mode-hook
           (lambda ()
             (my-prog-mode-setup 4)
+            (highlight-indent-guides-mode)
+            (flycheck-mode)
             ;; (ggtags-mode)
             ;; (setq flycheck-disabled-checkers '(python-mypy))
-            (highlight-indent-guides-mode)
-            (setq python-indent-offset 4)
+            ;; (setq python-indent-offset 4) ; default 4
             ))
 
+;; text-mode
+(add-hook 'text-mode-hook #'my-mode-setup)
+
 ;;; from package
+;; markdown-mode
+(with-eval-after-load 'markdown-mode
+  (eval-when-compile (require 'markdown-mode))
+  (require 'my-package))
+
 ;; plantuml-mode
+(with-eval-after-load 'plantuml-mode
+  (eval-when-compile (require 'plantuml-mode))
+  (require 'my-package))
+
 (add-hook 'plantuml-mode-hook
           (lambda ()
             (my-prog-mode-setup 2)
@@ -242,6 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ))
 
 ;; web mode
+(with-eval-after-load 'web-mode
+  (eval-when-compile (require 'web-mode))
+  (require 'my-package))
+
 (add-hook 'web-mode-hook
           (lambda ()
             (my-prog-mode-setup 2)

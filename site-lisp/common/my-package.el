@@ -173,8 +173,8 @@
                 (w32-ime-initialize)
 
                 ;; IME ON/OFF時のカーソルカラー
-                (add-hook 'w32-ime-on-hook (lambda () (set-cursor-color "yellow")))
-                (add-hook 'w32-ime-off-hook (lambda () (set-cursor-color "thistle")))
+                (add-hook 'w32-ime-on-hook (apply-partially #'set-cursor-color "yellow"))
+                (add-hook 'w32-ime-off-hook (apply-partially #'set-cursor-color "thistle"))
 
                 ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
                 (w32-ime-wrap-function-to-control-ime #'universal-argument)
@@ -215,8 +215,8 @@
                 (advice-add 'mozc-handle-event :around 'ad-mozc-intercept-keys))
 
               ;; IME ON/OFF時のカーソルカラー
-              (add-hook 'input-method-activate-hook (lambda () (set-cursor-color "yellow")))
-              (add-hook 'input-method-deactivate-hook (lambda () (set-cursor-color "thistle")))
+              (add-hook 'input-method-activate-hook (apply-partially #'set-cursor-color "yellow"))
+              (add-hook 'input-method-deactivate-hook (apply-partially #'set-cursor-color "thistle"))
               )))
     ))
 (ime-settings)
@@ -367,6 +367,61 @@
                (native-compile buffer-file-name))))
     (add-to-list 'smart-compile-alist `(emacs-lisp-mode ,cmd))))
 (global-set-key (kbd "C-c c") #'smart-compile)
+
+;;==============================================================================
+;; major-mode
+;;==============================================================================
+;;------------------------------------------------------------------------------
+;; markdown-mode
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'markdown-mode
+  (eval-when-compile (require 'markdown-mode))
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-content-type "application/xhtml+xml")
+  (setq markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"))
+  (setq markdown-xhtml-header-content "
+<style>
+body {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 10px;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('markdown-body');
+});
+</script>
+" ))
+
+;;------------------------------------------------------------------------------
+;; plantuml-mode
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'plantuml-mode
+  (eval-when-compile (require 'plantuml-mode))
+
+  (setq plantuml-jar-path
+        (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
+
+  ;; specify the desired output type to use for generated diagrams(svg,png,txt)
+  (setq plantuml-output-type "png")
+  (setq plantuml-default-exec-mode 'jar))
+
+;;------------------------------------------------------------------------------
+;; web-mode
+;;------------------------------------------------------------------------------
+(with-eval-after-load 'web-mode
+  (eval-when-compile (require 'web-mode))
+
+  (setq web-mode-engines-alist '(("php" . "\\.phtml\\'")))
+
+  (setq web-mode-content-types-alist '(("js" . "\\.\\(js[x]\\|vue\\)?\\'")))
+  (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))
+
+  (setq indent-tabs-mode nil)
+  (setq web-mode-enable-current-element-highlight t)
+  )
 
 (provide 'my-package)
 ;;; my-package.el ends here
