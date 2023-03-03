@@ -208,7 +208,7 @@
 ;;------------------------------------------------------------------------------
 ;; load path
 ;;------------------------------------------------------------------------------
-(let ((default-directory (eval-when-compile (concat user-emacs-directory "site-lisp"))))
+(let ((default-directory (eval-when-compile (locate-user-emacs-file "site-lisp"))))
   (normal-top-level-add-subdirs-to-load-path))
 
 ;;------------------------------------------------------------------------------
@@ -296,7 +296,7 @@
 ;; (eval-when-compile (require 'autoinsert))
 ;; (with-eval-after-load 'autoinsert
 ;;   ;; Template directory
-;;   (setq-default auto-insert-directory (eval-when-compile (expand-file-name (concat user-emacs-directory "auto-insert"))))
+;;   (setq-default auto-insert-directory (eval-when-compile (expand-file-name "auto-insert" user-emacs-directory)))
 
 ;;   ;; Define variables to expand in the template
 ;;   (setq-default template-replacements-alists
