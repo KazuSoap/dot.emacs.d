@@ -12,7 +12,7 @@
 (setq gc-cons-threshold most-positive-fixnum)
 
 ;; Maximum number of bytes to read from subprocess in a single chunk.
-(setq read-process-output-max (eval-when-compile (* 1024 1024)))
+(setq read-process-output-max (* 1024 1024))
 
 ;; hide startup-message
 (setq inhibit-startup-screen t)
@@ -66,12 +66,9 @@
 (create-fontset-from-fontset-spec
  (eval-when-compile
    (let ((fontset-elems
-          `(,(cond ((eq system-type 'windows-nt) ; if
-                    "-outline-ricty diminished discord-bold-normal-normal-mono-*-*-*-*-c-*-fontset-myricty")
-                   (t ; else
-                    "-PfEd-ricty diminished discord-bold-normal-normal-*-*-*-*-*-m-0-fontset-myricty"))
-            "ascii:-*-*-*-*-*-*-14-*-*-*-*-*-iso10646-1"
-            "unicode:-*-*-*-*-*-*-*-*-*-*-*-*-iso10646-1")))
+          '("-*-ricty diminished discord-bold-normal-normal-*-*-*-*-*-*-*-fontset-myricty"
+            "ascii:-*-14-*"
+            "unicode:-*")))
      (mapconcat #'identity fontset-elems ","))))
 
 ;; frame parameters
@@ -139,7 +136,6 @@
              (msys-path ;; Set a minimum "PATH"
               (mapcar (lambda (subpath) (concat msys-root subpath "/bin/"))
                       '("/mingw64" "/usr" "/usr/local"))))
-
         (mapc (lambda (dir) (add-to-list 'exec-path dir)) msys-path))
 
       (setenv "PATH" (mapconcat #'identity exec-path path-separator))
@@ -231,33 +227,33 @@
 
 ;; revert buffer
 ;; https://www.emacswiki.org/emacs/RevertBuffer
-(fset 'my-revert-buffer-no-confirm
-      (lambda (&optional force-reverting)
-        (interactive "P")
-        (cond ((or force-reverting (not (buffer-modified-p)))
-               (revert-buffer :ignore-auto :noconfirm))
-              (t ; else
-               (error "The buffer has been modified")))))
-(global-set-key (kbd "<f5>") 'my-revert-buffer-no-confirm)
+(eval-and-compile
+  (fset 'my-revert-buffer-no-confirm
+        (lambda (&optional force-reverting)
+          (interactive "P")
+          (cond ((or force-reverting (not (buffer-modified-p)))
+                 (revert-buffer :ignore-auto :noconfirm))
+                (t ; else
+                 (error "The buffer has been modified"))))))
+(global-set-key (kbd "<f5>") #'my-revert-buffer-no-confirm)
 
 ;; show "[EOB]" at the end of buffer
 ;; http://www.emacswiki.org/cgi-bin/wiki?HighlightEndOfBuffer
-(eval-when-compile
-  (defmacro set-my-mark-eob ()
-    '(lambda ()
-       (let ((existing-overlays (overlays-in (point-max) (point-max)))
-             (eob-mark (make-overlay (point-max) (point-max) nil t t))
-             (eob-text "[EOB]"))
-         ;; Delete any previous EOB markers.  Necessary so that they don't
-         ;; accumulate on calls to revert-buffer.
-         (dolist (next-overlay existing-overlays)
-           (when (overlay-get next-overlay 'eob-overlay)
-             (delete-overlay next-overlay)))
-         ;; Add a new EOB marker.
-         (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
-         (overlay-put eob-mark 'eob-overlay t)
-         (overlay-put eob-mark 'after-string eob-text)))))
-(add-hook 'find-file-hook (set-my-mark-eob))
+(let ((set-my-mark-eob
+       (lambda ()
+         (let ((existing-overlays (overlays-in (point-max) (point-max)))
+               (eob-mark (make-overlay (point-max) (point-max) nil t t))
+               (eob-text "[EOB]"))
+           ;; Delete any previous EOB markers.  Necessary so that they don't
+           ;; accumulate on calls to revert-buffer.
+           (dolist (next-overlay existing-overlays)
+             (when (overlay-get next-overlay 'eob-overlay)
+               (delete-overlay next-overlay)))
+           ;; Add a new EOB marker.
+           (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
+           (overlay-put eob-mark 'eob-overlay t)
+           (overlay-put eob-mark 'after-string eob-text)))))
+  (add-hook 'find-file-hook set-my-mark-eob))
 
 ;; ;; (fset 'my-expand-file-name
 ;; ;;       (lambda (f &rest args)
@@ -376,9 +372,9 @@
 (setq tab-bar-tab-hints t)
 (setq tab-bar-tab-name-function #'tab-bar-tab-name-current-with-count)
 
-;; remove background image
-(add-text-properties 0 (length tab-bar-back-button) '(display t) tab-bar-back-button)
-(add-text-properties 0 (length tab-bar-forward-button) '(display t) tab-bar-forward-button)
+;; ;; remove background image
+;; (add-text-properties 0 (length tab-bar-back-button) '(display t) tab-bar-back-button)
+;; (add-text-properties 0 (length tab-bar-forward-button) '(display t) tab-bar-forward-button)
 
 ;; face
 ;; header-line
@@ -419,10 +415,9 @@
 (eval-when-compile
   (defmacro nt-printer ()
     (when (eq system-type 'windows-nt)
-      (require 'lpr)
-      '(progn
-         (with-eval-after-load 'lpr
-           (require 'my-built-in))))))
+      '(with-eval-after-load 'lpr
+         (require 'my-built-in))
+      )))
 (nt-printer)
 
 ;;------------------------------------------------------------------------------
