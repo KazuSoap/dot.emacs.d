@@ -19,10 +19,12 @@
 (with-eval-after-load 'ediff
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   (setq ediff-split-window-function 'split-window-horizontally)
-  (set-face-attribute 'ediff-even-diff-A nil :background "gray20")
-  (set-face-attribute 'ediff-even-diff-B nil :background "gray20")
-  (set-face-attribute 'ediff-odd-diff-A  nil :background "gray20")
-  (set-face-attribute 'ediff-odd-diff-B  nil :background "gray20"))
+
+  (let ((bgEdiff "gray20"))
+    (set-face-attribute 'ediff-even-diff-A nil :background bgEdiff)
+    (set-face-attribute 'ediff-even-diff-B nil :background bgEdiff)
+    (set-face-attribute 'ediff-odd-diff-A  nil :background bgEdiff)
+    (set-face-attribute 'ediff-odd-diff-B  nil :background bgEdiff)))
 
 ;;------------------------------------------------------------------------------
 ;; TRAMP(Transparent Remote Access Multiple Protocol)
@@ -54,26 +56,22 @@
 
   ;; display mapping of invisible characters
   (setq whitespace-display-mappings
-        '(;; space > " "
-          (space-mark   ?\xA0   [?\u00A4]     [?_])
-          (space-mark   ?\x8A0  [?\x8A4]      [?_])
-          (space-mark   ?\x920  [?\x924]      [?_])
-          (space-mark   ?\xE20  [?\xE24]      [?_])
-          (space-mark   ?\xF20  [?\xF24]      [?_])
+        '(;; hard space > "¤"
+          (space-mark   ?\u00A0 [?\u00A4])
           ;; full-width-space > "□"
-          (space-mark   ?\u3000 [?\u25a1]     [?_ ?_])
+          (space-mark   ?\u3000 [?\u25a1])
           ;; tab > "»" with underline
-          (tab-mark     ?\t     [?\xBB ?\t]   [?\\ ?\t])
+          ;; (tab-mark     ?\t     [?\u00BB ?\t])
           ;; newline > "｣"
-          (newline-mark ?\n     [?\uFF63 ?\n] [?$ ?\n])))
+          (newline-mark ?\n     [?\uFF63 ?\n])))
 
   ;; recognize "space" if it matches the following regular expression
   (setq whitespace-space-regexp "\\(\u3000+\\)")
 
   ;; face
-  (set-face-attribute 'whitespace-space nil :foreground "GreenYellow" :background "black")
-  (set-face-attribute 'whitespace-tab nil :foreground "LightSkyBlue" :background "black" :underline t)
-  (set-face-attribute 'whitespace-newline nil :foreground "DeepSkyBlue")
+  (set-face-attribute 'whitespace-space    nil :foreground "GreenYellow")
+  (set-face-attribute 'whitespace-tab      nil :foreground "LightSkyBlue" :underline t)
+  (set-face-attribute 'whitespace-newline  nil :foreground "DeepSkyBlue")
   (set-face-attribute 'whitespace-trailing nil :background "DeepPink"))
 
 ;;==============================================================================
@@ -117,14 +115,15 @@
   (defmacro fakecygpty-nt ()
     (when (eq system-type 'windows-nt)
       (declare-function fakecygpty-activate "fakecygpty")
-      (let ((program-path-regexps (concat "^" (expand-file-name "/") "\\(usr/\\(local/\\)?\\)?bin/.*")))
+
+      (let* ((program-path-regexps (concat "^" (expand-file-name "/") "\\(usr/\\(local/\\)?\\)?bin/.*"))
+             (ad-fakecygpty--ignored-program
+              (lambda (program)
+                (not (string-match-p program-path-regexps (executable-find (file-name-nondirectory program)))))))
         `(progn
            (with-eval-after-load 'shell
              (require 'fakecygpty)
-             (fset 'ad-fakecygpty--ignored-program
-                   (lambda (program)
-                     (not (string-match-p ,program-path-regexps (executable-find (file-name-nondirectory program))))))
-             (advice-add 'fakecygpty--ignored-program :before-until 'ad-fakecygpty--ignored-program)
+             (advice-add 'fakecygpty--ignored-program :before-until ,ad-fakecygpty--ignored-program)
 
              (fakecygpty-activate))
            )))))
@@ -162,21 +161,18 @@
 
            `(progn
               (with-eval-after-load 'tr-ime-font
-                ;; 標準IMEの設定
                 (setq default-input-method "W32-IME")
 
-                ;; Windows IME の ON:[あ]/OFF:[Aa] をモードラインに表示
+                ;; Display Windows IME status in mode line (ON:[あ], OFF:[Aa]).
                 (setq w32-ime-mode-line-state-indicator "[Aa]")
                 (setq w32-ime-mode-line-state-indicator-list '("[Aa]" "[あ]" "[Aa]"))
 
-                ;; IME の初期化
                 (w32-ime-initialize)
 
-                ;; IME ON/OFF時のカーソルカラー
                 (add-hook 'w32-ime-on-hook (apply-partially #'set-cursor-color "yellow"))
                 (add-hook 'w32-ime-off-hook (apply-partially #'set-cursor-color "thistle"))
 
-                ;; IMEの制御(yes/noをタイプするところでは IME をオフにする)
+                ;; IME control (Turn off IME when typing "yes" or "no", etc.)
                 (w32-ime-wrap-function-to-control-ime #'universal-argument)
                 (w32-ime-wrap-function-to-control-ime #'read-string)
                 (w32-ime-wrap-function-to-control-ime #'read-char)
@@ -201,7 +197,7 @@
                 (require 'mozc-cand-posframe)
                 (setq mozc-candidate-style 'posframe)
 
-                ;; 無変換キーのキーイベントを横取りする
+                ;; Intercept the key event of the [muhenkan] key
                 (fset 'ad-mozc-intercept-keys
                       (lambda (f event)
                         (cond
@@ -214,7 +210,6 @@
                           (funcall f event)))))
                 (advice-add 'mozc-handle-event :around 'ad-mozc-intercept-keys))
 
-              ;; IME ON/OFF時のカーソルカラー
               (add-hook 'input-method-activate-hook (apply-partially #'set-cursor-color "yellow"))
               (add-hook 'input-method-deactivate-hook (apply-partially #'set-cursor-color "thistle"))
               )))
