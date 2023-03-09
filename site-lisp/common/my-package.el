@@ -16,6 +16,7 @@
 ;; ediff
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'ediff))
+
 (with-eval-after-load 'ediff
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   (setq ediff-split-window-function 'split-window-horizontally)
@@ -31,6 +32,7 @@
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'tramp))
+
 (with-eval-after-load 'tramp
   (declare-function tramp-change-syntax "tramp")
   (tramp-change-syntax 'simplified) ; Emacs 26.1 or later
@@ -47,6 +49,7 @@
 ;; Visualize invisible characters
 ;;------------------------------------------------------------------------------
 (eval-when-compile (require 'whitespace))
+
 (with-eval-after-load 'whitespace
   ;; delete trailing whitespace when saving
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
@@ -85,12 +88,12 @@
 (eval-when-compile
   (when (eq system-type 'windows-nt)
     (require 'cygwin-mount)
-    (defvar cygwin-mount-table--internal)
     (cygwin-mount-build-table-internal)
     (cygwin-mount-activate))
 
   (defmacro cygwin-mount-nt ()
-    (when (eq system-type 'windows-nt)
+    (when (and (eq system-type 'windows-nt)
+               (boundp 'cygwin-mount-table--internal))
       (declare-function cygwin-mount-activate "cygwin-mount")
 
       `(progn
@@ -189,31 +192,30 @@
           ((eq system-type 'gnu/linux) ; else if
            (require 'mozc)
 
-           `(progn
-              (with-eval-after-load 'mozc
-                ;; (setq mozc-candidate-style 'overlay)
-                ;; (require 'mozc-popup)
-                ;; (setq mozc-candidate-style 'popup)
-                (require 'mozc-cand-posframe)
-                (setq mozc-candidate-style 'posframe)
+           (let ((;; Intercept the key event of the [muhenkan] key
+                  ad-mozc-intercept-keys
+                  (lambda (f event)
+                    (cond
+                     ((member event '(muhenkan))
+                      ;; (message "%s" event) ;debug
+                      (mozc-clean-up-changes-on-buffer)
+                      (mozc-fall-back-on-default-binding event))
+                     (t ; else
+                      ;; (message "%s" event) ;debug
+                      (funcall f event))))))
+             `(progn
+                (with-eval-after-load 'mozc
+                  ;; (setq mozc-candidate-style 'overlay)
+                  ;; (require 'mozc-popup)
+                  ;; (setq mozc-candidate-style 'popup)
+                  (require 'mozc-cand-posframe)
+                  (setq mozc-candidate-style 'posframe)
 
-                ;; Intercept the key event of the [muhenkan] key
-                (fset 'ad-mozc-intercept-keys
-                      (lambda (f event)
-                        (cond
-                         ((member event '(muhenkan))
-                          ;; (message "%s" event) ;debug
-                          (mozc-clean-up-changes-on-buffer)
-                          (mozc-fall-back-on-default-binding event))
-                         (t ; else
-                          ;; (message "%s" event) ;debug
-                          (funcall f event)))))
-                (advice-add 'mozc-handle-event :around 'ad-mozc-intercept-keys))
-
-              (add-hook 'input-method-activate-hook (apply-partially #'set-cursor-color "yellow"))
-              (add-hook 'input-method-deactivate-hook (apply-partially #'set-cursor-color "thistle"))
-              )))
-    ))
+                  (advice-add 'mozc-handle-event :around ,ad-mozc-intercept-keys)
+                  (add-hook 'input-method-activate-hook (apply-partially #'set-cursor-color "yellow"))
+                  (add-hook 'input-method-deactivate-hook (apply-partially #'set-cursor-color "thistle")))
+                )))
+          )))
 (ime-settings)
 
 ;;------------------------------------------------------------------------------
@@ -249,11 +251,8 @@
   (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
   (set-face-attribute 'company-tooltip nil :background "midnight blue")
 
-  (fset 'ad-company-box--display (fix-company-box company-box--get-frame))
-  (advice-add 'company-box--display :after 'ad-company-box--display)
-
-  (fset 'ad-company-box-doc--show (fix-company-box frame-local-getq company-box-doc-frame))
-  (advice-add 'company-box-doc--show :after 'ad-company-box-doc--show))
+  (advice-add 'company-box--display :after (fix-company-box company-box--get-frame))
+  (advice-add 'company-box-doc--show :after (fix-company-box frame-local-getq company-box-doc-frame)))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck
@@ -263,7 +262,7 @@
 
 (with-eval-after-load 'flycheck
   (setq flycheck-display-errors-delay 0.3)
-  (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)) ; remove useless warnings
+  ;; (setq flycheck-disabled-checkers '(emacs-lisp-checkdoc)) ; remove useless warnings
   (setq flycheck-emacs-lisp-load-path 'inherit) ; use the `load-path' of the current Emacs session
   (add-hook 'flycheck-mode-hook (lambda () (setq left-fringe-width 8)))) ; Enable left-fringe only in flycheck-mode
 
@@ -299,23 +298,23 @@
 
   (defmacro irony-nt ()
     (when (eq system-type 'windows-nt)
-      `(progn
+      (let ((;; fixed issue with irony-server-install
+             ad-irony--install-server-read-command
+             (lambda (args)
+               "modify irony--install-server-read-command"
+               (setenv "CC" "clang") (setenv "CXX" "clang++") ; set clang to compiler
+               `(,(replace-regexp-in-string
+                   (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
+                   "\\1 -G'MSYS Makefiles'"
+                   (car args))))))
+        `(progn
          (with-eval-after-load 'irony
            ;; Set the buffer size to 64K on Windows (from the original 4K)
            (setq irony-server-w32-pipe-buffer-size (* 64 1024))
 
-           ;; fixed issue with irony-server-install
-           (fset 'ad-irony--install-server-read-command
-                 (lambda (args)
-                   "modify irony--install-server-read-command"
-                   (setenv "CC" "clang") (setenv "CXX" "clang++") ; set clang to compiler
-                   `(,(replace-regexp-in-string
-                       (format "^\\(%s\\)" (shell-quote-argument (default-value 'irony-cmake-executable)))
-                       "\\1 -G'MSYS Makefiles'"
-                       (car args)))))
-           (advice-add 'irony--install-server-read-command :filter-args 'ad-irony--install-server-read-command)
+           (advice-add 'irony--install-server-read-command :filter-args ,ad-irony--install-server-read-command)
            (add-hook 'irony-mode-hook #'irony-cdb-autosetup-compile-options))
-         ))))
+         )))))
 (irony-nt)
 
 ;;------------------------------------------------------------------------------
@@ -331,25 +330,32 @@
 ;;          ))))
 ;; (magit-nt)
 
-(with-eval-after-load 'magit
-  (eval-when-compile (defvar git-commit-summary-max-length))
+(eval-when-compile
+  (require 'magit)
 
-  (setq git-commit-summary-max-length 999)
-  (add-hook 'git-commit-setup-hook 'turn-off-auto-fill t))
+  (defmacro my-magit ()
+    (when (boundp 'git-commit-summary-max-length)
+      `(progn
+         (with-eval-after-load 'magit
+           (setq git-commit-summary-max-length 999)
+           (add-hook 'git-commit-setup-hook #'turn-off-auto-fill t))
+         ))))
+(my-magit)
+
 
 ;;------------------------------------------------------------------------------
 ;; migemo
 ;; Japanese incremental search through dynamic pattern expansion
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'migemo
-  (fset 'ad-migemo-register-isearch-keybinding
-        (lambda ()
-          (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
-          (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
-          (define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
-          (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
-          (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill)))
-  (advice-add 'migemo-register-isearch-keybinding :override 'ad-migemo-register-isearch-keybinding))
+(let ((ad-migemo-register-isearch-keybinding
+       (lambda ()
+         (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
+         (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
+         (define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
+         (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
+         (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill))))
+  (with-eval-after-load 'migemo
+    (advice-add 'migemo-register-isearch-keybinding :override ad-migemo-register-isearch-keybinding)))
 
 ;;------------------------------------------------------------------------------
 ;; smert compile
@@ -369,8 +375,9 @@
 ;;------------------------------------------------------------------------------
 ;; markdown-mode
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'markdown-mode))
+
 (with-eval-after-load 'markdown-mode
-  (eval-when-compile (require 'markdown-mode))
   (setq markdown-fontify-code-blocks-natively t)
   (setq markdown-content-type "application/xhtml+xml")
   (setq markdown-css-paths '("https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css"))
@@ -393,11 +400,10 @@ document.addEventListener('DOMContentLoaded', () => {
 ;;------------------------------------------------------------------------------
 ;; plantuml-mode
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'plantuml-mode
-  (eval-when-compile (require 'plantuml-mode))
+(eval-when-compile (require 'plantuml-mode))
 
-  (setq plantuml-jar-path
-        (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
+(with-eval-after-load 'plantuml-mode
+  (setq plantuml-jar-path (eval-when-compile (locate-file "plantuml" exec-path '(".jar"))))
 
   ;; specify the desired output type to use for generated diagrams(svg,png,txt)
   (setq plantuml-output-type "png")
@@ -406,17 +412,13 @@ document.addEventListener('DOMContentLoaded', () => {
 ;;------------------------------------------------------------------------------
 ;; web-mode
 ;;------------------------------------------------------------------------------
+(eval-when-compile (require 'web-mode))
+
 (with-eval-after-load 'web-mode
-  (eval-when-compile (require 'web-mode))
-
   (setq web-mode-engines-alist '(("php" . "\\.phtml\\'")))
-
   (setq web-mode-content-types-alist '(("js" . "\\.\\(js[x]\\|vue\\)?\\'")))
-  (add-to-list 'web-mode-comment-formats '("javascript" . "//" ))
-
-  (setq indent-tabs-mode nil)
   (setq web-mode-enable-current-element-highlight t)
-  )
+  (add-to-list 'web-mode-comment-formats '("javascript" . "//" )))
 
 (provide 'my-package)
 ;;; my-package.el ends here

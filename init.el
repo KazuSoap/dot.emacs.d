@@ -30,13 +30,12 @@
            (declare-function tr-ime-hook-check "tr-ime-hook")
 
            `(progn
-              ;; 無変換キーで tr-ime & w32-ime を有効化
+              ;; Enable tr-ime & w32-ime with [non-convert] key
               (global-set-key (kbd "<non-convert>")
                               (lambda ()
                                 (interactive)
                                 (global-unset-key (kbd "<non-convert>"))
 
-                                ;; tr-imeの有効化
                                 ;; (tr-ime-advanced-install)
                                 (tr-ime-advanced-initialize)
                                 (tr-ime-hook-check)
@@ -73,27 +72,30 @@
   (require 'plantuml-mode)
   (require 'web-mode))
 
-(let* (;; 共通
+(let* (;; common setup
        (my-mode-setup
         (lambda ()
           (require 'my-package)
           (display-line-numbers-mode)
-          (whitespace-mode) ;; whitespace
+          (whitespace-mode)
           ))
 
-       ;; プログラミング言語共通
+       ;; common setup for programming languages
        (my-prog-mode-setup
         (lambda (tab-w)
           (funcall my-mode-setup)
 
-          (setq tab-width tab-w) ;; tab 幅
-          (setq truncate-lines t) ;; 画面外文字の切り詰め
-          (setq truncate-partial-width-windows t) ;; 縦分割時の画面外文字の切り詰め
+          (setq tab-width tab-w)
+
+          ;; Truncate off-screen characters
+          (setq truncate-lines t) ;; default
+          (setq truncate-partial-width-windows t) ;; when vertical split screen
+
           ;; (show-paren-mode) ; default on
-          (company-mode) ;; 補完
+          (company-mode)
           ))
 
-       ;; c/c++-mode共通
+       ;; common setup for c/c++-mode
        (my-c/c++-mode-setup
         (lambda (irony-option)
           ;; (eldoc-mode)
@@ -106,7 +108,7 @@
           (setq c-basic-offset 4)
           (add-to-list (make-local-variable 'company-backends) '(company-irony))
 
-          ;; irony 追加のコンパイルオプションを設定
+          ;; irony > additional compile options
           (setq irony-additional-clang-options irony-option)
           )))
 

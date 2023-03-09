@@ -66,7 +66,7 @@
 (create-fontset-from-fontset-spec
  (eval-when-compile
    (let ((fontset-elems
-          '("-*-ricty diminished discord-bold-normal-normal-*-*-*-*-*-*-*-fontset-myricty"
+          '("-*-ricty diminished discord-bold-*-*-*-*-*-*-*-*-*-fontset-myricty"
             "ascii:-*-14-*"
             "unicode:-*")))
      (mapconcat #'identity fontset-elems ","))))
