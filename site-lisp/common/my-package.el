@@ -15,11 +15,13 @@
 ;;------------------------------------------------------------------------------
 ;; ediff
 ;;------------------------------------------------------------------------------
-(eval-when-compile (require 'ediff))
+(eval-when-compile
+  (require 'ediff)
+  (declare-function ediff-setup-windows-plain "ediff"))
 
 (with-eval-after-load 'ediff
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-  (setq ediff-split-window-function 'split-window-horizontally)
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain)
+  (setq ediff-split-window-function #'split-window-horizontally)
 
   (let ((bgEdiff "gray20"))
     (set-face-attribute 'ediff-even-diff-A nil :background bgEdiff)
@@ -31,12 +33,12 @@
 ;; TRAMP(Transparent Remote Access Multiple Protocol)
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
-(eval-when-compile (require 'tramp))
+(eval-when-compile
+  (require 'tramp)
+  (declare-function tramp-change-syntax "tramp"))
 
 (with-eval-after-load 'tramp
-  (declare-function tramp-change-syntax "tramp")
   (tramp-change-syntax 'simplified) ; Emacs 26.1 or later
-  (setq tramp-encoding-shell "bash")
 
   ;; When connecting to a remote shell, disable the LC_ALL setting to prevent garbled Japanese characters
   ;; http://www.gnu.org/software/emacs/manual/html_node/tramp/Remote-processes.html#Running%20a%20debugger%20on%20a%20remote%20host
@@ -59,13 +61,13 @@
 
   ;; display mapping of invisible characters
   (setq whitespace-display-mappings
-        '(;; hard space > "¤"
+        '(;; hard space       > "¤"
           (space-mark   ?\u00A0 [?\u00A4])
           ;; full-width-space > "□"
           (space-mark   ?\u3000 [?\u25a1])
-          ;; tab > "»" with underline
-          ;; (tab-mark     ?\t     [?\u00BB ?\t])
-          ;; newline > "｣"
+          ;; tab              > "»"
+          ;; (tab-mark  ?\t     [?\u00BB ?\t])
+          ;; newline          > "｣"
           (newline-mark ?\n     [?\uFF63 ?\n])))
 
   ;; recognize "space" if it matches the following regular expression
@@ -231,28 +233,12 @@
   (setq company-idle-delay nil)
   (setq company-minimum-prefix-length 3) ; minimum prefix length for idle completion
   (setq company-selection-wrap-around t)
-  (define-key (default-value 'company-mode-map) (kbd "C-<tab>") 'company-complete)
+  (define-key (default-value 'company-mode-map) (kbd "C-<tab>") #'company-complete)
   (add-hook 'company-mode-hook 'company-box-mode))
-
-(eval-when-compile
-  (require 'company-box)
-  (require 'frame-local)
-  (declare-function company-box--get-frame "company-box")
-  (declare-function frame-local-get "frame-local")
-
-  (defmacro fix-company-box (get-frame-func &rest margs)
-    `(lambda (&rest args)
-       (let ((frame (,get-frame-func ,(car margs))))
-         (when frame
-           (set-frame-parameter frame 'tab-bar-lines 0)))
-       args)))
 
 (with-eval-after-load 'company-box
   (set-face-attribute 'company-tooltip-selection nil :foreground "wheat" :background "steelblue")
-  (set-face-attribute 'company-tooltip nil :background "midnight blue")
-
-  (advice-add 'company-box--display :after (fix-company-box company-box--get-frame))
-  (advice-add 'company-box-doc--show :after (fix-company-box frame-local-getq company-box-doc-frame)))
+  (set-face-attribute 'company-tooltip nil :background "midnight blue"))
 
 ;;------------------------------------------------------------------------------
 ;; flycheck
@@ -342,18 +328,17 @@
          ))))
 (my-magit)
 
-
 ;;------------------------------------------------------------------------------
 ;; migemo
 ;; Japanese incremental search through dynamic pattern expansion
 ;;------------------------------------------------------------------------------
 (let ((ad-migemo-register-isearch-keybinding
        (lambda ()
-         (define-key isearch-mode-map (kbd "C-M-y") 'migemo-isearch-yank-char)
-         (define-key isearch-mode-map (kbd "C-w") 'migemo-isearch-yank-word)
+         (define-key isearch-mode-map (kbd "C-M-y")   'migemo-isearch-yank-char)
+         (define-key isearch-mode-map (kbd "C-w")     'migemo-isearch-yank-word)
          (define-key isearch-mode-map (kbd "M-s C-e") 'migemo-isearch-yank-line)
-         (define-key isearch-mode-map (kbd "M-m") 'migemo-isearch-toggle-migemo)
-         (define-key isearch-mode-map (kbd "C-y") 'isearch-yank-kill))))
+         (define-key isearch-mode-map (kbd "M-m")     'migemo-isearch-toggle-migemo)
+         (define-key isearch-mode-map (kbd "C-y")     'isearch-yank-kill))))
   (with-eval-after-load 'migemo
     (advice-add 'migemo-register-isearch-keybinding :override ad-migemo-register-isearch-keybinding)))
 
