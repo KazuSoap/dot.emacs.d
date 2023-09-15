@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 (with-eval-after-load 'web-mode
   (setq web-mode-engines-alist '(("php" . "\\.phtml\\'")))
-  (setq web-mode-content-types-alist '(("js" . "\\.\\(js[x]\\|vue\\)?\\'")))
+  (setq web-mode-content-types-alist '(("js" . "\\.vue\\'")))
   (setq web-mode-enable-current-element-highlight t)
   (add-to-list 'web-mode-comment-formats '("javascript" . "//" )))
 
