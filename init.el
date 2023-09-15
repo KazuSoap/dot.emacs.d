@@ -173,7 +173,7 @@
 ;; auto-mode-alist
 ;;------------------------------------------------------------------------------
 (add-to-list 'auto-mode-alist '("\\.elc\\'" . fundamental-mode))
-((add-to-list 'auto-mode-alist '("\\.\\(html?\\|php\\|tpl\\|c?[jt]s\\(on\\|x\\)?\\|vue\\)\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(html?\\|php\\|tpl\\|c?[jt]s\\(on\\|x\\)?\\|vue\\)\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.puml?\\'" . plantuml-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
 
