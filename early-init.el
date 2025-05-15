@@ -101,22 +101,7 @@
 ;; windows-misc
 ;;------------------------------------------------------------------------------
 (eval-when-compile
-  ;; By setting the emacs.exe process code page to UTF-8 in the manifest file,
-  ;; the following hack is no longer necessary.
-  ;; (https://gist.github.com/trueroad/d309d1931100634c2cd1058a0620c663)
-  ;; However, the following hack is still needed in certain environments.
-  ;; (defmacro set-function-args-encode (arg-pos)
-  ;;   "Set the character code of the parameter passed to the subprocess to cp932"
-  ;;   `(lambda (args)
-  ;;      (when (> (length args) ,arg-pos)
-  ;;        ;; (message "%s" (cond ((stringp args) args) (t (format "%s" args))))
-  ;;        (setf (nthcdr ,arg-pos args)
-  ;;              (mapcar (lambda (arg)
-  ;;                        (if (multibyte-string-p arg)
-  ;;                            (encode-coding-string arg 'cp932)
-  ;;                          arg))
-  ;;                      (nthcdr ,arg-pos args))))
-  ;;      args))
+  (require 'exec-path-from-shell nil t)
 
   (defmacro setenv_cached-env-var (env-var-lst)
     (mapcar (lambda (x) `(setenv ,x ,(getenv x))) (eval env-var-lst)))
@@ -158,7 +143,8 @@
                             ;; convert path format from unix style to win-nt style
                             (lambda (args)
                               (and (string= (car args) "PATH")
-                                   (setf (nth 1 args) (funcall cygpath "-amp" (nth 1 args))))
+                                   (let ((path (replace-regexp-in-string ":/bin:" ":" (nth 1 args))))
+                                     (setf (nth 1 args) (funcall cygpath "-amp" path))))
                               args)))
                       (advice-add 'exec-path-from-shell-setenv :filter-args ad-exec-path-from-shell-setenv))
 
@@ -193,10 +179,6 @@
            (setq w32-lwindow-modifier 'super)
            ;; (w32-register-hot-key [s-])
            (w32-register-hot-key [s-l])
-
-           ;; (advice-add 'call-process-region :filter-args (set-function-args-encode 5))
-           ;; (advice-add 'call-process :filter-args (set-function-args-encode 4))
-           ;; (advice-add 'start-process :filter-args (set-function-args-encode 3))
            ))
       )))
 (misc-nt)
@@ -234,7 +216,8 @@
           (cond ((or force-reverting (not (buffer-modified-p)))
                  (revert-buffer :ignore-auto :noconfirm))
                 (t ; else
-                 (error "The buffer has been modified"))))))
+                 (error "The buffer has been modified")))
+          )))
 (global-set-key (kbd "<f5>") #'my-revert-buffer-no-confirm)
 
 ;; show "[EOB]" at the end of buffer
@@ -252,7 +235,8 @@
            ;; Add a new EOB marker.
            (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
            (overlay-put eob-mark 'eob-overlay t)
-           (overlay-put eob-mark 'after-string eob-text)))))
+           (overlay-put eob-mark 'after-string eob-text)
+           ))))
   (add-hook 'find-file-hook set-my-mark-eob))
 
 ;; ;; (fset 'my-expand-file-name
@@ -359,7 +343,8 @@
         (call-process find-exec nil nil nil eln-cache-dir
                       "-name" "*.eln" "-size" "0" "-delete" "-or"
                       "-name" "*.eln.tmp" "-size" "0" "-delete" "-or"
-                      "-name" "*.eln.old" "-delete")))))
+                      "-name" "*.eln.old" "-delete"))
+      )))
 
 ;; suppress warnings and errors from asynchronous native compilation
 (setq native-comp-async-report-warnings-errors nil)
@@ -421,16 +406,14 @@
 (eval-when-compile
   (defmacro nt-printer ()
     (when (eq system-type 'windows-nt)
-      '(with-eval-after-load 'lpr
-         (require 'my-built-in))
+      '(with-eval-after-load 'lpr (require 'my-built-in))
       )))
 (nt-printer)
 
 ;;------------------------------------------------------------------------------
 ;; package system
 ;;------------------------------------------------------------------------------
-(with-eval-after-load 'package
-  (require 'my-built-in))
+(with-eval-after-load 'package (require 'my-built-in))
 
 ;;==============================================================================
 ;; built-in hook
@@ -438,8 +421,7 @@
 ;;------------------------------------------------------------------------------
 ;; after-init-hook
 ;;------------------------------------------------------------------------------
-(eval-when-compile
-  (require 'windmove))
+(eval-when-compile (require 'windmove))
 
 (add-hook 'after-init-hook
           (lambda ()
