@@ -235,7 +235,7 @@
              (when (overlay-get next-overlay 'eob-overlay)
                (delete-overlay next-overlay)))
            ;; Add a new EOB marker.
-           (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
+           ;; (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
            (overlay-put eob-mark 'eob-overlay t)
            (overlay-put eob-mark 'after-string eob-text)
            ))))
