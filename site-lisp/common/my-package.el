@@ -349,8 +349,7 @@
 
 (with-eval-after-load 'smart-compile
   (let ((cmd (lambda ()
-               (emacs-lisp-byte-compile)
-               (native-compile buffer-file-name))))
+               (emacs-lisp-byte-compile))))
     (add-to-list 'smart-compile-alist `(emacs-lisp-mode ,cmd))))
 (global-set-key (kbd "C-c c") #'smart-compile)
 

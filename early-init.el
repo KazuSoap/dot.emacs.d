@@ -163,7 +163,9 @@
              (setenv "SHLVL" "0")
              (setenv "SHELL" (setq shell-file-name "bash"))
              (setenv "LANG" ,(string-trim (shell-command-to-string "locale -uU")))
-             (setenv "MSYSTEM" "MINGW64"))
+             (setenv "MSYSTEM" "MINGW64")
+             (setenv "GIT_ASKPASS" "git-gui--askpass")
+             (setenv "SSH_ASKPASS" "git-gui--askpass"))
 
            ;; Revert the 'null-device' modified in 'dos-w32.el'
            (setq null-device "/dev/null")
@@ -347,8 +349,8 @@
       )))
 
 ;; suppress warnings and errors from asynchronous native compilation
-(setq native-comp-async-report-warnings-errors nil)
-(setq native-comp-async-jobs-number 8)
+(setq-default native-comp-async-report-warnings-errors nil)
+(setq-default native-comp-async-jobs-number 8)
 (setq native-comp-speed 3)
 
 ;;------------------------------------------------------------------------------
