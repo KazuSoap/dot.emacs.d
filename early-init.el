@@ -66,8 +66,8 @@
 (create-fontset-from-fontset-spec
  (eval-when-compile
    (let ((fontset-elems
-          '("-*-ricty diminished discord-bold-*-*-*-*-*-*-*-*-*-fontset-myricty"
-            "ascii:-*-14-*"
+          '("-*-HackGen Console NF-bold-*-*-*-*-*-*-*-*-*-fontset-myfontset"
+            "ascii:-*-13-*"
             "unicode:-*")))
      (mapconcat #'identity fontset-elems ","))))
 
@@ -76,7 +76,7 @@
       '((width . 100)
         (height . 30)
         (alpha . 85)
-        (font . "fontset-myricty")))
+        (font . "fontset-myfontset")))
 
 ;; show file path in title bar
 (setq frame-title-format '((:eval (if (buffer-file-name) "%f" "%b")) " - Emacs"))
@@ -228,14 +228,13 @@
        (lambda ()
          (let ((existing-overlays (overlays-in (point-max) (point-max)))
                (eob-mark (make-overlay (point-max) (point-max) nil t t))
-               (eob-text "[EOB]"))
+               (eob-text #("[EOB]" 0 5 (face '(foreground-color . "slate gray")))))
            ;; Delete any previous EOB markers.  Necessary so that they don't
            ;; accumulate on calls to revert-buffer.
            (dolist (next-overlay existing-overlays)
              (when (overlay-get next-overlay 'eob-overlay)
                (delete-overlay next-overlay)))
            ;; Add a new EOB marker.
-           ;; (put-text-property 0 (length eob-text) 'face '(foreground-color . "slate gray") eob-text)
            (overlay-put eob-mark 'eob-overlay t)
            (overlay-put eob-mark 'after-string eob-text)
            ))))
@@ -431,8 +430,8 @@
             (message "Emacs loaded in %.3f ms" (* 1000 (string-to-number (emacs-init-time))))
 
             ;; face
-            (set-face-attribute 'fixed-pitch nil :font "fontset-myricty")
-            (set-face-attribute 'tab-bar nil :font "fontset-myricty" :foreground "Gray72" :background "black")
+            (set-face-attribute 'fixed-pitch nil :font "fontset-myfontset")
+            (set-face-attribute 'tab-bar nil :font "fontset-myfontset" :foreground "Gray72" :background "black")
 
             ;; windmove
             ;; Move the split window with "modifier-key + arrow keys"
