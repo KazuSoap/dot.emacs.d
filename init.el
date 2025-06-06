@@ -29,18 +29,23 @@
     (cond ((eq system-type 'windows-nt)
            (declare-function tr-ime-hook-check "tr-ime-hook")
 
-           `(progn
-              ;; Enable tr-ime & w32-ime with [non-convert] key
-              (global-set-key (kbd "<non-convert>")
-                              (lambda ()
-                                (interactive)
-                                (global-unset-key (kbd "<non-convert>"))
+           ;; `(progn
+           ;;    ;; Enable tr-ime & w32-ime with [non-convert] key
+           ;;    (global-set-key (kbd "<non-convert>")
+           ;;                    (lambda ()
+           ;;                      (interactive)
+           ;;                      (global-unset-key (kbd "<non-convert>"))
 
-                                ;; (tr-ime-advanced-install)
-                                (tr-ime-advanced-initialize)
-                                (tr-ime-hook-check)
+           ;;                      ;; (tr-ime-advanced-install)
+           ;;                      (tr-ime-advanced-initialize)
+           ;;                      (tr-ime-hook-check)
 
-                                (require 'my-package)))))
+           ;;                      (require 'my-package)))))
+           (let ((ad-input-method (lambda (&rest args) (require 'tr-ime) (require 'my-package) args)))
+             `(progn
+                (advice-add 'toggle-input-method :before ,ad-input-method)
+                (advice-add 'deactivate-input-method :before ,ad-input-method)
+                )))
 
           ((eq system-type 'gnu/linux)
            `(progn

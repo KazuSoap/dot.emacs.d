@@ -30,6 +30,39 @@
     (set-face-attribute 'ediff-odd-diff-B  nil :background bgEdiff)))
 
 ;;------------------------------------------------------------------------------
+;; Language Server Protocol
+;;------------------------------------------------------------------------------
+;; (eval-when-compile
+;;   (require 'eglot))
+
+;; (with-eval-after-load 'eglot
+;;   (add-to-list 'eglot-server-programs
+;;                '(my-vue-mode . ("vue-language-server" "--stdio"
+;;                                 :initializationOptions
+;;                                 (:typescript (:tsdk "c:/msys64/home/k-hamada/.local/lib/node_modules/typescript/lib"
+;;                                                     :languageFeatures (:completion
+;;                                                                        (:defaultTagNameCase "both"
+;;                                                                                             :defaultAttrNameCase "kebabCase"
+;;                                                                                             :getDocumentNameCasesRequest nil
+;;                                                                                             :getDocumentSelectionRequest nil)
+;;                                                                        :diagnostics
+;;                                                                        (:getDocumentVersionRequest nil))
+;;                                                     :documentFeatures (:documentFormatting
+;;                                                                        (:defaultPrintWidth 100
+;;                                                                                            :getDocumentPrintWidthRequest nil)
+;;                                                                        :documentSymbol t
+;;                                                                        :documentColor t)))
+;;                                 )))
+;;   )
+
+(eval-when-compile (require 'lsp-mode))
+
+(with-eval-after-load 'lsp-mode
+  (setq lsp-enable-snippet nil)
+  (add-to-list 'lsp--formatting-indent-alist '(web-mode . web-mode-code-indent-offset)))
+
+ ;;------------------------------------------------------------------------------
+;;------------------------------------------------------------------------------
 ;; TRAMP(Transparent Remote Access Multiple Protocol)
 ;; edit remoto file from local emacs
 ;;------------------------------------------------------------------------------
@@ -121,17 +154,22 @@
     (when (eq system-type 'windows-nt)
       (declare-function fakecygpty-activate "fakecygpty")
 
-      (let* ((program-path-regexps (concat "^" (expand-file-name "/") "\\(usr/\\(local/\\)?\\)?bin/.*"))
-             (ad-fakecygpty--ignored-program
-              (lambda (program)
-                (not (string-match-p program-path-regexps (executable-find (file-name-nondirectory program)))))))
-        `(progn
-           (with-eval-after-load 'shell
-             (require 'fakecygpty)
-             (advice-add 'fakecygpty--ignored-program :before-until ,ad-fakecygpty--ignored-program)
+      ;; (let* ((program-path-regexps (concat "^" (expand-file-name "/") "\\(usr/\\(local/\\)?\\)?bin/.*"))
+      ;;        (ad-fakecygpty--ignored-program
+      ;;         (lambda (program)
+      ;;           (not (string-match-p program-path-regexps (executable-find (file-name-nondirectory program)))))))
+      ;;   `(progn
+      ;;      (with-eval-after-load 'shell
+      ;;        (require 'fakecygpty)
+      ;;        (advice-add 'fakecygpty--ignored-program :before-until ,ad-fakecygpty--ignored-program)
 
-             (fakecygpty-activate))
-           )))))
+      ;;        (fakecygpty-activate))))
+      `(progn
+         (with-eval-after-load 'shell
+           (require 'fakecygpty)
+           (fakecygpty-activate))
+         )
+      )))
 (fakecygpty-nt)
 
 ;;------------------------------------------------------------------------------
@@ -163,9 +201,14 @@
            (require 'tr-ime)
            (require 'w32-ime)
            (declare-function tr-ime-font-reflect-frame-parameter "tr-ime-font")
+           (declare-function tr-ime-hook-check "tr-ime-hook")
 
            `(progn
-              (with-eval-after-load 'tr-ime-font
+              (with-eval-after-load 'tr-ime
+                ;; (tr-ime-advanced-install)
+                (tr-ime-advanced-initialize)
+                (tr-ime-hook-check)
+
                 (setq default-input-method "W32-IME")
 
                 ;; Display Windows IME status in mode line (ON:[あ], OFF:[Aa]).

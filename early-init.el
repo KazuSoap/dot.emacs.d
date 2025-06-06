@@ -437,6 +437,9 @@
             ;; Move the split window with "modifier-key + arrow keys"
             (windmove-default-keybindings 'meta) ; modifier-key = Alt
             (setq windmove-wrap-around t) ; enable wrap-around
+
+            ;; garbage collection
+            (setq gc-cons-threshold (* 1024 1024 1024))
             ))
 
 ;;------------------------------------------------------------------------------
